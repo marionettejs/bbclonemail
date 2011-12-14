@@ -1,10 +1,28 @@
 !!! 5
 %html
   %head
-    %link{:href=>"/stylesheets/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
+    %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
     %title BBCloneMail: A Backbone.Marionette Reference Application
     
   %body
-    = yield
+    #container
+      %header
+        %h1 BBCloneMail
+        %p 
+          A 
+          %a{:href=> "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
+          Reference Application
+          
+      %section#content
+        %article
+          = yield
 
+      %footer
+
+    %script{:src=>"/javascripts/vendor/json2.js"}
+    %script{:src=>"/javascripts/vendor/jquery.js"}
+    %script{:src=>"/javascripts/vendor/underscore.js"}
+    %script{:src=>"/javascripts/vendor/backbone.js"}
+    %script{:src=>"/javascripts/vendor/backbone.memento.js"}
+    %script{:src=>"/javascripts/vendor/backbone.modelbinding.js"}
     %script{:src=>"/javascripts/bbclonemail.js"}
