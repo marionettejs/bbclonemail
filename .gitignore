@@ -2,3 +2,4 @@
 *.sw0
 *.orig
 *.DS_Store
+.sass-cache

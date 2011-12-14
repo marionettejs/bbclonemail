@@ -6,3 +6,7 @@ gem 'compass'
 gem 'sass'
 gem 'haml'
 gem 'json'
+
+group :development do
+  gem 'rb-fsevent'
+end
