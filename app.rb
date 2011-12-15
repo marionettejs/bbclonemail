@@ -5,5 +5,5 @@ require 'haml'
 require 'json'
 
 get "/" do
-  haml :index
+  haml :layout
 end

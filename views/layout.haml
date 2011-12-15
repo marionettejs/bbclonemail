@@ -6,16 +6,21 @@
     
   %body
     #container
-      %header
+      %header.titlebar
         %h1 BBCloneMail
-        %p 
+        %p.tag-line 
           A 
           %a{:href=> "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
           Reference Application
           
-      %section#content
-        %article
-          = yield
+      %navigation
+        %section#app-selector
+          %select
+            %option{:value=>"mail"}Mail
+            %option{:value=>"contacts"}Contacts
+        %section#navigation
+
+      %article
 
       %footer
 
