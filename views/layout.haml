@@ -21,19 +21,48 @@
             %select
               %option{:value=>"mail"}Mail
               %option{:value=>"contacts"}Contacts
-            asdf
           %section#navigation
+            %p Mail Categories
+            %ul
+              %li 
+                %a{:href=>"#"}Some Category
+              %li 
+                %a{:href=>"#"}Another Here
+              %li
+                %a{:href=>"#"}That Thing There
+              %li 
+                %a{:href=>"#"}More Stuff Goes Here
 
         %article
           %ul.email-list
             %li
-              From: Joe Johnson, Subject: Foo Bar Baz Qux... Widgets
+              %span.from
+                Joe Johnson
+              %span.subject
+                Some email about that subject, which is sent to you
+              %span.date
+                1/1/2001
             %li
-              From: Joe Johnson, Subject: Foo Bar Baz Qux... Widgets
+              %span.from
+                Jim Jimson
+              %span.subject
+                Did you get that thing I sent you?
+              %span.date
+                2/2/2002
             %li
-              From: Joe Johnson, Subject: Foo Bar Baz Qux... Widgets
+              %span.from
+                Ben Benson
+              %span.subject
+                Nigerian king needs YOU to send HIM money!
+              %span.date
+                3/3/2003
             %li
-              From: Joe Johnson, Subject: Foo Bar Baz Qux... Widgets
+              %span.from
+                Bob Robertson
+              %span.subject
+                Yo dawg, I heard you like Backbone...
+              %span.date
+                4/4/2004
 
     %section.footer
       .container

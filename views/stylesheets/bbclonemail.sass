@@ -6,8 +6,7 @@
 =box
   +border-radius
   border: 1px solid #ccc
-  padding-top: 15px
-  padding-bottom: 15px
+  padding: 2px
   background-color: #eee
 
 =a($normal:#00a, $hover:#000)
@@ -50,6 +49,53 @@ section.header
 section.content
   padding: 10px 0px
   background-color: #fff
+  navigation
+    section#app-selector 
+      margin-bottom: 10px
+      background-color: #fff
+      select
+        display: block
+        height: 25px
+        width: 148px
+        font-size: 12pt
+    section#navigation
+      +box
+      p
+        padding: 0px 
+        margin: 0px 5px
+        font-weight: bold
+      ul
+        +no-bullets
+        margin: 5px 0px
+        padding: 0px
+        li
+          +box
+          margin: 2px
+          padding: 2px 5px
+          border: 1px solid #ddd
+          background-color: #f7f7f7
+  article
+    ul.email-list
+      +no-bullets
+      padding: 0px
+      margin: 0px
+      li
+        +box
+        +column(15)
+        cursor: pointer
+        margin: 2px 0px
+        padding: 2px 5px
+        border: 1px solid #ccc
+        background-color: #fff
+        .from
+          +column(3)
+          text-align: right
+        .subject
+          +column(10)
+          font-weight: bold
+        .date
+          +column(1.75)
+          text-align: right
 
 section.footer
   border-top: 2px solid #aaa
