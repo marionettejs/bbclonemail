@@ -3,6 +3,7 @@ Backbone.View.prototype.render = function(){
   $(this.el).html(html);
 }
 
+
 BBCloneMail = new Backbone.Marionette.Application();
 
 BBCloneMail.addRegions({

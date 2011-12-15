@@ -14,6 +14,8 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   MailApp.show = function(){
     BBCloneMail.mainRegion.show(new MailApp.EmailListView());
     BBCloneMail.navigationRegion.show(new MailApp.MailCategoriesView());
+    BBCloneMail.showRoute("inbox");
+    BBCloneMail.AppSelection.showSelection("mail");
   };
   
   return MailApp;

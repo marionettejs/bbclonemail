@@ -14,6 +14,11 @@ BBCloneMail.Router = Backbone.Router.extend({
   }
 });
 
+BBCloneMail.showRoute = function(route){
+  BBCloneMail.router.navigate(route, false);
+};
+
+
 BBCloneMail.addInitializer(function(){
-  new BBCloneMail.Router();
+  BBCloneMail.router = new BBCloneMail.Router();
 });

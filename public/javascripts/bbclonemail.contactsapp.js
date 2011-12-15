@@ -14,6 +14,8 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   Contacts.show = function(){
     BBCloneMail.mainRegion.show(new Contacts.ContactListView());
     BBCloneMail.navigationRegion.show(new Contacts.ContactCategoriesView());
+    BBCloneMail.showRoute("contacts");
+    BBCloneMail.AppSelection.showSelection("contacts");
   };
   
   return Contacts;
