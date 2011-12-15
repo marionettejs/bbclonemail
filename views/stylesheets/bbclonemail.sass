@@ -45,9 +45,17 @@ section.header
   p
     padding: 0px
     margin: 0px
+  header
+    +column(9.6)
+  header.help
+    +box
+    margin-top: 5px
+    font-size: 8pt
+    color: #555
+    border: 1px solid #aaa
 
 section.content
-  padding: 10px 0px
+  padding: 25px 0px
   background-color: #fff
   navigation
     section#app-selector 
@@ -85,7 +93,7 @@ section.content
         +box
         +column(15)
         cursor: pointer
-        margin: 2px 0px
+        margin: 0px 5px 10px 0px
         padding: 2px 5px
         border: 1px solid #ccc
         background-color: #fff
@@ -103,7 +111,7 @@ section.content
         +box
         +column(4.9)
         cursor: pointer
-        margin: 2px 2px
+        margin: 0px 5px 10px 0px
         padding: 2px 5px
         border: 1px solid #ccc
         background-color: #fff
