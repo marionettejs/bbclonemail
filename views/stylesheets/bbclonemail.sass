@@ -1,2 +1,55 @@
+@import blueprint/reset
+@import partials/base
+@import blueprint
+@import blueprint/scaffolding
+
+=box
+  +border-radius
+  border: 1px solid #ccc
+  padding-top: 15px
+  padding-bottom: 15px
+  background-color: #eee
+
+=a($normal:#00a, $hover:#000)
+  a, a:hover, a:active, a:visited
+    color: $normal
+    text-decoration: underline
+
+  a:hover
+    color: $hover
+    text-decoration: underline
 
 body
+  +blueprint-typography(true)
+  +blueprint-utilities
+  +blueprint-debug
+  +blueprint-interaction
+  font: Helvetica, Arial, Sans-Serif
+  +a
+  background-color: #555
+
+section
+  width: auto
+  background-color: #eee
+
+section.footer
+  border-top: 2px solid #aaa
+  background-color: #555
+
+.container
+  +container
+
+footer
+  +column(20)
+  margin: 0px auto
+  font-size: 8pt
+  color: #ccc
+  +a(#ccc, #fff)
+  ul
+    +column(4.15)
+    +no-bullets
+    margin: 20px
+    padding: 0px
+    li.title
+      font-weight: bold
+

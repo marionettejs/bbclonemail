@@ -5,24 +5,60 @@
     %title BBCloneMail: A Backbone.Marionette Reference Application
     
   %body
-    #container
-      %header.titlebar
-        %h1 BBCloneMail
-        %p.tag-line 
-          A 
-          %a{:href=> "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
-          Reference Application
-          
-      %navigation
-        %section#app-selector
-          %select
-            %option{:value=>"mail"}Mail
-            %option{:value=>"contacts"}Contacts
-        %section#navigation
+    %section
+      .container
+        %header.titlebar
+          %h1 BBCloneMail
+          %p.tag-line 
+            A 
+            %a{:href=> "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
+            Reference Application
+            
+        %navigation
+          %section#app-selector
+            %select
+              %option{:value=>"mail"}Mail
+              %option{:value=>"contacts"}Contacts
+          %section#navigation
 
-      %article
+        %article
 
-      %footer
+    %section.footer
+      .container
+        %footer
+          %ul
+            %li
+              Copyright &copy;2011
+              %a{:href=>"http://mutedsolutions.com"}Muted Solutions, LLC.
+              All rights reserved.
+          %ul
+            %li
+              BBCloneMail is a reference app for my opinions on building a
+              Backbone.js application in a composite application structure.
+          %ul
+            %li.title
+              Built With:
+            %li
+              %a{:href => "http://backbonejs.org"}Backbone.js
+            %li
+              %a{:href => "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
+            %li
+              %a{:href => "http://github.com/derickbailey/backbone.modelbinding"}Backbone.ModelBinding
+            %li
+              %a{:href => "http://github.com/derickbailey/backbone.memento"}Backbone.Memento
+          %ul
+            %li.title
+              Find me online:
+            %li
+              %a{:href => "http://twitter.com/derickbailey"}@derickbailey
+            %li
+              %a{:href => "http://twitter.com/backbonejsclass"}@backbonejsclass
+            %li
+              %a{:href => "http://derickbailey.lostechies.com"}DerickBailey.lostechies.com
+            %li
+              %a{:href => "http://backbonetraining.net"}BackboneTraining.net
+            %li
+              %a{:href => "http://twitter.com/mutedsolutions"}@mutedsolutions
 
     %script{:src=>"/javascripts/vendor/json2.js"}
     %script{:src=>"/javascripts/vendor/jquery.js"}
