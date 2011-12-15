@@ -83,20 +83,25 @@ section.content
           border: 1px solid #ddd
           background-color: #f7f7f7
   article
+    #loading
+      display: none
+      +column(15)
+      text-align: center
     ul.email-list, ul.contact-list
       +no-bullets
       padding: 0px
       margin: 0px
-
-    ul.email-list
       li
         +box
-        +column(15)
         cursor: pointer
         margin: 0px 5px 10px 0px
         padding: 2px 5px
         border: 1px solid #ccc
         background-color: #fff
+
+    ul.email-list
+      li
+        +column(15)
         .from
           +column(3)
           text-align: right
@@ -108,13 +113,7 @@ section.content
           text-align: right
     ul.contact-list
       li
-        +box
         +column(4.9)
-        cursor: pointer
-        margin: 0px 5px 10px 0px
-        padding: 2px 5px
-        border: 1px solid #ccc
-        background-color: #fff
         .name
           +column(4.8)
           font-size: 12pt
