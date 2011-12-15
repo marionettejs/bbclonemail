@@ -1,9 +1,51 @@
 !!! 5
 %html
   %head
-    %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
     %title BBCloneMail: A Backbone.Marionette Reference Application
+    %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
     
+    %script{:id=>"email-list-view-template", :type=>"text/x-jquery-tmpl"}
+      %li
+        %span.from
+          Joe Johnson
+        %span.subject
+          Some email about that subject, which is sent to you
+        %span.date
+          1/1/2001
+      %li
+        %span.from
+          Jim Jimson
+        %span.subject
+          Did you get that thing I sent you?
+        %span.date
+          2/2/2002
+      %li
+        %span.from
+          Ben Benson
+        %span.subject
+          Nigerian king needs YOU to send HIM money!
+        %span.date
+          3/3/2003
+      %li
+        %span.from
+          Bob Robertson
+        %span.subject
+          Yo dawg, I heard you like Backbone...
+        %span.date
+          4/4/2004
+
+    %script{:id=>"mail-categories-view-template", :type=>"text/x-jquery-tmpl"}
+      %p Mail Categories
+      %ul
+        %li 
+          %a{:href=>"#"}Some Category
+        %li 
+          %a{:href=>"#"}Another Here
+        %li
+          %a{:href=>"#"}That Thing There
+        %li 
+          %a{:href=>"#"}More Stuff Goes Here
+
   %body
     %section.header
       .container
@@ -22,47 +64,8 @@
               %option{:value=>"mail"}Mail
               %option{:value=>"contacts"}Contacts
           %section#navigation
-            %p Mail Categories
-            %ul
-              %li 
-                %a{:href=>"#"}Some Category
-              %li 
-                %a{:href=>"#"}Another Here
-              %li
-                %a{:href=>"#"}That Thing There
-              %li 
-                %a{:href=>"#"}More Stuff Goes Here
 
-        %article
-          %ul.email-list
-            %li
-              %span.from
-                Joe Johnson
-              %span.subject
-                Some email about that subject, which is sent to you
-              %span.date
-                1/1/2001
-            %li
-              %span.from
-                Jim Jimson
-              %span.subject
-                Did you get that thing I sent you?
-              %span.date
-                2/2/2002
-            %li
-              %span.from
-                Ben Benson
-              %span.subject
-                Nigerian king needs YOU to send HIM money!
-              %span.date
-                3/3/2003
-            %li
-              %span.from
-                Bob Robertson
-              %span.subject
-                Yo dawg, I heard you like Backbone...
-              %span.date
-                4/4/2004
+        %article#main
 
     %section.footer
       .container
@@ -113,8 +116,17 @@
 
     %script{:src=>"/javascripts/vendor/json2.js"}
     %script{:src=>"/javascripts/vendor/jquery.js"}
+    %script{:src=>"/javascripts/vendor/jquery-tmpl.js"}
     %script{:src=>"/javascripts/vendor/underscore.js"}
     %script{:src=>"/javascripts/vendor/backbone.js"}
     %script{:src=>"/javascripts/vendor/backbone.memento.js"}
     %script{:src=>"/javascripts/vendor/backbone.modelbinding.js"}
+    %script{:src=>"/javascripts/vendor/backbone.marionette.js"}
     %script{:src=>"/javascripts/bbclonemail.js"}
+    %script{:src=>"/javascripts/bbclonemail.router.js"}
+    %script{:src=>"/javascripts/bbclonemail.mailapp.js"}
+
+    :javascript
+      $(function(){
+        BBCloneMail.start();
+      });
