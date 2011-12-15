@@ -8,7 +8,15 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   });
 
   MailApp.MailCategoriesView = Backbone.View.extend({
-    template: "#mail-categories-view-template"
+    template: "#mail-categories-view-template",
+
+    events: {
+      "click a": "categoryClicked"
+    },
+
+    categoryClicked: function(e){
+      e.preventDefault();
+    }
   });
 
   MailApp.show = function(){
