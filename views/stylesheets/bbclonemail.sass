@@ -40,15 +40,16 @@ section.footer
   +container
 
 footer
+  $footer-color: #ddd
   +column(20)
   margin: 0px auto
   font-size: 8pt
-  color: #ccc
-  +a(#ccc, #fff)
+  color: $footer-color
+  +a($footer-color, #fff)
   ul
-    +column(4.15)
+    +column(4.4)
     +no-bullets
-    margin: 20px
+    margin: 15px
     padding: 0px
     li.title
       font-weight: bold
