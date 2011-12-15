@@ -1,5 +1,28 @@
 BBCloneMail: A Backbone.Marionette Reference Application
 
+## See It In Action
+
+This is a sample application, demonstrating how to use my 
+[Backbone.Marionette](http://github.com/derickbailey/backbone.marionette)
+plugin for Backbone.js. You can see it in action at:
+
+http://bbclonemail.heroku.com
+
+## A Work In Progress
+
+Keep in mind that this is still a work in progress. While the source code
+and functionality do demonstrate all of the core features and capabilities
+of Backbone.Marionette, the application itself is very limited in it's 
+functionality. 
+
+Also note that I haven't optimized the JavaScript downloads in any way. There
+is no minification, and no asset packaging to create a single download for the
+entire application at this point. As a result, the app takes a moment or two
+to download all of the JavaScript files and start up.
+
+As I continue working on functionality, I'll also put in some optimizations for
+the JavaScript, so that it starts up faster.
+
 ## Legal Mumbo Jumbo (MIT License)
 
 Copyright (c) 2011 Derick Bailey, Muted Solutions, LLC
