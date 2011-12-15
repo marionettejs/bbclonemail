@@ -8,7 +8,15 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   });
 
   Contacts.ContactCategoriesView = Backbone.View.extend({
-    template: "#contact-categories-view-template"
+    template: "#contact-categories-view-template",
+
+    events: {
+      "click a": "categoryClicked"
+    },
+
+    categoryClicked: function(e){
+      e.preventDefault();
+    }
   });
 
   Contacts.show = function(){
