@@ -38,13 +38,69 @@
       %p Mail Categories
       %ul
         %li 
-          %a{:href=>"#"}Some Category
+          %a{:href=>"#"}Inbox
         %li 
-          %a{:href=>"#"}Another Here
-        %li
-          %a{:href=>"#"}That Thing There
+          %a{:href=>"#"}Sent
         %li 
-          %a{:href=>"#"}More Stuff Goes Here
+          %a{:href=>"#"}Work Related
+        %li 
+          %a{:href=>"#"}Trash
+
+    %script{:id=>"contact-list-view-template", :type=>"text/x-jquery-tmpl"}
+      %li
+        %span.name
+          Joe Johnson
+        %span.email
+          joe.johnson@example.com
+        %span.phone
+          555-555-5555
+      %li
+        %span.name
+          Jim Jimson
+        %span.email
+          jim.jimson@example.com
+        %span.phone
+          555-555-5556
+      %li
+        %span.name
+          Ben Benson
+        %span.email
+          ben.benson@example.com
+        %span.phone
+          555-555-5557
+      %li
+        %span.name
+          Bob Robertson
+        %span.email
+          robert.robertson@example.com
+        %span.phone
+          555-555-5558
+      %li
+        %span.name
+          Amy Amerson
+        %span.email
+          amy.amerson@example.com
+        %span.phone
+          555-555-5559
+      %li
+        %span.name
+          Julie Julerson
+        %span.email
+          julie.julerson@example.com
+        %span.phone
+          555-555-5560
+
+    %script{:id=>"contact-categories-view-template", :type=>"text/x-jquery-tmpl"}
+      %p Contact Categories
+      %ul
+        %li 
+          %a{:href=>"#"}Everyone
+        %li 
+          %a{:href=>"#"}Friends
+        %li 
+          %a{:href=>"#"}Family
+        %li 
+          %a{:href=>"#"}Coworkers
 
   %body
     %section.header
@@ -125,6 +181,7 @@
     %script{:src=>"/javascripts/bbclonemail.js"}
     %script{:src=>"/javascripts/bbclonemail.router.js"}
     %script{:src=>"/javascripts/bbclonemail.mailapp.js"}
+    %script{:src=>"/javascripts/bbclonemail.contactsapp.js"}
 
     :javascript
       $(function(){

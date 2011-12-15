@@ -1,9 +1,5 @@
 Backbone.View.prototype.render = function(){
-  var data;
-  if (this.model){ data = this.model.toJSON(); }
-  if (this.collection){ data = this.collection.toJSON(); }
-
-  var html = $(this.template).tmpl(data);
+  var html = $(this.template).tmpl();
   $(this.el).html(html);
 }
 

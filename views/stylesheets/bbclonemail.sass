@@ -75,10 +75,12 @@ section.content
           border: 1px solid #ddd
           background-color: #f7f7f7
   article
-    ul.email-list
+    ul.email-list, ul.contact-list
       +no-bullets
       padding: 0px
       margin: 0px
+
+    ul.email-list
       li
         +box
         +column(15)
@@ -96,6 +98,22 @@ section.content
         .date
           +column(1.75)
           text-align: right
+    ul.contact-list
+      li
+        +box
+        +column(4.9)
+        cursor: pointer
+        margin: 2px 2px
+        padding: 2px 5px
+        border: 1px solid #ccc
+        background-color: #fff
+        .name
+          +column(4.8)
+          font-size: 12pt
+          text-align: center
+          font-weight: bold
+        .email, .phone
+          +column(4.8)
 
 section.footer
   border-top: 2px solid #aaa
