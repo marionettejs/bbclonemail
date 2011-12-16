@@ -8,6 +8,12 @@ plugin for Backbone.js. You can see it in action at:
 
 http://bbclonemail.heroku.com
 
+## Annotated Source Code
+
+The annotated source code (still in progress) is available here:
+
+http://derickbailey.github.com/bbclonemail/docs/bbclonemail.html
+
 ## A Work In Progress
 
 Keep in mind that this is still a work in progress. While the source code
