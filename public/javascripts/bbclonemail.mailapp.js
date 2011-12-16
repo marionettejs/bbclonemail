@@ -15,13 +15,17 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
       var body = emailEl.find(".body");
       if (body.length > 0){
-        body.remove();
+        body.hide("fast", function(){
+          $(this).remove();
+        });
       } else {
         var content = $("#email-body-template").tmpl();
         body = $("<div>");
         body.addClass("body");
+        body.css("display", "none");
         body.html(content);
         emailEl.find("article").append(body);
+        body.show("fast");
       }
 
     }
