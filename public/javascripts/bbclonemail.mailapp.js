@@ -12,10 +12,8 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
     expandCollapseEmail: function(e){
       var emailEl = $(e.currentTarget).parent();
-      console.log(e);
 
       var body = emailEl.find(".body");
-      console.log(body);
       if (body.length > 0){
         body.remove();
       } else {
