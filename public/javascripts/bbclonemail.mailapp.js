@@ -1,5 +1,18 @@
-// This is the "controller" or sub-application
-// for the mail app. It contains all of the 
+// Backbone.BBCloneMail
+// A reference application for Backbone.Marionette
+//
+// Copyright (C)2011 Derick Bailey, Muted Solutions, LLC
+// Distributed Under MIT License
+//
+// Documentation and Full License Available at:
+// http://github.com/derickbailey/backbone.bbclonemail
+// http://github.com/derickbailey/backbone.marionette
+
+// MailApp
+// -------
+
+// This is the app controller or sub-application
+// for email. It contains all of the 
 // high level knowledge of how to run the app
 // when it's in mail mode.
 BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
