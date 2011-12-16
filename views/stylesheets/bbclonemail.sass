@@ -98,13 +98,20 @@ section.content
         padding: 2px 5px
         border: 1px solid #ccc
         background-color: #fff
+        article
+          .body
+            cursor: auto
+            +column(13.5)
+            +push(0.5)
+            +prepend-top(1em)
+            padding-bottom: 0px
+            margin-bottom: 0px
 
     ul.email-list
       li
         +column(15)
         .from
           +column(3)
-          text-align: right
         .subject
           +column(10)
           font-weight: bold

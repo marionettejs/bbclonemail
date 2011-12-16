@@ -3,36 +3,77 @@
   %head
     %title BBCloneMail: A Backbone.Marionette Reference Application
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
-    
+
+    %script{:id=>"email-body-template", :type=>"text/x-jquery-tmpl"}
+      %p
+        Voluptate quinoa wayfarers, american apparel consectetur mlkshk dolor 
+        DIY. Portland pitchfork terry richardson jean shorts locavore placeat. 
+        Qui retro stumptown, art party aute delectus reprehenderit wolf quinoa 
+        craft beer nesciunt minim master cleanse. Irony cliche dreamcatcher, PBR 
+        skateboard laborum ex synth trust fund wayfarers tumblr. Gluten-free nostrud 
+        williamsburg, sustainable freegan delectus yr laborum wes anderson incididunt 
+        vice elit artisan shoreditch. Cred accusamus jean shorts aliquip, 3 wolf moon 
+        occaecat farm-to-table VHS stumptown beard in cupidatat ethical sartorial high 
+        life. Before they sold out four loko do, chambray wolf eu pariatur in irony.
+
+      %p
+        Whatever keytar odio mollit, portland enim consequat ethical minim quis 
+        mixtape VHS master cleanse culpa deserunt. Do mcsweeney's butcher sustainable
+        , cosby sweater cupidatat ex veniam mollit cardigan. Exercitation wayfarers 
+        tofu sint fixie irure, vinyl raw denim officia cupidatat. Sed velit enim, sapiente 
+        keytar salvia aute non craft beer. Fixie deserunt non banh mi seitan. Salvia cardigan 
+        aute duis. Velit pariatur in commodo, wayfarers enim cardigan freegan yr nesciunt helvetica 
+        gluten-free culpa minim scenester.
+
+      %p
+        Cred fap cliche hoodie stumptown. Duis cillum wolf quinoa vinyl anim, 
+        iphone odio lomo Austin. Freegan carles food truck, 8-bit retro brooklyn 
+        Austin tempor nihil voluptate cosby sweater. Squid letterpress craft beer
+        , tumblr portland gentrify vice keytar echo park twee master cleanse. Laboris 
+        ad sint vero consectetur cupidatat. Exercitation 3 wolf moon american apparel
+        , labore do iphone +1 gluten-free. Incididunt fixie gluten-free williamsburg
+        , hoodie yr aliqua mcsweeney's. 
+
     %script{:id=>"email-list-view-template", :type=>"text/x-jquery-tmpl"}
       %li
-        %span.from
-          Joe Johnson
-        %span.subject
-          Some email about that subject, which is sent to you
-        %span.date
-          1/1/2001
+        %header
+          %span.from
+            Joe Johnson
+          %span.subject
+            Some email about that subject, which is sent to you
+          %span.date
+            1/1/2001
+        %article
+
       %li
-        %span.from
-          Jim Jimson
-        %span.subject
-          Did you get that thing I sent you?
-        %span.date
-          2/2/2002
+        %header
+          %span.from
+            Jim Jimson
+          %span.subject
+            Did you get that thing I sent you?
+          %span.date
+            2/2/2002
+        %article
+          
       %li
-        %span.from
-          Ben Benson
-        %span.subject
-          Nigerian king needs YOU to send HIM money!
-        %span.date
-          3/3/2003
+        %header
+          %span.from
+            Ben Benson
+          %span.subject
+            Nigerian king needs YOU to send HIM money!
+          %span.date
+            3/3/2003
+        %article
+          
       %li
-        %span.from
-          Bob Robertson
-        %span.subject
-          Yo dawg, I heard you like Backbone...
-        %span.date
-          4/4/2004
+        %header
+          %span.from
+            Bob Robertson
+          %span.subject
+            Yo dawg, I heard you like Backbone...
+          %span.date
+            4/4/2004
+        %article
 
     %script{:id=>"mail-categories-view-template", :type=>"text/x-jquery-tmpl"}
       %p Mail Categories
