@@ -33,10 +33,6 @@ BBCloneMail.MailApp.MailBox = (function(Backbone, $){
       _.bindAll(this, "renderItem");
     },
 
-    events: {
-      "click header": "expandCollapseEmail"
-    },
-
     render: function(){
       this.collection.each(this.renderItem);
     },
