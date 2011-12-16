@@ -1,0 +1,4 @@
+desc "Build annotated source documentation"
+task :docco do
+  `docco public/javascripts/bbclonemail*.js`
+end
