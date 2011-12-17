@@ -37,15 +37,34 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     BBCloneMail.mainRegion.show(mailBox);
   }
 
+  var showFilteredEmailList = function(category){
+    var filteredMail = MailApp.emailList;
+   
+    // Filter the mail by the category, if one was specified
+    if (category){
+      console.log("filtered");
+      filteredMail = filteredMail.filter(function(email){
+        var categories = email.get("categories");
+        var found = categories.indexOf(category) >= 0;
+        return found;
+      });
+      filteredMail = new MailApp.EmailCollection(filteredMail);
+    }
+    
+    // display the filtered email list
+    displayEmailList(filteredMail);
+  }
+
   // This is a "MailApp" method that is called whenever
   // we are switching the BBMailCone app into mail mode.
   // It replaces all of the visual regions with the 
   // correct content by calling the `show` method for the
   // correct region manager.
-  MailApp.show = function(){
+  MailApp.show = function(category){
+    console.log(category);
 
     // Show the mail box with email entries
-    displayEmailList(MailApp.emailList);
+    showFilteredEmailList(category);
 
     // Show the mail categories list
     BBCloneMail.navigationRegion.show(new BBCloneMail.MailApp.Categories.CategoriesView({
@@ -64,17 +83,10 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // we have down in to that category, and then display the filtered
   // list on the screen.
   BBCloneMail.vent.bind("mail:category:selected", function(category){
-    // Filter the mail by the category
-    var filteredMail = MailApp.emailList.filter(function(email){
-      var categories = email.get("categories");
-      var found = categories.indexOf(category);
-      return found;
-    });
-    
-    // display the filtered email list
-    displayEmailList(new MailApp.EmailCollection(filteredMail));
+    // Show the mail box with email entries
+    showFilteredEmailList(category);
 
-    // update the url hash w/ the category
+    // Update the url hash w/ the category
     BBCloneMail.showRoute("inbox/" + category);
   });
 

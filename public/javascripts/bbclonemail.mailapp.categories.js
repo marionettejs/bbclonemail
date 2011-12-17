@@ -47,6 +47,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     }
   });
 
+  // Build a proper collection of category models
   var buildCategories = function(categoryNames){
     var category;
     var categoryCollection = new CategoryCollection();
