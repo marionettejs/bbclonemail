@@ -6,10 +6,17 @@ Distributed Under MIT License</p>
 
 <p>Documentation and Full License Available at:
 http://github.com/derickbailey/backbone.bbclonemail
-http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Router</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Router</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The router callbacks are only fired when the url hash is
+directly hit, either by bookmark or manually changing
+the hash. </p>
+
+<p>Also note that the router is as dumb as possible. It only
+calls out to other sub-app controlling objects, and lets
+those objects do the real work.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Router</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
   <span class="nx">routes</span><span class="o">:</span> <span class="p">{</span>
     <span class="s2">&quot;&quot;</span><span class="o">:</span> <span class="s2">&quot;mail&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inbox&quot;</span><span class="o">:</span> <span class="s2">&quot;mail&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inbox/:category&quot;</span><span class="o">:</span> <span class="s2">&quot;mailCategory&quot;</span><span class="p">,</span>
     <span class="s2">&quot;contacts&quot;</span><span class="o">:</span> <span class="s2">&quot;contacts&quot;</span><span class="p">,</span>
   <span class="p">},</span>
 
@@ -17,17 +24,18 @@ http://github.com/derickbailey/backbone.marionette</p>             </td>        
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
   <span class="p">},</span>
 
+  <span class="nx">mailCategory</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">category</span><span class="p">){</span>
+    <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="nx">category</span><span class="p">);</span>
+  <span class="p">},</span>
+
   <span class="nx">contacts</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
   <span class="p">}</span>
-<span class="p">});</span>
-
-<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">showRoute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">route</span><span class="p">){</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Used to update the url's hash fragment route. Note the
+<code>false</code> second parameter, ensuring the router does not
+fire it's callback method for the route we are showing</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">showRoute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">route</span><span class="p">){</span>
   <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">router</span><span class="p">.</span><span class="nx">navigate</span><span class="p">(</span><span class="nx">route</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-<span class="p">};</span>
-
-
-<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addInitializer</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+<span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Initialize the router when the application starts</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addInitializer</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
   <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
 <span class="p">});</span>
 
