@@ -41,8 +41,8 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     var filteredMail = MailApp.emailList;
    
     // Filter the mail by the category, if one was specified
+    console.log(category);
     if (category){
-      console.log("filtered");
       filteredMail = filteredMail.filter(function(email){
         var categories = email.get("categories");
         var found = categories.indexOf(category) >= 0;
@@ -55,14 +55,22 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     displayEmailList(filteredMail);
   }
 
+  // Display the correct route, including the
+  // optional category that is being shown
+  var showRoute = function(category){
+    var route = "inbox";
+    if (category){
+      route = route + "/" + category;
+    }
+    BBCloneMail.showRoute(route);
+  }
+
   // This is a "MailApp" method that is called whenever
   // we are switching the BBMailCone app into mail mode.
   // It replaces all of the visual regions with the 
   // correct content by calling the `show` method for the
   // correct region manager.
   MailApp.show = function(category){
-    console.log(category);
-
     // Show the mail box with email entries
     showFilteredEmailList(category);
 
@@ -72,7 +80,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     }));
 
     // Updates the url's #hash fragment with the correct hash
-    BBCloneMail.showRoute("inbox");
+    showRoute(category);
 
     // Updates the app mode select box
     BBCloneMail.AppSelection.showSelection("mail");
@@ -87,7 +95,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     showFilteredEmailList(category);
 
     // Update the url hash w/ the category
-    BBCloneMail.showRoute("inbox/" + category);
+    showRoute(category);
   });
 
   // Initializes the email collection object with the list
