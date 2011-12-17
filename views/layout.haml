@@ -26,13 +26,16 @@
       %p Mail Categories
       %ul
         %li 
-          %a{:href=>"#"}Inbox
+          %a{:href=>"#inbox"}Inbox
         %li 
-          %a{:href=>"#"}Sent
+          %a{:href=>"#inbox/sent"}Sent
         %li 
-          %a{:href=>"#"}Work Related
-        %li 
-          %a{:href=>"#"}Trash
+          %a{:href=>"#inbox/trash"}Trash
+      %ul.customCategories
+        {{each categories}}
+        %li
+          %a{:href=>"#inbox/${$value.name}"}${$value.name}
+        {{/each}}
 
     %script{:id=>"contact-list-view-template", :type=>"text/x-jquery-tmpl"}
       %li
@@ -190,30 +193,36 @@
 
         var options = {};
 
+        options.categories = ["Work Related", "Personal", "Important", "Read Later"]
+
         options.email = [
           {
             from: "Joe Johnson",
             subject: "Some email about that subject which was sent to you",
             date: "1/1/2001",
-            body: body
+            body: body,
+            categories: ["Work Related"]
           },
           {
             from: "Jim Jimson",
             subject: "Did you get that thing I sent you?",
             date: "1/1/2001",
-            body: body
+            body: body,
+            categories: ["Work Related", "Read Later"]
           },
           {
             from: "Ben Benson",
             subject: "Nigerian King needs YOU to send HIM money!",
             date: "1/1/2001",
-            body: body
+            body: body,
+            categories: ["Personal", "Important"]
           },
           {
             from: "Bob Robertson",
             subject: "Yo dawg, I hear you like Backbone...",
             date: "1/1/2001",
-            body: body
+            body: body,
+            categories: ["Read Later", "Important"]
           },
         ];
 

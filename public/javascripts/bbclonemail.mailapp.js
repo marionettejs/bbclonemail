@@ -39,7 +39,9 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     }));
 
     // Show the mail categories list
-    BBCloneMail.navigationRegion.show(new BBCloneMail.MailApp.Categories());
+    BBCloneMail.navigationRegion.show(new BBCloneMail.MailApp.Categories.CategoriesView({
+      collection: MailApp.Categories.categoryCollection
+    }));
 
     // Updates the url's #hash fragment with the correct hash
     BBCloneMail.showRoute("inbox");
