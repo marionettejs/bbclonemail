@@ -36,6 +36,8 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
 
     categoryClicked: function(e){
       e.preventDefault();
+      var category = $(e.currentTarget).data("category");
+      BBCloneMail.vent.trigger("mail:category:selected", category);
     },
 
     render: function(){

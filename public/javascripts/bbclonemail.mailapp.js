@@ -26,6 +26,17 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     model: MailApp.Email
   });
 
+
+  // This method instantiates the mailbox view and populates
+  // it with the specified mail list. Then it passes that
+  // view instance to the mainRegion to show it on the screen.
+  var displayEmailList = function(emailList){
+    var mailBox = new BBCloneMail.MailApp.MailBox({
+      collection: emailList
+    })
+    BBCloneMail.mainRegion.show(mailBox);
+  }
+
   // This is a "MailApp" method that is called whenever
   // we are switching the BBMailCone app into mail mode.
   // It replaces all of the visual regions with the 
@@ -34,9 +45,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   MailApp.show = function(){
 
     // Show the mail box with email entries
-    BBCloneMail.mainRegion.show(new BBCloneMail.MailApp.MailBox({
-      collection: MailApp.emailList
-    }));
+    displayEmailList(MailApp.emailList);
 
     // Show the mail categories list
     BBCloneMail.navigationRegion.show(new BBCloneMail.MailApp.Categories.CategoriesView({
@@ -49,6 +58,25 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     // Updates the app mode select box
     BBCloneMail.AppSelection.showSelection("mail");
   };
+
+  // Listen to the click of the mail categories from the left hand
+  // side of the mail app. When one is clicked, filter the mail that
+  // we have down in to that category, and then display the filtered
+  // list on the screen.
+  BBCloneMail.vent.bind("mail:category:selected", function(category){
+    // Filter the mail by the category
+    var filteredMail = MailApp.emailList.filter(function(email){
+      var categories = email.get("categories");
+      var found = categories.indexOf(category);
+      return found;
+    });
+    
+    // display the filtered email list
+    displayEmailList(new MailApp.EmailCollection(filteredMail));
+
+    // update the url hash w/ the category
+    BBCloneMail.showRoute("inbox/" + category);
+  });
 
   // Initializes the email collection object with the list
   // of emails that are passed in from the call to 
