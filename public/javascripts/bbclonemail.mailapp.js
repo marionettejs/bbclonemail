@@ -41,7 +41,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     var filteredMail = MailApp.emailList;
    
     // Filter the mail by the category, if one was specified
-    console.log(category);
     if (category){
       filteredMail = filteredMail.filter(function(email){
         var categories = email.get("categories");
