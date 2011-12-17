@@ -4,10 +4,6 @@
     %title BBCloneMail: A Backbone.Marionette Reference Application
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
 
-    %script{:id=>"email-body-template", :type=>"text/x-jquery-tmpl"}
-      %p
-        ${this}
-
     %script{:id=>"email-list-item-template", :type=>"text/x-jquery-tmpl"}
       %header
         %span.from
@@ -18,6 +14,12 @@
           ${date}
       %article
         .body
+          {{if categories}}
+          %ul.emailCategories
+            {{each categories}}
+            %li ${$value}
+            {{/each}}
+          {{/if}}
           {{each body}}
           %p ${$value}
           {{/each}}
