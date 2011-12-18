@@ -17,14 +17,22 @@
 // on `Backbone.View`. Of course, this can be 
 // overridden in a specific view instance, which
 // you'll see in other places.
-Backbone.View.prototype.render = function(){
-  var data;
 
-  if (this.model){data = this.model.toJSON();}
-  if (this.collection){data = this.collection.toJSON();}
+(function(Backbone, $){
 
-  var html = $(this.template).tmpl(data);
-  $(this.el).html(html);
-}
+  BBCloneMail.SmartView = Backbone.View.extend({
+    serializeData: function(){
+      var data;
+      if (this.model){data = this.model.toJSON();}
+      if (this.collection){data = this.collection.toJSON();}
+      return data;
+    },
 
+    render: function(){
+      var data = this.serializeData();
+      var html = $(this.template).tmpl(data);
+      $(this.el).html(html);
+    }
+  });
 
+})(Backbone, $);

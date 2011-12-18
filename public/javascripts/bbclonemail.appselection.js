@@ -12,7 +12,7 @@ BBCloneMail.AppSelection = (function(BBCloneMail, Backbone){
 
   var AppSelection = {};
 
-  AppSelection.AppSelectionView = Backbone.View.extend({
+  AppSelection.AppSelectionView = BBCloneMail.SmartView.extend({
     events: {
       "change select": "appChanged"
     },

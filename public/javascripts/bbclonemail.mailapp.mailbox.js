@@ -13,13 +13,13 @@
 
 // The mail box view to display the list of emails
 // for the mailbox.
-BBCloneMail.MailApp.MailBox = (function(Backbone, $){
+BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
 
   // The item view is private to the MailBox module
   // because the rest of the app does not need to
   // know about it. Only the mailbox itself needs to
   // be concerned with the individual item view.
-  var ItemView = Backbone.View.extend({
+  var ItemView = BBCloneMail.SmartView.extend({
     tagName: "li",
     template: "#email-list-item-template",
 
@@ -38,7 +38,7 @@ BBCloneMail.MailApp.MailBox = (function(Backbone, $){
   // of the individual email items. You can see here
   // that I'm overriding the `render` method in order
   // to render the collection of item views.
-  return Backbone.View.extend({
+  return BBCloneMail.SmartView.extend({
     tagName: "ul",
     className: "email-list",
 
@@ -59,4 +59,4 @@ BBCloneMail.MailApp.MailBox = (function(Backbone, $){
     }
   });
 
-})(Backbone, jQuery);
+})(BBCloneMail, Backbone, jQuery);

@@ -27,23 +27,26 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
   // The view to show the list of categories. The view
   // template includes the standard categories hard coded
   // and then it renders the individual categories, too.
-  Categories.CategoriesView = Backbone.View.extend({
+  Categories.CategoriesView = BBCloneMail.SmartView.extend({
     template: "#mail-categories-view-template",
 
     events: {
       "click a": "categoryClicked"
     },
 
+    // Raise an event aggregator event, to say that a
+    // particular category was clicked, and let the other
+    // parts of the system figure out how to respond.
     categoryClicked: function(e){
       e.preventDefault();
       var category = $(e.currentTarget).data("category");
       BBCloneMail.vent.trigger("mail:category:selected", category);
     },
 
-    render: function(){
-      var data = {categories: this.collection.toJSON()};
-      var html = $(this.template).tmpl(data);
-      $(this.el).html(html);
+    // serialize the collection in a way that lets us 
+    // iterate through it in the template
+    serializeData: function(){
+      return {categories: this.collection.toJSON()};
     }
   });
 
