@@ -27,7 +27,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
   // The view to show the list of categories. The view
   // template includes the standard categories hard coded
   // and then it renders the individual categories, too.
-  Categories.CategoriesView = BBCloneMail.SmartView.extend({
+  Categories.CategoriesView = BBCloneMail.ItemView.extend({
     template: "#mail-categories-view-template",
 
     events: {

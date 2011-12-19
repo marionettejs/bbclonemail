@@ -11,13 +11,13 @@
 BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   var Contacts = {};
 
-  Contacts.ContactListView = BBCloneMail.SmartView.extend({
+  Contacts.ContactListView = BBCloneMail.ItemView.extend({
     tagName: "ul",
     className: "contact-list",
     template: "#contact-list-view-template"
   });
 
-  Contacts.ContactCategoriesView = BBCloneMail.SmartView.extend({
+  Contacts.ContactCategoriesView = BBCloneMail.ItemView.extend({
     template: "#contact-categories-view-template",
 
     events: {

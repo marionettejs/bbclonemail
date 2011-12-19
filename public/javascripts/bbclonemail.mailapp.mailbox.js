@@ -19,7 +19,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   // because the rest of the app does not need to
   // know about it. Only the mailbox itself needs to
   // be concerned with the individual item view.
-  var ItemView = BBCloneMail.SmartView.extend({
+  var EmailView = BBCloneMail.ItemView.extend({
     tagName: "li",
     template: "#email-list-item-template",
 
@@ -38,25 +38,11 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   // of the individual email items. You can see here
   // that I'm overriding the `render` method in order
   // to render the collection of item views.
-  return BBCloneMail.SmartView.extend({
+  var EmailListView = BBCloneMail.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
-
-    initialize: function(){
-      _.bindAll(this, "renderItem");
-    },
-
-    render: function(){
-      this.collection.each(this.renderItem);
-    },
-
-    renderItem: function(item){
-      var itemView = new ItemView({
-        model: item
-      });
-      itemView.render();
-      $(this.el).append(itemView.el);
-    }
+    itemView: EmailView
   });
 
+  return EmailListView;
 })(BBCloneMail, Backbone, jQuery);
