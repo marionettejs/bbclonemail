@@ -6,31 +6,34 @@ Distributed Under MIT License</p>
 
 <p>Documentation and Full License Available at:
 http://github.com/derickbailey/backbone.bbclonemail
-http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">BBCloneMail</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">Contacts</span> <span class="o">=</span> <span class="p">{};</span>
-
-  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactListView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Contacts</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The contacts app is mostly hard coded at this point. It is
+not very functional, other than to show the list of hard coded
+contacts (coming straight from the view template). It does
+demonstrate how I am using region managers to swap out content
+in various parts of the app, though. </p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">BBCloneMail</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">Contacts</span> <span class="o">=</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Displays the hard coded list of contacts, from the
+view template.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactListView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
     <span class="nx">tagName</span><span class="o">:</span> <span class="s2">&quot;ul&quot;</span><span class="p">,</span>
     <span class="nx">className</span><span class="o">:</span> <span class="s2">&quot;contact-list&quot;</span><span class="p">,</span>
     <span class="nx">template</span><span class="o">:</span> <span class="s2">&quot;#contact-list-view-template&quot;</span>
-  <span class="p">});</span>
-
-  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactCategoriesView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Displays the hard coded list of contact categories, from
+the view template.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactCategoriesView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
     <span class="nx">template</span><span class="o">:</span> <span class="s2">&quot;#contact-categories-view-template&quot;</span><span class="p">,</span>
 
     <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
       <span class="s2">&quot;click a&quot;</span><span class="o">:</span> <span class="s2">&quot;categoryClicked&quot;</span>
     <span class="p">},</span>
 
-    <span class="nx">categoryClicked</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
-      <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+    <span class="nx">categoryClicked</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>ignore the clicks for now, just make sure they don't
+cause a page refresh.</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
     <span class="p">}</span>
-  <span class="p">});</span>
-
-  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">show</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Replaces the main and navigation regions of the screen with
+the content for the contacts, using the region managers. Also
+sets the correct route and ensures the aplication selection is
+set correctly.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Contacts</span><span class="p">.</span><span class="nx">show</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">mainRegion</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="k">new</span> <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactListView</span><span class="p">());</span>
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">navigationRegion</span><span class="p">.</span><span class="nx">show</span><span class="p">(</span><span class="k">new</span> <span class="nx">Contacts</span><span class="p">.</span><span class="nx">ContactCategoriesView</span><span class="p">());</span>
-    <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">showRoute</span><span class="p">(</span><span class="s2">&quot;contacts&quot;</span><span class="p">);</span>
+    <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Routing</span><span class="p">.</span><span class="nx">showContactsRoute</span><span class="p">();</span>
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">AppSelection</span><span class="p">.</span><span class="nx">showSelection</span><span class="p">(</span><span class="s2">&quot;contacts&quot;</span><span class="p">);</span>
   <span class="p">};</span>
   

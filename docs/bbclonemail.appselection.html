@@ -6,35 +6,34 @@ Distributed Under MIT License</p>
 
 <p>Documentation and Full License Available at:
 http://github.com/derickbailey/backbone.bbclonemail
-http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">AppSelection</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">BBCloneMail</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">){</span>
-
-  <span class="kd">var</span> <span class="nx">AppSelection</span> <span class="o">=</span> <span class="p">{};</span>
-
-  <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">AppSelectionView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>App Selector</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>The app selector is the drop list on the top left of the
+application that lets you choose between "Mail" and "Contacts".
+Changing the selected app will cause the application to switch to
+that sub-app's contents and functionality.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">AppSelection</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">BBCloneMail</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">AppSelection</span> <span class="o">=</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The app selection view handles the changing of the app
+selector drop list.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">AppSelectionView</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ItemView</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
     <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
       <span class="s2">&quot;change select&quot;</span><span class="o">:</span> <span class="s2">&quot;appChanged&quot;</span>
-    <span class="p">},</span>
-
-    <span class="nx">appChanged</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Figure out which app is being selected and call the
+correct object's <code>show</code> method.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">appChanged</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
       <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
-      <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">app</span> <span class="o">==</span> <span class="s2">&quot;mail&quot;</span><span class="p">){</span>
-        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
-      <span class="p">}</span>
-    <span class="p">},</span>
+      <span class="kd">var</span> <span class="nx">appName</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
 
-    <span class="nx">setSelection</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
+      <span class="kd">var</span> <span class="nx">app</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">appName</span> <span class="o">==</span> <span class="s2">&quot;mail&quot;</span><span class="p">){</span>
+        <span class="nx">app</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">app</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="nx">app</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+    <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Show the correct app in the select box.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">setSelection</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
     <span class="p">}</span>
-  <span class="p">});</span>
-
-  <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">showSelection</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
+  <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Public API to show the correct app in the select box.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">showSelection</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
     <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">view</span><span class="p">.</span><span class="nx">setSelection</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addInitializer</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+  <span class="p">}</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Initialize the App Selector functionality when the
+application starts.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addInitializer</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
     <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">view</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AppSelection</span><span class="p">.</span><span class="nx">AppSelectionView</span><span class="p">({</span>
       <span class="nx">el</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#app-selector&quot;</span><span class="p">)</span>
     <span class="p">});</span>
