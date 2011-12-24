@@ -57,11 +57,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // Display the correct route, including the
   // optional category that is being shown
   var showRoute = function(category){
-    var route = "inbox";
-    if (category){
-      route = route + "/" + category;
-    }
-    BBCloneMail.showRoute(route);
   }
 
   // This is a "MailApp" method that is called whenever
@@ -79,7 +74,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     }));
 
     // Updates the url's #hash fragment with the correct hash
-    showRoute(category);
+    BBCloneMail.Routing.showMailRoute(category);
 
     // Updates the app mode select box
     BBCloneMail.AppSelection.showSelection("mail");
@@ -94,7 +89,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     showFilteredEmailList(category);
 
     // Update the url hash w/ the category
-    showRoute(category);
+    BBCloneMail.Routing.showMailRoute(category);
   });
 
   // Initializes the email collection object with the list
