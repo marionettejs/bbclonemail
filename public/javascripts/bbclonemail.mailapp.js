@@ -73,9 +73,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
       collection: MailApp.Categories.categoryCollection
     }));
 
-    // Updates the app mode select box
-    BBCloneMail.AppSelection.showSelection("mail");
-    
     // Let other parts of the app know that the mail app is now
     // being displayed.
     BBCloneMail.vent.trigger("mail:show", category);

@@ -48,12 +48,13 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   // the content for the contacts, using the region managers. Also
   // sets the correct route and ensures the aplication selection is
   // set correctly.
-
   Contacts.show = function(){
     BBCloneMail.mainRegion.show(new Contacts.ContactListView());
     BBCloneMail.navigationRegion.show(new Contacts.ContactCategoriesView());
-    BBCloneMail.Routing.showContactsRoute();
-    BBCloneMail.AppSelection.showSelection("contacts");
+
+    // Let the rest of the app know that the Contacts app is now
+    // running
+    BBCloneMail.vent.trigger("contacts:show");
   };
   
   return Contacts;
