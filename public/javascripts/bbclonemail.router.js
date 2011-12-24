@@ -21,6 +21,12 @@
 BBCloneMail.Routing = (function(BBCloneMail, Backbone){
   var Routing = {};
 
+  // Router
+  // ------
+
+  // The router handles the incoming routes from the browser url, from
+  // bookmarks, direct links and users typing directly in to the
+  // url.
   Routing.Router = Backbone.Router.extend({
     routes: {
       "": "mail",
@@ -42,15 +48,13 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     }
   });
 
-  // The `showRoute` method is used to update the url's hash 
-  // fragment route. 
-  //
-  // It accepts a base route and an unlimited number of optional
-  // parameters for the route: `showRoute("foo", "bar", "baz", "etc");`.
-  //
-  // Note the `false` second parameter to the `navigate` call, 
-  // ensuring the router does not fire it's callback method for 
-  // the route we are showing.
+  // Updating The Current Route
+  // --------------------------
+
+  // The `showRoute` method is a private method used to update the 
+  // url's hash fragment route. It accepts a base route and an 
+  // unlimited number of optional parameters for the route: 
+  // `showRoute("foo", "bar", "baz", "etc");`.
   var showRoute = function(base){
     var length = arguments.length;
     var route = base;
@@ -64,18 +68,29 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
       }
     }
 
+    // Note the `false` second parameter to the `navigate` call, 
+    // ensuring the router does not fire it's callback method for 
+    // the route we are showing.
     Routing.router.navigate(route, false);
   };
 
-  // Show routes for the mail app
-  Routing.showMailRoute = function(category){
-    showRoute("inbox", category)
-  };
+  // Show route for the mail app.
+  BBCloneMail.vent.bind("mail:show", function(){
+    showRoute("inbox");
+  });
 
-  // Show routes for the contacts app
-  Routing.showContactsRoute = function(category){
-    showRoute("contacts", category)
-  };
+  // Show route for mail categories that are being displayed.
+  BBCloneMail.vent.bind("mail:category:selected", function(category){
+    showRoute("inbox", category);
+  });
+
+  // Show route for the contacts app
+  BBCloneMail.vent.bind("contacts:show", function(){
+    showRoute("contacts");
+  });
+
+  // Initialization
+  // --------------
 
   // Initialize the router when the application starts
   BBCloneMail.addInitializer(function(){

@@ -73,11 +73,12 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
       collection: MailApp.Categories.categoryCollection
     }));
 
-    // Updates the url's #hash fragment with the correct hash
-    BBCloneMail.Routing.showMailRoute(category);
-
     // Updates the app mode select box
     BBCloneMail.AppSelection.showSelection("mail");
+    
+    // Let other parts of the app know that the mail app is now
+    // being displayed.
+    BBCloneMail.vent.trigger("mail:show", category);
   };
 
   // Listen to the click of the mail categories from the left hand
@@ -87,9 +88,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   BBCloneMail.vent.bind("mail:category:selected", function(category){
     // Show the mail box with email entries
     showFilteredEmailList(category);
-
-    // Update the url hash w/ the category
-    BBCloneMail.Routing.showMailRoute(category);
   });
 
   // Initializes the email collection object with the list
