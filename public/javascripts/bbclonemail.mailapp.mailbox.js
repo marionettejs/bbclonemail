@@ -11,7 +11,7 @@
 // MailApp.Mailbox
 // ---------------
 
-// The mail box. A sub-app of the Mail App. It controls the 
+// The Mailbox is a sub-app of the Mail App. It controls the 
 // display of the mail list and the individual emails.
 BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   var MailBox = {};
