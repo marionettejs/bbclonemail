@@ -1,4 +1,6 @@
-desc "Build annotated source documentation"
+desc "Deploy site and docs to github and heroku"
+task :deploy => [:push_github, :push_heroku, :docco]
+
 task :docco do
   `docco public/javascripts/bbclonemail*.js`
   `git add -A`
@@ -10,4 +12,12 @@ task :docco do
   `git commit -am 'updating docs'`
   `git push origin gh-pages`
   `git checkout master`
+end
+
+task :push_github do
+  `git push origin master`
+end
+
+task :push_heroku do
+  `git push heroku master`
 end
