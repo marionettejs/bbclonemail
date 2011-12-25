@@ -63,11 +63,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     BBCloneMail.navigationRegion.show(categoryView);
   }
 
-  // Let other parts of the app know that the mail app is now being displayed.
-  var notifyMailAppStartup = function(){
-    BBCloneMail.vent.trigger("mail:show");
-  }
-
   // Mail App Public API
   // -------------------
 
@@ -76,6 +71,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     // Delegate to show category, which displays
     // everthing when not category provided.
     MailApp.showCategory();
+    BBCloneMail.vent.trigger("mail:show");
   };
 
   // Show a list of email for the given category.

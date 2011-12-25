@@ -33,7 +33,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     template: "#mail-categories-view-template",
 
     events: {
-      "click a": "categoryClicked"
+      "click ul.customcategories a": "categoryClicked"
     },
 
     // Raise an event aggregator event, to say that a
