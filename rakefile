@@ -1,4 +1,12 @@
 desc "Build annotated source documentation"
 task :docco do
   `docco public/javascripts/bbclonemail*.js`
+  `git add -A`
+  `git stash`
+  `git checkout gh-pages`
+  `rm -rdf docs`
+  `git add -A`
+  `git stash pop`
+  `git commit -am 'updating docs'`
+  `git checkout master`
 end
