@@ -10,4 +10,7 @@ gem 'json'
 group :development do
   gem 'rb-fsevent'
   gem 'heroku'
+  gem 'guard'
+  gem 'guard-process'
+  gem 'guard-compass'
 end
