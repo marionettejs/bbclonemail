@@ -1,8 +1,7 @@
 # A sample Guardfile
 # More info at https://github.com/guard/guard#readme
 
-guard 'compass' do
-  watch(/^src\/(.*)\.s[ac]ss/)
+guard 'process', :name => 'Compass', :command => 'compass watch', :stop_signal => "TERM"  do
 end
 
 # This is an example with all options that you can specify for guard-process

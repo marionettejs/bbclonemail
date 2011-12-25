@@ -17,12 +17,9 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   
   // The the full contents of the email.
   var EmailView = BBCloneMail.ItemView.extend({
-    tagName: "li",
-    template: "#email-view-template",
-
-    onRender: function(){
-      BBCloneMail.vent.trigger("mail:message:show", this.model);
-    }
+    tagName: "ul",
+    className: "email-list",
+    template: "#email-view-template"
   });
 
   // Show a preview of the email in the list of
@@ -40,10 +37,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     // Show or hide the body of the email when
     // the email header is clicked.
     showEmail: function(e){
-      var emailView = new EmailView({
-        model: this.model
-      });
-      BBCloneMail.mainRegion.show(emailView);
+      BBCloneMail.vent.trigger("mail:message:show", this.model);
     }
   });
 
@@ -53,6 +47,15 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     tagName: "ul",
     className: "email-list",
     itemView: EmailPreview
+  });
+
+  // Handle the selection of an email message by displaying
+  // it in the main area of the application.
+  BBCloneMail.vent.bind("mail:message:show", function(message){
+    var emailView = new EmailView({
+      model: message
+    });
+    BBCloneMail.mainRegion.show(emailView);
   });
 
   return EmailListView;
