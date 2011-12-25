@@ -8,5 +8,6 @@ task :docco do
   `git add -A`
   `git stash pop`
   `git commit -am 'updating docs'`
+  `git push origin gh-pages`
   `git checkout master`
 end
