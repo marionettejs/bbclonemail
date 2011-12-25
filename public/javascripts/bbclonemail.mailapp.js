@@ -18,14 +18,14 @@
 BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   var MailApp = {};
 
-  // Email model and collection. These are pretty much
-  // self explanatory.
+  // Define the email model and collection.
   MailApp.Email = Backbone.Model.extend({});
-
   MailApp.EmailCollection = Backbone.Collection.extend({
     model: MailApp.Email
   });
 
+  // Mail App Helper Methods
+  // -----------------------
 
   // This method instantiates the mailbox view and populates
   // it with the specified mail list. Then it passes that
@@ -36,7 +36,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     })
     BBCloneMail.mainRegion.show(mailBox);
   }
-
 
   // Filter the mail by the category, if one was specified
   var showFilteredEmailList = function(category){
@@ -64,6 +63,14 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     BBCloneMail.navigationRegion.show(categoryView);
   }
 
+  // Let other parts of the app know that the mail app is now being displayed.
+  var notifyMailAppStartup = function(){
+    BBCloneMail.vent.trigger("mail:show");
+  }
+
+  // Mail App Public API
+  // -------------------
+
   // Show the inbox with all email.
   MailApp.show = function(){
     // Delegate to show category, which displays
@@ -75,9 +82,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   MailApp.showCategory = function(category){
     showFilteredEmailList(category);
     showCategoryList();
-    // Let other parts of the app know that the mail app is now
-    // being displayed.
-    BBCloneMail.vent.trigger("mailApp:show", category);
+    notifyMailAppStartup();
   };
 
   // Show an individual email message, by Id
@@ -85,16 +90,22 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     showCategoryList();
     var email = MailApp.emailList.get(messageId);
     MailApp.MailBox.showMessage(email);
+    notifyMailAppStartup();
   };
+
+  // Mail App Event Handlers
+  // -----------------------
 
   // Listen to the click of the mail categories from the left hand
   // side of the mail app. When one is clicked, filter the mail that
   // we have down in to that category, and then display the filtered
   // list on the screen.
-  BBCloneMail.vent.bind("mail:category:selected", function(category){
-    // Show the mail box with email entries
+  BBCloneMail.vent.bind("mail:category:show", function(category){
     showFilteredEmailList(category);
   });
+
+  // Mail App Initializer
+  // --------------------
 
   // Initializes the email collection object with the list
   // of emails that are passed in from the call to 

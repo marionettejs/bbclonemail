@@ -19,10 +19,12 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
 
   // The category model and collection
   var Category = Backbone.Model.extend({});
-
   var CategoryCollection = Backbone.Collection.extend({
     model: Category
   });
+
+  // Mail Category Views
+  // -------------------
 
   // The view to show the list of categories. The view
   // template includes the standard categories hard coded
@@ -40,7 +42,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     categoryClicked: function(e){
       e.preventDefault();
       var category = $(e.currentTarget).data("category");
-      BBCloneMail.vent.trigger("mail:category:selected", category);
+      BBCloneMail.vent.trigger("mail:category:show", category);
     },
 
     // serialize the collection in a way that lets us 
@@ -49,6 +51,9 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
       return {categories: this.collection.toJSON()};
     }
   });
+
+  // Mail Categories Helper Methods
+  // ----------------------------
 
   // Build a proper collection of category models
   var buildCategories = function(categoryNames){
@@ -60,6 +65,9 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     });
     return categoryCollection;
   };
+
+  // Mail Categories Initializer
+  // ---------------------------
 
   // Get the list of categories on startup and hold
   // then in memory, so we can render them on to the

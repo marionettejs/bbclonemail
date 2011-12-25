@@ -15,6 +15,9 @@
 // for the mailbox.
 BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   var MailBox = {};
+
+  // Mail Box Views
+  // --------------
   
   // The the full contents of the email.
   var EmailView = BBCloneMail.ItemView.extend({
@@ -50,6 +53,9 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     itemView: EmailPreview
   });
 
+  // Mail Box Public API
+  // -------------------
+
   // A method to display a specific email message.
   MailBox.showMessage = function(message){
     var emailView = new EmailView({
@@ -57,6 +63,9 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     });
     BBCloneMail.mainRegion.show(emailView);
   }
+
+  // Mail Box Event Handlers
+  // -----------------------
 
   // Handle the selection of an email message by displaying
   // it in the main area of the application.
