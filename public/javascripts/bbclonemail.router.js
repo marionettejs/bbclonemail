@@ -31,7 +31,8 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     routes: {
       "": "mail",
       "inbox": "mail",
-      "inbox/:category": "mailCategory",
+      "inbox/category/:category": "mailCategory",
+      "inbox/:id": "mailMessage",
       "contacts": "contacts",
     },
 
@@ -40,7 +41,11 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     },
 
     mailCategory: function(category){
-      BBCloneMail.MailApp.show(category);
+      BBCloneMail.MailApp.showCategory(category);
+    },
+
+    mailMessage: function(messageId){
+      BBCloneMail.MailApp.showMessage(messageId);
     },
 
     contacts: function(){

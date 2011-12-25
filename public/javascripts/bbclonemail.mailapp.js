@@ -31,16 +31,18 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // it with the specified mail list. Then it passes that
   // view instance to the mainRegion to show it on the screen.
   var displayEmailList = function(emailList){
-    var mailBox = new BBCloneMail.MailApp.MailBox({
+    var mailBox = new BBCloneMail.MailApp.MailBox.EmailListView({
       collection: emailList
     })
     BBCloneMail.mainRegion.show(mailBox);
   }
 
+
+  // Filter the mail by the category, if one was specified
   var showFilteredEmailList = function(category){
     var filteredMail = MailApp.emailList;
    
-    // Filter the mail by the category, if one was specified
+    // Do the actual filtering
     if (category){
       filteredMail = filteredMail.filter(function(email){
         var categories = email.get("categories");
@@ -54,28 +56,35 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     displayEmailList(filteredMail);
   }
 
-  // Display the correct route, including the
-  // optional category that is being shown
-  var showRoute = function(category){
+  // Show the mail categories list
+  var showCategoryList = function(){
+    var categoryView = new BBCloneMail.MailApp.Categories.CategoriesView({
+      collection: MailApp.Categories.categoryCollection
+    })
+    BBCloneMail.navigationRegion.show(categoryView);
   }
 
-  // This is a "MailApp" method that is called whenever
-  // we are switching the BBMailCone app into mail mode.
-  // It replaces all of the visual regions with the 
-  // correct content by calling the `show` method for the
-  // correct region manager.
-  MailApp.show = function(category){
-    // Show the mail box with email entries
+  // Show the inbox with all email.
+  MailApp.show = function(){
+    // Delegate to show category, which displays
+    // everthing when not category provided.
+    MailApp.showCategory();
+  };
+
+  // Show a list of email for the given category.
+  MailApp.showCategory = function(category){
     showFilteredEmailList(category);
-
-    // Show the mail categories list
-    BBCloneMail.navigationRegion.show(new BBCloneMail.MailApp.Categories.CategoriesView({
-      collection: MailApp.Categories.categoryCollection
-    }));
-
+    showCategoryList();
     // Let other parts of the app know that the mail app is now
     // being displayed.
     BBCloneMail.vent.trigger("mailApp:show", category);
+  };
+
+  // Show an individual email message, by Id
+  MailApp.showMessage = function(messageId){
+    showCategoryList();
+    var email = MailApp.emailList.get(messageId);
+    MailApp.MailBox.showMessage(email);
   };
 
   // Listen to the click of the mail categories from the left hand
