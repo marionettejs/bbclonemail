@@ -46,7 +46,7 @@
       %ul.customCategories
         {{each categories}}
         %li{:"data-category"=>""}
-          %a{:href=>"#inbox/${$value.name}", :"data-category"=>"${$value.name}"}${$value.name}
+          %a{:href=>"#inbox/categories/${$value.name}", :"data-category"=>"${$value.name}"}${$value.name}
         {{/each}}
 
     %script{:id=>"contact-list-view-template", :type=>"text/x-jquery-tmpl"}

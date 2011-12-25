@@ -82,7 +82,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   MailApp.showCategory = function(category){
     showFilteredEmailList(category);
     showCategoryList();
-    notifyMailAppStartup();
   };
 
   // Show an individual email message, by Id
@@ -90,7 +89,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     showCategoryList();
     var email = MailApp.emailList.get(messageId);
     MailApp.MailBox.showMessage(email);
-    notifyMailAppStartup();
   };
 
   // Mail App Event Handlers

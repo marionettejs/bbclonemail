@@ -31,7 +31,7 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     routes: {
       "": "mail",
       "inbox": "mail",
-      "inbox/category/:category": "mailCategory",
+      "inbox/categories/:category": "mailCategory",
       "inbox/:id": "mailMessage",
       "contacts": "contacts",
     },
@@ -91,7 +91,7 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
 
   // Show route for mail categories that are being displayed.
   BBCloneMail.vent.bind("mail:category:show", function(category){
-    showRoute("inbox", category);
+    showRoute("inbox", "categories", category);
   });
 
   // Show route for the contacts app
