@@ -75,8 +75,13 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
   };
 
   // Show route for the mail app.
-  BBCloneMail.vent.bind("mail:show", function(){
+  BBCloneMail.vent.bind("mailApp:show", function(){
     showRoute("inbox");
+  });
+
+  // Show route for the email message display
+  BBCloneMail.vent.bind("mail:message:show", function(message){
+    showRoute("inbox", message.id);
   });
 
   // Show route for mail categories that are being displayed.

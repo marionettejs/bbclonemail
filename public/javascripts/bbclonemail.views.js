@@ -38,6 +38,9 @@
       var data = this.serializeData();
       var html = $(this.template).tmpl(data);
       $(this.el).html(html);
+      if (this.onRender){
+        this.onRender();
+      }
     }
   });
 

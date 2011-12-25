@@ -4,7 +4,7 @@
     %title BBCloneMail: A Backbone.Marionette Reference Application
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
 
-    %script{:id=>"email-list-item-template", :type=>"text/x-jquery-tmpl"}
+    %script{:id=>"email-preview-template", :type=>"text/x-jquery-tmpl"}
       %header
         %span.from
           ${from}
@@ -12,17 +12,27 @@
           ${subject}
         %span.date
           ${date}
-      %article
-        .body
-          {{if categories}}
-          %ul.emailCategories
-            {{each categories}}
-            %li ${$value}
+
+    %script{:id=>"email-view-template", :type=>"text/x-jquery-tmpl"}
+      #email-message
+        %header
+          %span.from
+            ${from}
+          %span.subject
+            ${subject}
+          %span.date
+            ${date}
+        %article
+          .body
+            {{if categories}}
+            %ul.emailCategories
+              {{each categories}}
+              %li ${$value}
+              {{/each}}
+            {{/if}}
+            {{each body}}
+            %p ${$value}
             {{/each}}
-          {{/if}}
-          {{each body}}
-          %p ${$value}
-          {{/each}}
 
     %script{:id=>"mail-categories-view-template", :type=>"text/x-jquery-tmpl"}
       %p Mail Categories
@@ -199,6 +209,7 @@
 
         options.email = [
           {
+            id: "sdf908f67hjf9sf",
             from: "Joe Johnson",
             subject: "Some email about that subject which was sent to you",
             date: "1/1/2001",
@@ -206,6 +217,7 @@
             categories: ["Work Related"]
           },
           {
+            id: "365hljk85436lkh",
             from: "Jim Jimson",
             subject: "Did you get that thing I sent you?",
             date: "1/1/2001",
@@ -213,6 +225,7 @@
             categories: ["Work Related", "Read Later"]
           },
           {
+            id: "a89ghjkl12389sg",
             from: "Ben Benson",
             subject: "Nigerian King needs YOU to send HIM money!",
             date: "1/1/2001",
@@ -220,6 +233,7 @@
             categories: ["Personal", "Important"]
           },
           {
+            id: "764089gfdljk563",
             from: "Bob Robertson",
             subject: "Yo dawg, I hear you like Backbone...",
             date: "1/1/2001",

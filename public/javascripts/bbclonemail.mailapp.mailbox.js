@@ -14,34 +14,45 @@
 // The mail box view to display the list of emails
 // for the mailbox.
 BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
-
-  // The item view is private to the MailBox module
-  // because the rest of the app does not need to
-  // know about it. Only the mailbox itself needs to
-  // be concerned with the individual item view.
+  
+  // The the full contents of the email.
   var EmailView = BBCloneMail.ItemView.extend({
     tagName: "li",
-    template: "#email-list-item-template",
+    template: "#email-view-template",
 
+    onRender: function(){
+      BBCloneMail.vent.trigger("mail:message:show", this.model);
+    }
+  });
+
+  // Show a preview of the email in the list of
+  // available email.
+  var EmailPreview = BBCloneMail.ItemView.extend({
+    tagName: "li",
+    template: "#email-preview-template",
+
+    // The click event toggles the show and hide of
+    // the email contents.
     events: {
-      "click": "showHideBody"
+      "click": "showEmail"
     },
 
     // Show or hide the body of the email when
     // the email header is clicked.
-    showHideBody: function(e){
-      $(this.el).find(".body").toggle("fast");
+    showEmail: function(e){
+      var emailView = new EmailView({
+        model: this.model
+      });
+      BBCloneMail.mainRegion.show(emailView);
     }
   });
 
   // The actual mail box view, which renders each
-  // of the individual email items. You can see here
-  // that I'm overriding the `render` method in order
-  // to render the collection of item views.
+  // of the individual email items. 
   var EmailListView = BBCloneMail.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
-    itemView: EmailView
+    itemView: EmailPreview
   });
 
   return EmailListView;
