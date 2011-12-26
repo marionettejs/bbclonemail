@@ -22,8 +22,16 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
   // The the full contents of the email.
   var EmailView = BBCloneMail.ItemView.extend({
     tagName: "ul",
-    className: "email-list",
-    template: "#email-view-template"
+    className: "email-list email-view",
+    template: "#email-view-template",
+
+    onRender: function(){
+      $(this.el).hide();
+    },
+
+    onShow: function(){
+      $(this.el).slideDown("fast");
+    }
   });
 
   // Show a preview of the email in the list of

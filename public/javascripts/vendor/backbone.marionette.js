@@ -40,9 +40,12 @@ Backbone.Marionette = (function(Backbone, _, $){
     },
 
     _closeView: function(view){
-      if (view && view.close){
+      if (!view) return;
+      if (view.close){
         view.close();
       }
+      view.remove();
+      view.unbind();
     },
 
     _openView: function(view){

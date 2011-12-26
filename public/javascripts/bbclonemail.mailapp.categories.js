@@ -33,7 +33,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     template: "#mail-categories-view-template",
 
     events: {
-      "click ul.customcategories a": "categoryClicked"
+      "click a": "categoryClicked"
     },
 
     // Raise an event aggregator event, to say that a
@@ -42,7 +42,11 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     categoryClicked: function(e){
       e.preventDefault();
       var category = $(e.currentTarget).data("category");
-      BBCloneMail.vent.trigger("mail:category:show", category);
+      if (category){
+        BBCloneMail.vent.trigger("mail:category:show", category);
+      } else {
+        BBCloneMail.vent.trigger("mail:show");
+      }
     },
 
     // serialize the collection in a way that lets us 
