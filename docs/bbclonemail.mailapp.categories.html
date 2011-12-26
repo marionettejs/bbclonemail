@@ -18,13 +18,17 @@ and then it renders the individual categories, too.</p>             </td>       
     <span class="nx">template</span><span class="o">:</span> <span class="s2">&quot;#mail-categories-view-template&quot;</span><span class="p">,</span>
 
     <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;click ul.customcategories a&quot;</span><span class="o">:</span> <span class="s2">&quot;categoryClicked&quot;</span>
+      <span class="s2">&quot;click a&quot;</span><span class="o">:</span> <span class="s2">&quot;categoryClicked&quot;</span>
     <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <p>Raise an event aggregator event, to say that a
 particular category was clicked, and let the other
 parts of the system figure out how to respond.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">categoryClicked</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
       <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
       <span class="kd">var</span> <span class="nx">category</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">data</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">);</span>
-      <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">&quot;mail:category:show&quot;</span><span class="p">,</span> <span class="nx">category</span><span class="p">);</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">category</span><span class="p">){</span>
+        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">&quot;mail:category:show&quot;</span><span class="p">,</span> <span class="nx">category</span><span class="p">);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s2">&quot;mail:show&quot;</span><span class="p">);</span>
+      <span class="p">}</span>
     <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>serialize the collection in a way that lets us 
 iterate through it in the template</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">serializeData</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
       <span class="k">return</span> <span class="p">{</span><span class="nx">categories</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">()};</span>
