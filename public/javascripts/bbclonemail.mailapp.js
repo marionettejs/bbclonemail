@@ -25,12 +25,16 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
     // Get email for the specified category. Returns a
     // new `EmailCollection` with the filtered contents.
+    // If no category is specified, returns `this`.
     forCategory: function(category){
+      if (!category){ return this; }
+
       var filteredMailItems = this.filter(function(email){
         var categories = email.get("categories");
         var found = categories.indexOf(category) >= 0;
         return found;
       });
+
       return new MailApp.EmailCollection(filteredMailItems);
     }
   });
@@ -38,25 +42,10 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // Mail App Helper Methods
   // -----------------------
 
-  // This method instantiates the mailbox view and populates
-  // it with the specified mail list. Then it passes that
-  // view instance to the mainRegion to show it on the screen.
-  var displayEmailList = function(emailList){
-    var mailBox = new BBCloneMail.MailApp.MailBox.EmailListView({
-      collection: emailList
-    })
-    BBCloneMail.mainRegion.show(mailBox);
-  }
-
   // Filter the mail by the category, if one was specified
   var showFilteredEmailList = function(category){
-    var filteredMail = MailApp.emailList;
-   
-    if (category){
-      filteredMail = filteredMail.forCategory(category);
-    }
-    
-    displayEmailList(filteredMail);
+    var filteredMail = MailApp.emailList.forCategory(category);
+    MailApp.MailBox.showMail(filteredMail);
   }
 
   // Show the mail categories list

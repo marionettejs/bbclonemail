@@ -55,7 +55,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
 
   // The actual mail box view, which renders each
   // of the individual email items. 
-  MailBox.EmailListView = BBCloneMail.CollectionView.extend({
+  var EmailListView = BBCloneMail.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
     itemView: EmailPreview
@@ -70,6 +70,14 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
       model: message
     });
     BBCloneMail.mainRegion.show(emailView);
+  }
+
+  // A method to display a list of supplied email messages.
+  MailBox.showMail = function(emailList){
+    var emailListView = new EmailListView({
+      collection: emailList
+    });
+    BBCloneMail.mainRegion.show(emailListView);
   }
 
   // Mail Box Event Handlers
