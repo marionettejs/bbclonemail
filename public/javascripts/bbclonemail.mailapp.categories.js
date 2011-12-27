@@ -70,6 +70,17 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     return categoryCollection;
   };
 
+  // Mail Categories Public API
+  // --------------------------
+  
+  // Show the mail categories list
+  Categories.showCategoryList = function(){
+    var categoryView = new Categories.CategoriesView({
+      collection: Categories.categoryCollection
+    })
+    BBCloneMail.navigationRegion.show(categoryView);
+  }
+
   // Mail Categories Initializer
   // ---------------------------
 

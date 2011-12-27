@@ -34,20 +34,16 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     }
   });
 
-  // Show a preview of the email in the list of
-  // available email.
+  // Show a preview of the email in the list. Clicking
+  // on it will show the full contents of the email.
   var EmailPreview = BBCloneMail.ItemView.extend({
     tagName: "li",
     template: "#email-preview-template",
 
-    // The click event toggles the show and hide of
-    // the email contents.
     events: {
       "click": "showEmail"
     },
 
-    // Show or hide the body of the email when
-    // the email header is clicked.
     showEmail: function(e){
       BBCloneMail.vent.trigger("mail:message:show", this.model);
     }

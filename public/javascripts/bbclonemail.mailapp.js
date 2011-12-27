@@ -18,8 +18,11 @@
 BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   var MailApp = {};
 
-  // Define the email model and collection.
+  // Email Model And Collection
+  // --------------------------
+
   MailApp.Email = Backbone.Model.extend({});
+
   MailApp.EmailCollection = Backbone.Collection.extend({
     model: MailApp.Email,
 
@@ -48,14 +51,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     MailApp.MailBox.showMail(filteredMail);
   }
 
-  // Show the mail categories list
-  var showCategoryList = function(){
-    var categoryView = new BBCloneMail.MailApp.Categories.CategoriesView({
-      collection: MailApp.Categories.categoryCollection
-    })
-    BBCloneMail.navigationRegion.show(categoryView);
-  }
-
   // Mail App Public API
   // -------------------
 
@@ -68,14 +63,14 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // Show a list of email for the given category.
   MailApp.showCategory = function(category){
     showFilteredEmailList(category);
-    showCategoryList();
+    MailApp.Categories.showCategoryList();
   };
 
   // Show an individual email message, by Id
   MailApp.showMessage = function(messageId){
-    showCategoryList();
     var email = MailApp.emailList.get(messageId);
     MailApp.MailBox.showMessage(email);
+    MailApp.Categories.showCategoryList();
   };
 
   // Mail App Event Handlers
