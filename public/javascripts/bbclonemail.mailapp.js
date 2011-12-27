@@ -21,7 +21,18 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // Define the email model and collection.
   MailApp.Email = Backbone.Model.extend({});
   MailApp.EmailCollection = Backbone.Collection.extend({
-    model: MailApp.Email
+    model: MailApp.Email,
+
+    // Get email for the specified category. Returns a
+    // new `EmailCollection` with the filtered contents.
+    forCategory: function(category){
+      var filteredMailItems = this.filter(function(email){
+        var categories = email.get("categories");
+        var found = categories.indexOf(category) >= 0;
+        return found;
+      });
+      return new MailApp.EmailCollection(filteredMailItems);
+    }
   });
 
   // Mail App Helper Methods
@@ -41,17 +52,10 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   var showFilteredEmailList = function(category){
     var filteredMail = MailApp.emailList;
    
-    // Do the actual filtering
     if (category){
-      filteredMail = filteredMail.filter(function(email){
-        var categories = email.get("categories");
-        var found = categories.indexOf(category) >= 0;
-        return found;
-      });
-      filteredMail = new MailApp.EmailCollection(filteredMail);
+      filteredMail = filteredMail.forCategory(category);
     }
     
-    // display the filtered email list
     displayEmailList(filteredMail);
   }
 
@@ -68,8 +72,6 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
   // Show the inbox with all email.
   MailApp.show = function(){
-    // Delegate to show category, which displays
-    // everthing when not category provided.
     MailApp.showCategory();
     BBCloneMail.vent.trigger("mail:show");
   };
