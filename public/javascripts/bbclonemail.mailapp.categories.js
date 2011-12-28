@@ -52,7 +52,8 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     // serialize the collection in a way that lets us 
     // iterate through it in the template
     serializeData: function(){
-      return {categories: this.collection.toJSON()};
+      var data = { categories: this.collection.toJSON() };
+      return data;
     }
   });
 
