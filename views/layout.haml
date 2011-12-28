@@ -44,7 +44,7 @@
         %li{:"data-category"=>""} 
           %a{:href=>"#inbox/trash", :"data-category"=>"trash"}Trash
       %ul.customCategories
-        {{each categories}}
+        {{each items}}
         %li{:"data-category"=>""}
           %a{:href=>"#inbox/categories/${$value.name}", :"data-category"=>"${$value.name}"}${$value.name}
         {{/each}}
