@@ -11,18 +11,13 @@
 // Backbone View Rendering
 // -----------------------
 
-// The basic rendering can be overridden in a specific 
-// view instance by adding a `render` method to a view.
-(function(BBCloneMail, Backbone, $){
+// Replace the default underscore.js templating with
+// jQuery templates.
+Backbone.Marionette.ItemView.prototype.renderTemplate = function(template, data){
+  var html = template.tmpl(data);
+  return html;
+};
 
-  BBCloneMail.ItemView = Backbone.Marionette.ItemView.extend({
-    renderTemplate: function(template, data){
-      var html = $(template).tmpl(data);
-      return html;
-    }
-  });
-
-  BBCloneMail.CollectionView = Backbone.Marionette.CollectionView.extend({
-  });
-
-})(BBCloneMail, Backbone, $);
+// Alias the views so they are easier to get to.
+BBCloneMail.ItemView = Backbone.Marionette.ItemView;
+BBCloneMail.CollectionView = Backbone.Marionette.CollectionView;
