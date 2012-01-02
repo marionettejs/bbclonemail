@@ -29,9 +29,10 @@ method on the <code>app</code> object: <code>new MyRouter({app: fooApp});</code>
     <span class="p">},</span>
 
     <span class="nx">processAppRoutes</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">appRoutes</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">,</span> <span class="nx">method</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">routes</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">routesLength</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">args</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">routesLength</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">routes</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 
       <span class="k">for</span><span class="p">(</span><span class="nx">route</span> <span class="k">in</span> <span class="nx">appRoutes</span><span class="p">){</span>
         <span class="nx">routes</span><span class="p">.</span><span class="nx">unshift</span><span class="p">([</span><span class="nx">route</span><span class="p">,</span> <span class="nx">appRoutes</span><span class="p">[</span><span class="nx">route</span><span class="p">]]);</span>
@@ -43,11 +44,7 @@ method on the <code>app</code> object: <code>new MyRouter({app: fooApp});</code>
         <span class="nx">route</span> <span class="o">=</span> <span class="nx">routes</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
         <span class="nx">methodName</span> <span class="o">=</span> <span class="nx">routes</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
         <span class="nx">method</span> <span class="o">=</span> <span class="nx">app</span><span class="p">[</span><span class="nx">methodName</span><span class="p">];</span>
-        <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
-
-        <span class="k">this</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="nx">route</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
-          <span class="nx">method</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
-        <span class="p">});</span>
+        <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="nx">route</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">,</span> <span class="nx">method</span><span class="p">);</span>
 
       <span class="p">}</span>
     <span class="p">}</span>
