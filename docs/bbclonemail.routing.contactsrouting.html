@@ -16,18 +16,16 @@ the hash. </p>
 
 <p>Also note that the router is as dumb as possible. It only
 calls out to other sub-app controlling objects, and lets
-those objects do the real work.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">Router</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
-    <span class="nx">routes</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;contacts&quot;</span><span class="o">:</span> <span class="s2">&quot;contacts&quot;</span><span class="p">,</span>
-    <span class="p">},</span>
-
-    <span class="nx">contacts</span><span class="o">:</span> <span class="kd">function</span><span class="p">(){</span>
-      <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+those objects do the real work.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">Router</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Routing</span><span class="p">.</span><span class="nx">AppRouter</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    <span class="nx">appRoutes</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;contacts&quot;</span><span class="o">:</span> <span class="s2">&quot;show&quot;</span>
     <span class="p">}</span>
   <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Show route for the contacts app</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s2">&quot;contacts:show&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Routing</span><span class="p">.</span><span class="nx">showRoute</span><span class="p">(</span><span class="s2">&quot;contacts&quot;</span><span class="p">);</span>
   <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Initialization</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Initialize the router when the application starts</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addInitializer</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-    <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+    <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ContactsRouting</span><span class="p">.</span><span class="nx">Router</span><span class="p">({</span>
+      <span class="nx">app</span><span class="o">:</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span>
+    <span class="p">});</span>
   <span class="p">});</span>
 
   <span class="k">return</span> <span class="nx">ContactsRouting</span><span class="p">;</span>
