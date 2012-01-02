@@ -178,19 +178,30 @@
             %li
               %a{:href => "http://mutedsolutions.com"}MutedSolutions.com
 
+    // pre-requisites and libraries
     %script{:src=>"/javascripts/vendor/json2.js"}
     %script{:src=>"/javascripts/vendor/jquery.js"}
     %script{:src=>"/javascripts/vendor/jquery-tmpl.js"}
     %script{:src=>"/javascripts/vendor/underscore.js"}
     %script{:src=>"/javascripts/vendor/backbone.js"}
     %script{:src=>"/javascripts/vendor/backbone.marionette.js"}
+
+    // general app files
     %script{:src=>"/javascripts/bbclonemail.js"}
     %script{:src=>"/javascripts/bbclonemail.views.js"}
-    %script{:src=>"/javascripts/bbclonemail.router.js"}
     %script{:src=>"/javascripts/bbclonemail.appselection.js"}
+
+    // routing files
+    %script{:src=>"/javascripts/bbclonemail.routing.js"}
+    %script{:src=>"/javascripts/bbclonemail.routing.mailrouting.js"}
+    %script{:src=>"/javascripts/bbclonemail.routing.contactsrouting.js"}
+
+    // mail app files
     %script{:src=>"/javascripts/bbclonemail.mailapp.js"}
     %script{:src=>"/javascripts/bbclonemail.mailapp.categories.js"}
     %script{:src=>"/javascripts/bbclonemail.mailapp.mailbox.js"}
+
+    // contacts app files
     %script{:src=>"/javascripts/bbclonemail.contactsapp.js"}
 
     :javascript
