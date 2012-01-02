@@ -49,49 +49,13 @@
           %a{:href=>"#inbox/categories/${$value.name}", :"data-category"=>"${$value.name}"}${$value.name}
         {{/each}}
 
-    %script{:id=>"contact-list-view-template", :type=>"text/x-jquery-tmpl"}
-      %li
-        %span.name
-          Joe Johnson
-        %span.email
-          joe.johnson@example.com
-        %span.phone
-          555-555-5555
-      %li
-        %span.name
-          Jim Jimson
-        %span.email
-          jim.jimson@example.com
-        %span.phone
-          555-555-5556
-      %li
-        %span.name
-          Ben Benson
-        %span.email
-          ben.benson@example.com
-        %span.phone
-          555-555-5557
-      %li
-        %span.name
-          Bob Robertson
-        %span.email
-          robert.robertson@example.com
-        %span.phone
-          555-555-5558
-      %li
-        %span.name
-          Amy Amerson
-        %span.email
-          amy.amerson@example.com
-        %span.phone
-          555-555-5559
-      %li
-        %span.name
-          Julie Julerson
-        %span.email
-          julie.julerson@example.com
-        %span.phone
-          555-555-5560
+    %script{:id=>"contact-item-template", :type=>"text/x-jquery-tmpl"}
+      %span.name
+        ${name}
+      %span.email
+        ${email}
+      %span.phone
+        ${phone}
 
     %script{:id=>"contact-categories-view-template", :type=>"text/x-jquery-tmpl"}
       %p Contact Categories
@@ -203,6 +167,8 @@
 
     // contacts app files
     %script{:src=>"/javascripts/bbclonemail.contactsapp.js"}
+    %script{:src=>"/javascripts/bbclonemail.contactsapp.categories.js"}
+    %script{:src=>"/javascripts/bbclonemail.contactsapp.contactlist.js"}
 
     :javascript
       $(function(){
@@ -249,6 +215,45 @@
             body: body,
             categories: ["Read Later", "Important"]
           },
+        ];
+
+        options.contacts = [
+          {
+            id: "09vsjk3209svdjh",
+            name: "Joe Johnson",
+            email: "joe.johnson@example.com",
+            phone: "555-555-5555"
+          },
+          {
+            id: "45890bdhj4590gf",
+            name: "Jim Jimson",
+            email: "jim.jimson@example.com",
+            phone: "555-555-5556"
+          },
+          {
+            id: "120985h4509vfh4",
+            name: "Ben Benson",
+            email: "ben.benson@example.com",
+            phone: "555-555-5557"
+          },
+          {
+            id: "9sd9123njkdas90",
+            name: "Bob Robertson",
+            email: "robert.robertson@example.com",
+            phone: "555-555-5558"
+          },
+          {
+            id: "lj32kjsd09xzcv3",
+            name: "Amy Amerson",
+            email: "amy.amerson@example.com",
+            phone: "555-555-5559"
+          },
+          {
+            id: "aa23j45hn45n536",
+            name: "Julie Julerson",
+            email: "julie.julerson@example.com",
+            phone: "555-555-5560"
+          }
         ];
 
         BBCloneMail.start(options);

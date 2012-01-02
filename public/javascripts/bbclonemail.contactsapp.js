@@ -20,42 +20,34 @@
 BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   var Contacts = {};
 
-  // Displays the hard coded list of contacts, from the
-  // view template.
-  Contacts.ContactListView = BBCloneMail.ItemView.extend({
-    tagName: "ul",
-    className: "contact-list",
-    template: "#contact-list-view-template"
+  // Contact Model And Collection
+  // -----------------------------
+
+  Contacts.Contact = Backbone.Model.extend({});
+
+  Contacts.ContactCollection = Backbone.Collection.extend({
+    model: Contacts.Contact
   });
-
-  // Displays the hard coded list of contact categories, from
-  // the view template.
-  Contacts.ContactCategoriesView = BBCloneMail.ItemView.extend({
-    template: "#contact-categories-view-template",
-
-    events: {
-      "click a": "categoryClicked"
-    },
-
-    categoryClicked: function(e){
-      // ignore the clicks for now, just make sure they don't
-      // cause a page refresh.
-      e.preventDefault();
-    }
-  });
-
+  
   // Replaces the main and navigation regions of the screen with
   // the content for the contacts, using the region managers. Also
   // sets the correct route and ensures the aplication selection is
   // set correctly.
   Contacts.show = function(){
-    BBCloneMail.mainRegion.show(new Contacts.ContactListView());
-    BBCloneMail.navigationRegion.show(new Contacts.ContactCategoriesView());
+    BBCloneMail.ContactsApp.ContactList.show(Contacts.contacts);
+    BBCloneMail.ContactsApp.Categories.show();
 
     // Let the rest of the app know that the Contacts app is now
     // running
     BBCloneMail.vent.trigger("contacts:show");
   };
+
+  // Initializer
+  // -----------
+  
+  BBCloneMail.addInitializer(function(options){
+    Contacts.contacts = new Contacts.ContactCollection(options.contacts);
+  });
   
   return Contacts;
 })(BBCloneMail, Backbone);
