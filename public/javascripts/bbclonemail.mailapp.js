@@ -55,7 +55,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // -------------------
 
   // Show the inbox with all email.
-  MailApp.show = function(){
+  MailApp.showInbox = function(){
     MailApp.showCategory();
     BBCloneMail.vent.trigger("mail:show");
   };

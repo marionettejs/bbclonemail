@@ -30,8 +30,8 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
   // those objects do the real work.
   MailRouting.Router = BBCloneMail.Routing.AppRouter.extend({
     appRoutes: {
-      "": "show",
-      "inbox": "show",
+      "": "showInbox",
+      "inbox": "showInbox",
       "inbox/categories/:category": "showCategory",
       "inbox/:id": "showMessage"
     }
