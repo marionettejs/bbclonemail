@@ -28,24 +28,12 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
   // Also note that the router is as dumb as possible. It only
   // calls out to other sub-app controlling objects, and lets
   // those objects do the real work.
-  MailRouting.Router = Backbone.Router.extend({
-    routes: {
-      "": "mail",
-      "inbox": "mail",
-      "inbox/categories/:category": "mailCategory",
-      "inbox/:id": "mailMessage"
-    },
-
-    mail: function(){
-      BBCloneMail.MailApp.show();
-    },
-
-    mailCategory: function(category){
-      BBCloneMail.MailApp.showCategory(category);
-    },
-
-    mailMessage: function(messageId){
-      BBCloneMail.MailApp.showMessage(messageId);
+  MailRouting.Router = BBCloneMail.Routing.AppRouter.extend({
+    appRoutes: {
+      "": "show",
+      "inbox": "show",
+      "inbox/categories/:category": "showCategory",
+      "inbox/:id": "showMessage"
     }
   });
 
@@ -69,7 +57,9 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
 
   // Initialize the router when the application starts
   BBCloneMail.addInitializer(function(){
-    MailRouting.router = new MailRouting.Router();
+    MailRouting.router = new MailRouting.Router({
+      app: BBCloneMail.MailApp
+    });
   });
 
   return MailRouting;
