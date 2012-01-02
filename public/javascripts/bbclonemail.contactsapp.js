@@ -11,12 +11,9 @@
 // Contacts
 // --------
 
-// The contacts app is mostly hard coded at this point. It is
-// not very functional, other than to show the list of hard coded
-// contacts (coming straight from the view template). It does
-// demonstrate how I am using region managers to swap out content
-// in various parts of the app, though. 
-
+// Manage the list of contacts and the categories for
+// the contacts. Limited functionality at this point,
+// but slowly adding more.
 BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   var Contacts = {};
 
@@ -28,17 +25,14 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   Contacts.ContactCollection = Backbone.Collection.extend({
     model: Contacts.Contact
   });
+
+  // Public API
+  // ----------
   
-  // Replaces the main and navigation regions of the screen with
-  // the content for the contacts, using the region managers. Also
-  // sets the correct route and ensures the aplication selection is
-  // set correctly.
+  // Show the contact list and the categories.
   Contacts.show = function(){
     BBCloneMail.ContactsApp.ContactList.show(Contacts.contacts);
     BBCloneMail.ContactsApp.Categories.show();
-
-    // Let the rest of the app know that the Contacts app is now
-    // running
     BBCloneMail.vent.trigger("contacts:show");
   };
 

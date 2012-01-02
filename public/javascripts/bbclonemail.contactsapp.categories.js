@@ -11,8 +11,13 @@
 // Contact Categories
 // --------
 
+// Manage the list of categories, and the interactions with them,
+// for the contacts app.
 BBCloneMail.ContactsApp.Categories = (function(BBCloneMail, Backbone){
   var Categories = {};
+
+  // Categories Views
+  // ----------------
 
   // Displays the hard coded list of contact categories, from
   // the view template.
@@ -24,8 +29,6 @@ BBCloneMail.ContactsApp.Categories = (function(BBCloneMail, Backbone){
     },
 
     categoryClicked: function(e){
-      // ignore the clicks for now, just make sure they don't
-      // cause a page refresh.
       e.preventDefault();
     }
   });
@@ -33,6 +36,8 @@ BBCloneMail.ContactsApp.Categories = (function(BBCloneMail, Backbone){
   // Public API
   // ----------
   
+  // Show the list of contact categories in the 
+  // left hand navigation.
   Categories.show = function(){
     BBCloneMail.navigationRegion.show(new Categories.ContactCategoriesView());
   }
