@@ -41,7 +41,9 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     },
 
     processAppRoutes: function(app, appRoutes){
-      var routes = [], routesLength;
+      var method, methodName;
+      var route, routesLength;
+      var routes = [];
       var router = this;
 
       for(route in appRoutes){
@@ -51,15 +53,10 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
       routesLength = routes.length;
       for (var i = 0; i < routesLength; i++){
 
-        (function(){
-          var route = routes[i][0];
-          var methodName = routes[i][1];
-          var method = app[methodName];
-          router.route(route, methodName, function(){
-            var args = Array.prototype.slice.call(arguments);
-            method.apply(this, args);
-          });
-        })();
+        route = routes[i][0];
+        methodName = routes[i][1];
+        method = app[methodName];
+        router.route(route, methodName, method);
 
       }
     }
