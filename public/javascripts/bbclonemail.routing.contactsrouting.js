@@ -30,7 +30,7 @@ BBCloneMail.Routing.ContactsRouting = (function(BBCloneMail, Backbone){
   // those objects do the real work.
   ContactsRouting.Router = BBCloneMail.Routing.AppRouter.extend({
     appRoutes: {
-      "contacts": "show"
+      "contacts": "showContactList"
     }
   });
 

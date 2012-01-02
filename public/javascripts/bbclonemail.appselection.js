@@ -40,14 +40,11 @@ BBCloneMail.AppSelection = (function(BBCloneMail, Backbone){
       e.preventDefault();
       var appName = $(e.currentTarget).val();
 
-      var app;
       if (appName == "mail"){
-        app = BBCloneMail.MailApp;
+        BBCloneMail.MailApp.showInbox();
       } else {
-        app = BBCloneMail.ContactsApp;
+        BBCloneMail.ContactsApp.showContactList();
       }
-
-      app.show();
     },
 
     // Show the correct app in the select box.
