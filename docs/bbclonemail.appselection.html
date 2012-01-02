@@ -23,14 +23,11 @@ correct object's <code>show</code> method.</p>             </td>             <td
       <span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
       <span class="kd">var</span> <span class="nx">appName</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">val</span><span class="p">();</span>
 
-      <span class="kd">var</span> <span class="nx">app</span><span class="p">;</span>
       <span class="k">if</span> <span class="p">(</span><span class="nx">appName</span> <span class="o">==</span> <span class="s2">&quot;mail&quot;</span><span class="p">){</span>
-        <span class="nx">app</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">;</span>
+        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">MailApp</span><span class="p">.</span><span class="nx">showInbox</span><span class="p">();</span>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="nx">app</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">;</span>
+        <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">ContactsApp</span><span class="p">.</span><span class="nx">showContactList</span><span class="p">();</span>
       <span class="p">}</span>
-
-      <span class="nx">app</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
     <span class="p">},</span></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Show the correct app in the select box.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">setSelection</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">){</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">).</span><span class="nx">val</span><span class="p">(</span><span class="nx">app</span><span class="p">);</span>
     <span class="p">},</span>

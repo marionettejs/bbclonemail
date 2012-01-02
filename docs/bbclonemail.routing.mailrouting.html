@@ -18,8 +18,8 @@ the hash. </p>
 calls out to other sub-app controlling objects, and lets
 those objects do the real work.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">MailRouting</span><span class="p">.</span><span class="nx">Router</span> <span class="o">=</span> <span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Routing</span><span class="p">.</span><span class="nx">AppRouter</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
     <span class="nx">appRoutes</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;&quot;</span><span class="o">:</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;inbox&quot;</span><span class="o">:</span> <span class="s2">&quot;show&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;&quot;</span><span class="o">:</span> <span class="s2">&quot;showInbox&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;inbox&quot;</span><span class="o">:</span> <span class="s2">&quot;showInbox&quot;</span><span class="p">,</span>
       <span class="s2">&quot;inbox/categories/:category&quot;</span><span class="o">:</span> <span class="s2">&quot;showCategory&quot;</span><span class="p">,</span>
       <span class="s2">&quot;inbox/:id&quot;</span><span class="o">:</span> <span class="s2">&quot;showMessage&quot;</span>
     <span class="p">}</span>
