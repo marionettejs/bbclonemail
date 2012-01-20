@@ -14,55 +14,6 @@
 BBCloneMail.Routing = (function(BBCloneMail, Backbone){
   var Routing = {};
 
-  // AppRouter
-  // ---------
-  
-  // The AppRouter object is a work-in-progress to reduce the
-  // boilerplate code in routers. It requires an `app` object
-  // be provided to the constructor, and `appRoutes` hash to be
-  // defined on the router. 
-  //
-  // The left part of the `appRoutes` is a standard Backbone route. 
-  // The right part of the `appRoutes` is the name of the method to 
-  // call on the `app` object, when the route callback fires. 
-  //
-  // For example:
-  // `appRoutes: { "foo/bar": "bar"}` will call the `bar` 
-  // method on the `app` object: `new MyRouter({app: fooApp});`
-
-  Routing.AppRouter = Backbone.Router.extend({
-
-    constructor: function(options){
-      Backbone.Router.prototype.constructor.call(this, options);
-
-      if (this.appRoutes){
-        this.processAppRoutes(options.app, this.appRoutes);
-      }
-    },
-
-    processAppRoutes: function(app, appRoutes){
-      var method, methodName;
-      var route, routesLength;
-      var routes = [];
-      var router = this;
-
-      for(route in appRoutes){
-        routes.unshift([route, appRoutes[route]]);
-      }
-
-      routesLength = routes.length;
-      for (var i = 0; i < routesLength; i++){
-
-        route = routes[i][0];
-        methodName = routes[i][1];
-        method = app[methodName];
-        router.route(route, methodName, method);
-
-      }
-    }
-
-  });
-
   // Public API
   // ----------
 

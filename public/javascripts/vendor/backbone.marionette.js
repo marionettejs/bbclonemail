@@ -1,4 +1,4 @@
-// Backbone.Marionette v0.2.1
+// Backbone.Marionette v0.2.5
 //
 // Copyright (C)2011 Derick Bailey, Muted Solutions, LLC
 // Distributed Under MIT License
@@ -9,7 +9,7 @@
 Backbone.Marionette = (function(Backbone, _, $){
   var Marionette = {};
 
-  Marionette.version = "0.2.1";
+  Marionette.version = "0.2.5";
 
   // Region Manager
   // --------------
@@ -19,7 +19,9 @@ Backbone.Marionette = (function(Backbone, _, $){
   Marionette.RegionManager = function(options){
     this.options = options || (options = {});
     if (!this.el){
-      throw new Error("An 'el' must be specified");
+      var err = new Error("An 'el' must be specified");
+      err.name = "NoElError";
+      throw err;
     }
     this.el = $(this.el);
   };
@@ -66,6 +68,7 @@ Backbone.Marionette = (function(Backbone, _, $){
       Backbone.View.prototype.constructor.apply(this, args);
 
       this.el = $(this.el);
+      _.bindAll(this, "render");
     },
 
     // Serialize the model or collection for the view. If a model is
@@ -104,12 +107,38 @@ Backbone.Marionette = (function(Backbone, _, $){
         this.onRender();
       }
 
+      return this;
     },
 
     // Default implementation uses underscore.js templates. Override
     // this method to use your own templating engine.
     renderTemplate: function(template, data){
+      if (!template || template.length === 0){
+        var err = new Error("A template must be specified");
+        err.name = "NoTemplateError";
+        throw err;
+      }
+
       return _.template(template.html(), data);
+    },
+
+    // Retrieve the template from the call's context. The
+    // `template` attribute can either be a function that
+    // returns a jQuery object, or a jQuery selector string 
+    // directly. The string value must be a valid jQuery 
+    // selector.  
+    getTemplate: function(){
+      var template = this.template;
+  
+      var templateData;
+
+      if (_.isFunction(template)){
+        templateData = template.call(this);
+      } else {
+        templateData = Marionette.TemplateManager.get(template);
+      }
+
+      return templateData;
     },
 
     // Default `close` implementation, for removing a view from the
@@ -133,22 +162,44 @@ Backbone.Marionette = (function(Backbone, _, $){
   // A view that iterates over a Backbone.Collection
   // and renders an individual ItemView for each model.
   Marionette.CollectionView = Backbone.View.extend({
+    itemView: Marionette.ItemView,
+    modelView: Marionette.ItemView,
+
     constructor: function(){
-      var args = slice.call(arguments);
       Backbone.View.prototype.constructor.apply(this, arguments);
 
       this.el = $(this.el);
 
-      _.bindAll(this, "addChildView");
-      this.collection.bind("add", this.addChildView, this);
-      this.collection.bind("remove", this.removeChildView, this);
+      _.bindAll(this, "addChildView", "render");
+      this.bindTo(this.collection, "add", this.addChildView, this);
+      this.bindTo(this.collection, "remove", this.removeChildView, this);
     },
 
     // Loop through all of the items and render 
     // each of them with the specified `itemView`.
     render: function(){
-      var self = this;
+      this.renderModel();
+
       this.collection.each(this.addChildView);
+      if (this.onRender){
+        this.onRender();
+      }
+      return this;
+    },
+
+    // Render an individual model, if we have one, as
+    // part of a composite view (branch / leaf). For example:
+    // a treeview.
+    renderModel: function(){
+      if (this.model){
+        var itemView = new this.modelView({
+          model: this.model,
+          template: this.template
+        });
+        itemView.render();
+
+        this.el.append(itemView.el);
+      }
     },
 
     // Render the child item's view and add it to the
@@ -252,6 +303,55 @@ Backbone.Marionette = (function(Backbone, _, $){
     }
   };
 
+  // AppRouter
+  // ---------
+
+  // Reduce the boilerplate code of handling route events
+  // and then calling a single method on another object.
+  // Have your routers configured to call the method on
+  // your object, directly.
+  //
+  // Configure an AppRouter with `appRoutes`.
+  //
+  // App routers can only take one `controller` object. 
+  // It is reocmmended that you divide your controller
+  // objects in to smaller peices of related functionality
+  // and have multiple routers / controllers, instead of
+  // just one giant router and controller.
+  //
+  // You can also add standard routes to an AppRouter.
+  
+  Marionette.AppRouter = Backbone.Router.extend({
+
+    constructor: function(options){
+      Backbone.Router.prototype.constructor.call(this, options);
+
+      if (this.appRoutes){
+        this.processAppRoutes(options.controller, this.appRoutes);
+      }
+    },
+
+    processAppRoutes: function(app, appRoutes){
+      var method, methodName;
+      var route, routesLength;
+      var routes = [];
+      var router = this;
+
+      for(route in appRoutes){
+        routes.unshift([route, appRoutes[route]]);
+      }
+
+      routesLength = routes.length;
+      for (var i = 0; i < routesLength; i++){
+        route = routes[i][0];
+        methodName = routes[i][1];
+        method = app[methodName];
+        router.route(route, methodName, method);
+      }
+    }
+  });
+
+
   // Composite Application
   // ---------------------
 
@@ -295,14 +395,14 @@ Backbone.Marionette = (function(Backbone, _, $){
 
       for(var region in regions){
         if (regions.hasOwnProperty(region)){
-          regionValue = regions[region];
+          var regionValue = regions[region];
     
           if (typeof regionValue === "string"){
             appRegions[region] = Marionette.RegionManager.extend({
               el: regionValue
             });
           } else {
-            appRegions[region] = regionValue
+            appRegions[region] = regionValue;
           }
 
         }
@@ -364,7 +464,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         this.templates = {};
       }
     }
-  }
+  };
 
   // Helpers
   // -------
@@ -372,29 +472,6 @@ Backbone.Marionette = (function(Backbone, _, $){
   // For slicing `arguments` in functions
   var slice = Array.prototype.slice;
   
-  // Retrieve the template from the call's context. The
-  // `template` attribute can either be a function that
-  // returns a jQuery object, or a jQuery selector string 
-  // directly. The string value must be a valid jQuery 
-  // selector.  
-  var templateMixin = {
-    getTemplate: function(){
-      var template = this.template;
-      var templateData;
-
-      if (_.isFunction(template)){
-        templateData = template.call(this);
-      } else {
-        templateData = Marionette.TemplateManager.get(template);
-      }
-
-      return templateData;
-    }
-  }
-  // Copy the 'getTemplate' function on to the views
-  _.extend(Marionette.ItemView.prototype, templateMixin);
-  _.extend(Marionette.CollectionView.prototype, templateMixin);
-
   // Copy the `extend` function used by Backbone's classes
   var extend = Backbone.View.extend;
   Marionette.RegionManager.extend = extend;
@@ -406,4 +483,5 @@ Backbone.Marionette = (function(Backbone, _, $){
   _.extend(Marionette.Application.prototype, Marionette.BindTo);
 
   return Marionette;
-})(Backbone, _, jQuery);
+})(Backbone, _, window.jQuery || window.Zepto || window.ender);
+

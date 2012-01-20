@@ -28,7 +28,7 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
   // Also note that the router is as dumb as possible. It only
   // calls out to other sub-app controlling objects, and lets
   // those objects do the real work.
-  MailRouting.Router = BBCloneMail.Routing.AppRouter.extend({
+  MailRouting.Router = Backbone.Marionette.AppRouter.extend({
     appRoutes: {
       "": "showInbox",
       "inbox": "showInbox",
@@ -58,7 +58,7 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
   // Initialize the router when the application starts
   BBCloneMail.addInitializer(function(){
     MailRouting.router = new MailRouting.Router({
-      app: BBCloneMail.MailApp
+      controller: BBCloneMail.MailApp
     });
   });
 

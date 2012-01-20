@@ -28,7 +28,7 @@ BBCloneMail.Routing.ContactsRouting = (function(BBCloneMail, Backbone){
   // Also note that the router is as dumb as possible. It only
   // calls out to other sub-app controlling objects, and lets
   // those objects do the real work.
-  ContactsRouting.Router = BBCloneMail.Routing.AppRouter.extend({
+  ContactsRouting.Router = Backbone.Marionette.AppRouter.extend({
     appRoutes: {
       "contacts": "showContactList"
     }
@@ -45,7 +45,7 @@ BBCloneMail.Routing.ContactsRouting = (function(BBCloneMail, Backbone){
   // Initialize the router when the application starts
   BBCloneMail.addInitializer(function(){
     ContactsRouting.router = new ContactsRouting.Router({
-      app: BBCloneMail.ContactsApp
+      controller: BBCloneMail.ContactsApp
     });
   });
 
