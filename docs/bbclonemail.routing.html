@@ -7,55 +7,13 @@ Distributed Under MIT License</p>
 <p>Documentation and Full License Available at:
 http://github.com/derickbailey/backbone.bbclonemail
 http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Routing</h2>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">Routing</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">BBCloneMail</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">Routing</span> <span class="o">=</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>AppRouter</h2>             </td>             <td class="code">               <div class="highlight"><pre>  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The AppRouter object is a work-in-progress to reduce the
-boilerplate code in routers. It requires an <code>app</code> object
-be provided to the constructor, and <code>appRoutes</code> hash to be
-defined on the router. </p>
-
-<p>The left part of the <code>appRoutes</code> is a standard Backbone route. 
-The right part of the <code>appRoutes</code> is the name of the method to 
-call on the <code>app</code> object, when the route callback fires. </p>
-
-<p>For example:
-<code>appRoutes: { "foo/bar": "bar"}</code> will call the <code>bar</code> 
-method on the <code>app</code> object: <code>new MyRouter({app: fooApp});</code></p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Routing</span><span class="p">.</span><span class="nx">AppRouter</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
-
-    <span class="nx">constructor</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">options</span><span class="p">){</span>
-      <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Router</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
-
-      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">appRoutes</span><span class="p">){</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">processAppRoutes</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">app</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">appRoutes</span><span class="p">);</span>
-      <span class="p">}</span>
-    <span class="p">},</span>
-
-    <span class="nx">processAppRoutes</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="nx">appRoutes</span><span class="p">){</span>
-      <span class="kd">var</span> <span class="nx">method</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">route</span><span class="p">,</span> <span class="nx">routesLength</span><span class="p">;</span>
-      <span class="kd">var</span> <span class="nx">routes</span> <span class="o">=</span> <span class="p">[];</span>
-      <span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-
-      <span class="k">for</span><span class="p">(</span><span class="nx">route</span> <span class="k">in</span> <span class="nx">appRoutes</span><span class="p">){</span>
-        <span class="nx">routes</span><span class="p">.</span><span class="nx">unshift</span><span class="p">([</span><span class="nx">route</span><span class="p">,</span> <span class="nx">appRoutes</span><span class="p">[</span><span class="nx">route</span><span class="p">]]);</span>
-      <span class="p">}</span>
-
-      <span class="nx">routesLength</span> <span class="o">=</span> <span class="nx">routes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">routesLength</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
-
-        <span class="nx">route</span> <span class="o">=</span> <span class="nx">routes</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">0</span><span class="p">];</span>
-        <span class="nx">methodName</span> <span class="o">=</span> <span class="nx">routes</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="mi">1</span><span class="p">];</span>
-        <span class="nx">method</span> <span class="o">=</span> <span class="nx">app</span><span class="p">[</span><span class="nx">methodName</span><span class="p">];</span>
-        <span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="nx">route</span><span class="p">,</span> <span class="nx">methodName</span><span class="p">,</span> <span class="nx">method</span><span class="p">);</span>
-
-      <span class="p">}</span>
-    <span class="p">}</span>
-
-  <span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Public API</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>The <code>showRoute</code> method is a private method used to update the 
+  <span class="kd">var</span> <span class="nx">Routing</span> <span class="o">=</span> <span class="p">{};</span></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <h2>Public API</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>The <code>showRoute</code> method is a private method used to update the 
 url's hash fragment route. It accepts a base route and an 
 unlimited number of optional parameters for the route: 
 <code>showRoute("foo", "bar", "baz", "etc");</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Routing</span><span class="p">.</span><span class="nx">showRoute</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
     <span class="kd">var</span> <span class="nx">route</span> <span class="o">=</span> <span class="nx">getRoutePath</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
     <span class="nx">Backbone</span><span class="p">.</span><span class="nx">history</span><span class="p">.</span><span class="nx">navigate</span><span class="p">(</span><span class="nx">route</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-  <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h2>Helper Methods</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <p>Creates a proper route based on the <code>routeParts</code>
+  <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Helper Methods</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Creates a proper route based on the <code>routeParts</code>
 that are passed to it.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">getRoutePath</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">routeParts</span><span class="p">){</span>
     <span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nx">routeParts</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
     <span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">routeParts</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
