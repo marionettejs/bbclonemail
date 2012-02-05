@@ -2,6 +2,7 @@ desc "Deploy site and docs to github and heroku"
 task :deploy => [:push_github, :push_heroku, :docco]
 
 task :docco do
+  `docco public/javascripts/*.js`
   `docco public/javascripts/**/bbclonemail*.js`
   `git add -A`
   `git stash`
