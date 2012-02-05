@@ -1,0 +1,29 @@
+<script id='email-view-template' type='text/x-jquery-tmpl'>
+  <li>
+    <header>
+      <span class='from'>
+        ${from}
+      </span>
+      <span class='subject'>
+        ${subject}
+      </span>
+      <span class='date'>
+        ${date}
+      </span>
+    </header>
+    <article>
+      <div class='body'>
+        {{if categories}}
+        <ul class='emailCategories'>
+          {{each categories}}
+          <li>${$value}</li>
+          {{/each}}
+        </ul>
+        {{/if}}
+        {{each body}}
+        <p>${$value}</p>
+        {{/each}}
+      </div>
+    </article>
+  </li>
+</script>

@@ -1,0 +1,21 @@
+<script id='mail-categories-view-template' type='text/x-jquery-tmpl'>
+  <p>Mail Categories</p>
+  <ul>
+    <li>
+      <a href="#inbox" data-category="">Inbox</a>
+    </li>
+    <li>
+      <a href="#inbox/sent" data-category="sent">Sent</a>
+    </li>
+    <li>
+      <a href="#inbox/trash" data-category="trash">Trash</a>
+    </li>
+  </ul>
+  <ul class='customCategories'>
+    {{each items}}
+    <li>
+      <a href="#inbox/categories/${$value.name}" data-category="${$value.name}">${$value.name}</a>
+    </li>
+    {{/each}}
+  </ul>
+</script>
