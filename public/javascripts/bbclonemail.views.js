@@ -26,9 +26,7 @@ Backbone.Marionette.ItemView.prototype.renderTemplate = function(template, data)
 // `"/templates/my-view-template.html"` from the server.
 Backbone.Marionette.TemplateManager.loadTemplate = function(templateId, callback){
   var tmpId = templateId.replace("#", "");
-  var file = "/templates/" + tmpId + ".html";
-  $.get(file, function(template){
-    var $template= $(template)
-    callback.call(this, $template);
+  $.get("/templates/" + tmpId + ".html", function(template){
+    callback.call(this, $(template));
   });
 }
