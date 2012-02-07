@@ -12,11 +12,22 @@ http://github.com/derickbailey/backbone.marionette</p>             </td>        
   <span class="k">return</span> <span class="nx">html</span><span class="p">;</span>
 <span class="p">};</span></pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <p>Set up async template loading from the server. A view with
 a template of <code>"#my-view-template"</code> will load a file called
-<code>"/templates/my-view-template.html"</code> from the server.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Backbone</span><span class="p">.</span><span class="nx">Marionette</span><span class="p">.</span><span class="nx">TemplateManager</span><span class="p">.</span><span class="nx">loadTemplate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">templateId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
-  <span class="kd">var</span> <span class="nx">tmpId</span> <span class="o">=</span> <span class="nx">templateId</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
-  <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/templates/&quot;</span> <span class="o">+</span> <span class="nx">tmpId</span> <span class="o">+</span> <span class="s2">&quot;.html&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">template</span><span class="p">){</span>
-    <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="nx">template</span><span class="p">));</span>
-  <span class="p">});</span>
-<span class="p">}</span>
+<code>"/templates/my-view-template.html"</code> from the server.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+  <span class="kd">var</span> <span class="nx">promises</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="kd">var</span> <span class="nx">getPromise</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tmpId</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">promises</span><span class="p">[</span><span class="nx">tmpId</span><span class="p">]</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;/templates/&quot;</span> <span class="o">+</span> <span class="nx">tmpId</span> <span class="o">+</span> <span class="s2">&quot;.html&quot;</span><span class="p">);</span>
+    <span class="nx">promises</span><span class="p">[</span><span class="nx">tmpId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">promise</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">promise</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Marionette</span><span class="p">.</span><span class="nx">TemplateManager</span><span class="p">.</span><span class="nx">loadTemplate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">templateId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">tmpId</span> <span class="o">=</span> <span class="nx">templateId</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">getPromise</span><span class="p">(</span><span class="nx">tmpId</span><span class="p">);</span>
+    <span class="nx">promise</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">template</span><span class="p">){</span>
+      <span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="nx">template</span><span class="p">));</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">})();</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
