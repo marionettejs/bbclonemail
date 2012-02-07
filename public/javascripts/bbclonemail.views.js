@@ -24,9 +24,21 @@ Backbone.Marionette.ItemView.prototype.renderTemplate = function(template, data)
 // Set up async template loading from the server. A view with
 // a template of `"#my-view-template"` will load a file called
 // `"/templates/my-view-template.html"` from the server.
-Backbone.Marionette.TemplateManager.loadTemplate = function(templateId, callback){
-  var tmpId = templateId.replace("#", "");
-  $.get("/templates/" + tmpId + ".html", function(template){
-    callback.call(this, $(template));
-  });
-}
+
+(function(){
+  var promises = {};
+
+  var getPromise = function(tmpId){
+    var promise = promises[tmpId] || $.get("/templates/" + tmpId + ".html");
+    promises[tmpId] = promise;
+    return promise;
+  }
+
+  Backbone.Marionette.TemplateManager.loadTemplate = function(templateId, callback){
+    var tmpId = templateId.replace("#", "");
+    var promise = getPromise(tmpId);
+    promise.done(function(template){
+      callback.call(this, $(template));
+    });
+  }
+})();
