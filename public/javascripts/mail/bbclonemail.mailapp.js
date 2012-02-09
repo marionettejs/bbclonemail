@@ -23,7 +23,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
   MailApp.Email = Backbone.Model.extend({});
 
-  MailApp.EmailCollection = Backbone.Collection.extend({
+  MailApp.EmailCollection = BBCloneMail.Collection.extend({
     url: "/email",
     model: MailApp.Email,
 
@@ -69,8 +69,10 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
   // Show an individual email message, by Id
   MailApp.showMessage = function(messageId){
-    var email = MailApp.emailList.get(messageId);
-    MailApp.MailBox.showMessage(email);
+    MailApp.emailList.onReset(function(list){
+      var email = list.get(messageId);
+      MailApp.MailBox.showMessage(email);
+    });
     MailApp.Categories.showCategoryList();
   };
 
