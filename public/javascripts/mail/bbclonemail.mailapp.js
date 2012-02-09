@@ -24,6 +24,7 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   MailApp.Email = Backbone.Model.extend({});
 
   MailApp.EmailCollection = Backbone.Collection.extend({
+    url: "/email",
     model: MailApp.Email,
 
     // Get email for the specified category. Returns a
@@ -94,8 +95,9 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
   // Initializes the email collection object with the list
   // of emails that are passed in from the call to 
   // `BBCloneMail.start`.
-  BBCloneMail.addInitializer(function(options){
-    MailApp.emailList = new MailApp.EmailCollection(options.email);
+  BBCloneMail.addInitializer(function(){
+    MailApp.emailList = new MailApp.EmailCollection();
+    MailApp.emailList.fetch();
   });
   
   return MailApp;

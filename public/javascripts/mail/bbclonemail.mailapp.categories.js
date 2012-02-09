@@ -20,6 +20,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
   // The category model and collection
   var Category = Backbone.Model.extend({});
   var CategoryCollection = Backbone.Collection.extend({
+    url: "/categories",
     model: Category
   });
 
@@ -50,20 +51,6 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     }
   });
 
-  // Mail Categories Helper Methods
-  // ----------------------------
-
-  // Build a proper collection of category models
-  var buildCategories = function(categoryNames){
-    var category;
-    var categoryCollection = new CategoryCollection();
-    _.each(categoryNames, function(categoryName){
-      category = new Category({name: categoryName});
-      categoryCollection.add(category);
-    });
-    return categoryCollection;
-  };
-
   // Mail Categories Public API
   // --------------------------
   
@@ -81,8 +68,9 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
   // Get the list of categories on startup and hold
   // then in memory, so we can render them on to the
   // screen when we need to.
-  BBCloneMail.addInitializer(function(options){
-    Categories.categoryCollection = buildCategories(options.categories);
+  BBCloneMail.addInitializer(function(){
+    Categories.categoryCollection = new CategoryCollection();
+    Categories.categoryCollection.fetch();
   });
 
   return Categories;

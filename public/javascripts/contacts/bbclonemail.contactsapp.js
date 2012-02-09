@@ -23,6 +23,7 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   Contacts.Contact = Backbone.Model.extend({});
 
   Contacts.ContactCollection = Backbone.Collection.extend({
+    url: "/contacts",
     model: Contacts.Contact
   });
 
@@ -39,8 +40,9 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
   // Initializer
   // -----------
   
-  BBCloneMail.addInitializer(function(options){
-    Contacts.contacts = new Contacts.ContactCollection(options.contacts);
+  BBCloneMail.addInitializer(function(){
+    Contacts.contacts = new Contacts.ContactCollection();
+    Contacts.contacts.fetch();
   });
   
   return Contacts;
