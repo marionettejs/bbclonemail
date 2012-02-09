@@ -17,7 +17,7 @@
 BBCloneMail.Collection = Backbone.Collection.extend({
   constructor: function(){
     var args = Array.prototype.slice.call(arguments);
-    Backbone.Collection.prototype.constructor.call(this, args);
+    Backbone.Collection.prototype.constructor.apply(this, args);
 
     this.onResetCallbacks = new Backbone.Marionette.Callbacks();
     this.on("reset", this.runOnResetCallbacks, this);

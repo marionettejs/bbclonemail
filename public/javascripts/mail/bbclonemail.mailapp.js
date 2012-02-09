@@ -39,7 +39,8 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
         return found;
       });
 
-      return new MailApp.EmailCollection(filteredMailItems);
+      var x = new MailApp.EmailCollection(filteredMailItems);
+      return x;
     }
   });
 
@@ -48,8 +49,10 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
 
   // Filter the mail by the category, if one was specified
   var showFilteredEmailList = function(category){
-    var filteredMail = MailApp.emailList.forCategory(category);
-    MailApp.MailBox.showMail(filteredMail);
+    MailApp.emailList.onReset(function(list){
+      var filteredMail = list.forCategory(category);
+      MailApp.MailBox.showMail(filteredMail);
+    });
   }
 
   // Mail App Public API
