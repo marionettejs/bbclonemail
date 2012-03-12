@@ -42,7 +42,7 @@ Backbone.Marionette.ItemView.prototype.renderTemplate = function(template, data)
   }
 
   // Use jQuery to asynchronously load the template. 
-  Backbone.Marionette.TemplateManager.loadTemplate = function(templateId, callback){
+  Backbone.Marionette.TemplateCache.loadTemplate = function(templateId, callback){
     var tmpId = templateId.replace("#", "");
     var promise = loadTemplateAsync(tmpId);
     promise.done(function(template){
