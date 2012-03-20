@@ -1,4 +1,4 @@
-// Backbone.Marionette v0.6.0
+// Backbone.Marionette v0.6.3
 //
 // Copyright (C)2011 Derick Bailey, Muted Solutions, LLC
 // Distributed Under MIT License
@@ -9,7 +9,7 @@
 Backbone.Marionette = (function(Backbone, _, $){
   var Marionette = {};
 
-  Marionette.version = "0.6.0";
+  Marionette.version = "0.6.3";
 
   // Item View
   // ---------
@@ -60,6 +60,9 @@ Backbone.Marionette = (function(Backbone, _, $){
       var data = this.serializeData();
       var deferredRender = $.Deferred();
 
+      this.beforeRender && this.beforeRender();
+      this.trigger("item:before:render", that);
+
       deferredRender.done(function(){
         that.onRender && that.onRender();
         that.trigger("item:rendered", that);
@@ -73,7 +76,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         deferredRender.resolve();
       });
 
-      return deferredRender;
+      return deferredRender.promise();
     },
 
     // Default implementation uses underscore.js templates. Override
@@ -86,7 +89,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         throw err;
       }
 
-      return _.template(template.html(), data);
+      return _.template(template, data);
     },
 
     // Retrieve the template from the call's context. The
@@ -109,13 +112,15 @@ Backbone.Marionette = (function(Backbone, _, $){
     // for you. You can specify an `onClose` method in your view to
     // add custom code that is called after the view is closed.
     close: function(){
+      this.trigger('item:before:close');
+      this.beforeClose && this.beforeClose();
+
       this.unbindAll();
       this.unbind();
       this.remove();
 
-      if (this.onClose){
-        this.onClose();
-      }
+      this.onClose && this.onClose();
+      this.trigger('item:closed');
     }
   });
 
@@ -138,14 +143,7 @@ Backbone.Marionette = (function(Backbone, _, $){
     initialEvents: function(){
       this.bindTo(this.collection, "add", this.addChildView, this);
       this.bindTo(this.collection, "remove", this.removeChildView, this);
-      this.bindTo(this.collection, "reset", this.reRender, this);
-    },
-
-    // Re-rendering the collection view involves closing any
-    // existing child views before rendering again.
-    reRender: function(){
-      this.closeChildren();
-      this.render();
+      this.bindTo(this.collection, "reset", this.render, this);
     },
 
     // Loop through all of the items and render 
@@ -154,6 +152,11 @@ Backbone.Marionette = (function(Backbone, _, $){
       var that = this;
       var deferredRender = $.Deferred();
       var promises = [];
+
+      this.beforeRender && this.beforeRender();
+      this.trigger("collection:before:render", this);
+
+      this.closeChildren();
 
       if (!this.itemView){
         var err = new Error("An `itemView` must be specified");
@@ -175,19 +178,24 @@ Backbone.Marionette = (function(Backbone, _, $){
         deferredRender.resolveWith(that);
       });
 
-      return deferredRender;
+      return deferredRender.promise();
     },
 
     // Render the child item's view and add it to the
     // HTML for the collection view.
     addChildView: function(item){
+      var that = this;
+
       var view = new this.itemView({
         model: item
       });
+      this.storeChild(view);
 
       var promise = view.render();
-      this.storeChild(view);
-      this.appendHtml(this.$el, view.$el);
+      $.when(promise).then(function(){
+        that.appendHtml(that.$el, view.$el);
+      });
+      
       return promise;
     },
 
@@ -219,15 +227,18 @@ Backbone.Marionette = (function(Backbone, _, $){
     // Handle cleanup and other closing needs for
     // the collection of views.
     close: function(){
+      this.beforeClose && this.beforeClose();
+      this.trigger("collection:before:close");
+
       this.unbind();
       this.unbindAll();
-      this.remove();
 
       this.closeChildren();
 
-      if (this.onClose){
-        this.onClose();
-      }
+      this.remove();
+
+      this.onClose && this.onClose();
+      this.trigger("collection:closed");
     },
 
     closeChildren: function(){
@@ -261,7 +272,6 @@ Backbone.Marionette = (function(Backbone, _, $){
       });
 
       var modelIsRendered = this.renderModel();
-
       $.when(modelIsRendered).then(function(){
         that.$el.html(that.renderedModelView.el);
         that.trigger("composite:model:rendered");
@@ -276,11 +286,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         that.trigger("composite:rendered");
       });
 
-      this.render = function(){
-        return this.renderModel();
-      }
-
-      return compositeRendered;
+      return compositeRendered.promise();
     },
 
     // Render the collection for the composite view
@@ -289,7 +295,7 @@ Backbone.Marionette = (function(Backbone, _, $){
       collectionDeferred.done(function(){
         this.trigger("composite:collection:rendered");
       });
-      return collectionDeferred;
+      return collectionDeferred.promise();
     },
 
     // Render an individual model, if we have one, as
@@ -440,7 +446,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         manager.close();
         delete that[name];
       });
-      delete this.regionManagers;
+      this.regionManagers = {};
     }
   });
 
@@ -643,6 +649,7 @@ Backbone.Marionette = (function(Backbone, _, $){
   // caching them for faster access.
   Marionette.TemplateCache = {
     templates: {},
+    loaders: {},
 
     // Get the specified template by id. Either
     // retrieves the cached version, or loads it
@@ -655,22 +662,29 @@ Backbone.Marionette = (function(Backbone, _, $){
       if (cachedTemplate){
         templateRetrieval.resolve(cachedTemplate);
       } else {
+        var loader = this.loaders[templateId];
+        if(loader) {
+          templateRetrieval = loader;
+        } else {
+          this.loaders[templateId] = templateRetrieval;
 
-        this.loadTemplate(templateId, function(template){
-          that.templates[templateId] = template;
-          templateRetrieval.resolve(template);
-        });
+          this.loadTemplate(templateId, function(template){
+            delete that.loaders[templateId];
+            that.templates[templateId] = template;
+            templateRetrieval.resolve(template);
+          });
+        }
 
       }
 
-      return templateRetrieval;
+      return templateRetrieval.promise();
     },
 
     // Load a template from the DOM, by default. Override
     // this method to provide your own template retrieval,
     // such as asynchronous loading from a server.
     loadTemplate: function(templateId, callback){
-      var template = $(templateId);
+      var template = $(templateId).html();
       callback.call(this, template);
     },
 
