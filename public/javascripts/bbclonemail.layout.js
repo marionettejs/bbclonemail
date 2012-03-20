@@ -4,11 +4,16 @@
   var Layout = Backbone.Marionette.Layout.extend({
     template: "#layout-template",
 
+    // These are my visual regions: the "navigation" or
+    // left hand list of categories, and the "main"
+    // content area where the email list or contact list
+    // is displayed.
     regions: {
       navigation: "#navigation",
       main: "#main"
     },
 
+    // Handle the switching of the app between mail and contacts
     events: {
       "change #app-selector select": "appChanged"
     },

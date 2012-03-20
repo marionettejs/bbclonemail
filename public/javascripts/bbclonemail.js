@@ -16,12 +16,3 @@
 // the JavaScript global scope clean, so everything
 // we will do hangs off the 'Application' instance.
 BBCloneMail = new Backbone.Marionette.Application();
-
-// These are my visual regions: the "navigation" or
-// left hand list of categories, and the "main"
-// content area where the email list or contact list
-// is displayed.
-BBCloneMail.addRegions({
-  navigationRegion: "#navigation",
-  mainRegion: "#main"
-});
