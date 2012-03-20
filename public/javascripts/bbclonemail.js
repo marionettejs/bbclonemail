@@ -25,14 +25,3 @@ BBCloneMail.addRegions({
   navigationRegion: "#navigation",
   mainRegion: "#main"
 });
-
-// This kicks off after all of my other application
-// initializers have fired, and starts the Backbone
-// history. Doing that fires off the router's route
-// based on the #hash fragment in the URL, and gets
-// the app up and running in the correct mode.
-BBCloneMail.bind("initialize:after", function(){
-  if (Backbone.history){
-    Backbone.history.start();
-  }
-});

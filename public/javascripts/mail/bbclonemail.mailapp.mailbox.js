@@ -57,7 +57,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     var emailView = new EmailView({
       model: message
     });
-    BBCloneMail.mainRegion.show(emailView);
+    BBCloneMail.layout.main.show(emailView);
   }
 
   // A method to display a list of supplied email messages.
@@ -65,7 +65,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     var emailListView = new EmailListView({
       collection: emailList
     });
-    BBCloneMail.mainRegion.show(emailListView);
+    BBCloneMail.layout.main.show(emailListView);
   }
 
   // Mail Box Event Handlers

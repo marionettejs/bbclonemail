@@ -5,77 +5,6 @@
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
 
   %body
-    %section.header
-      .container
-        %header
-          %h1 BBCloneMail
-          %p.tag-line 
-            A 
-            %a{:href=> "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
-            Reference Application
-        %header.help
-          This application demonstrates the use of my 
-          %a{:href => "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
-          plugin for BackboneJS. To see it in action, change the selected app
-          in the drop list to the left. Be sure to check out 
-          %a{:href => "http://github.com/derickbailey/bbclonemail"}the source code
-          to see how it works.
-            
-    %section.content
-      .container
-        %navigation
-          %section#app-selector
-            %select
-              %option{:value=>"mail"}Mail
-              %option{:value=>"contacts"}Contacts
-          %section#navigation
-
-        %article#main
-          #loading
-            %img{:src=>"/images/ajax-loader.gif"}
-
-    %section.footer
-      .container
-        %footer
-          %ul
-            %li
-              Copyright &copy;2011
-              %a{:href=>"http://mutedsolutions.com"}Muted Solutions, LLC.
-              All rights reserved. 
-          %ul
-            %li
-              BBCloneMail is a reference app for building awesomeness with 
-              %a{:href => "http://backbonejs.org"}Backbone.js 
-              and 
-              %a{:href => "http://github.com/derickbailey/backbone.marionette"}Backbone.Marionette
-          %ul
-            %li.title BBCloneMail Source:
-            %li
-              %a{:href => "http://github.com/derickbailey/bbclonemail"}
-                The Github Project
-            %li
-              %a{:href => "http://derickbailey.github.com/bbclonemail/docs/bbclonemail.html"}
-                The Annoted Code
-          %ul
-            %li.title
-              Find me Twitter:
-            %li
-              %a{:href => "http://twitter.com/derickbailey"}@derickbailey
-            %li
-              %a{:href => "http://twitter.com/backbonejsclass"}@backbonejsclass
-            %li
-              %a{:href => "http://twitter.com/mutedsolutions"}@mutedsolutions
-          %ul
-            %li.title
-              Find me on the web:
-            %li
-              %a{:href => "http://backbonetraining.net"}BackboneTraining.net
-            %li
-              %a{:href => "http://watchmecode.net"}WatchMeCode.net
-            %li
-              %a{:href => "http://derickbailey.lostechies.com"}DerickBailey.lostechies.com
-            %li
-              %a{:href => "http://mutedsolutions.com"}MutedSolutions.com
 
     // pre-requisites and libraries
     %script{:src=>"/javascripts/vendor/json2.js"}
@@ -87,6 +16,7 @@
 
     // general app files
     %script{:src=>"/javascripts/bbclonemail.js"}
+    %script{:src=>"/javascripts/bbclonemail.layout.js"}
     %script{:src=>"/javascripts/bbclonemail.collection.js"}
     %script{:src=>"/javascripts/bbclonemail.views.js"}
     %script{:src=>"/javascripts/bbclonemail.appselection.js"}

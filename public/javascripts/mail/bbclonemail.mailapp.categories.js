@@ -59,7 +59,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     var categoryView = new Categories.CategoriesView({
       collection: Categories.categoryCollection
     })
-    BBCloneMail.navigationRegion.show(categoryView);
+    BBCloneMail.layout.navigation.show(categoryView);
   }
 
   // Mail Categories Initializer
