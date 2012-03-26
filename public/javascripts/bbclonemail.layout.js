@@ -69,7 +69,7 @@
     // Render the layout and get it on the screen, first
     BBCloneMail.layout = new Layout();
 
-    BBCloneMail.layout.on("render", function(){
+    BBCloneMail.layout.on("show", function(){
       BBCloneMail.vent.trigger("layout:rendered");
     });
 
