@@ -16,7 +16,7 @@ BBCloneMail.ItemView = Backbone.Marionette.ItemView;
 BBCloneMail.CollectionView = Backbone.Marionette.CollectionView;
 
 // Replace the default underscore.js templating with jQuery templates.
-Backbone.Marionette.ItemView.prototype.renderTemplate = function(template, data){
+Backbone.Marionette.Renderer.renderTemplate = function(template, data){
   var html = template.tmpl(data);
   return html;
 };
