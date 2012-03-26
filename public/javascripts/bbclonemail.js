@@ -16,3 +16,11 @@
 // the JavaScript global scope clean, so everything
 // we will do hangs off the 'Application' instance.
 BBCloneMail = new Backbone.Marionette.Application();
+
+BBCloneMail.addRegions({
+  content: ".content"
+});
+
+BBCloneMail.vent.on("layout:rendered", function(){
+  Backbone.history.start();
+});

@@ -68,13 +68,12 @@
   BBCloneMail.addInitializer(function(){
     // Render the layout and get it on the screen, first
     BBCloneMail.layout = new Layout();
-    var layoutRender = BBCloneMail.layout.render()
-    $("body").prepend(BBCloneMail.layout.el);
 
-    // This kicks off the rest of the app, through the router
-    layoutRender.done(function(){
-      Backbone.history.start();
+    BBCloneMail.layout.on("render", function(){
+      BBCloneMail.vent.trigger("layout:rendered");
     });
+
+    BBCloneMail.content.show(BBCloneMail.layout);
   });
 
 })(BBCloneMail, Backbone, $);
