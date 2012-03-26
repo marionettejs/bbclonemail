@@ -11,4 +11,12 @@ application namespace. It's important to keep
 the JavaScript global scope clean, so everything
 we will do hangs off the 'Application' instance.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Marionette</span><span class="p">.</span><span class="nx">Application</span><span class="p">();</span>
 
+<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addRegions</span><span class="p">({</span>
+  <span class="nx">content</span><span class="o">:</span> <span class="s2">&quot;.content&quot;</span>
+<span class="p">});</span>
+
+<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;layout:rendered&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">Backbone</span><span class="p">.</span><span class="nx">history</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+<span class="p">});</span>
+
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
