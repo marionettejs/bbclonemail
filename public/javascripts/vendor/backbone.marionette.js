@@ -37,6 +37,21 @@ Backbone.Marionette = (function(Backbone, _, $){
       }
 
       return template;
+    },
+
+    // Default `close` implementation, for removing a view from the
+    // DOM and unbinding it. Regions will call this method
+    // for you. You can specify an `onClose` method in your view to
+    // add custom code that is called after the view is closed.
+    close: function(){
+      this.beforeClose && this.beforeClose();
+
+      this.unbindAll();
+      this.unbind();
+      this.remove();
+
+      this.onClose && this.onClose();
+      this.trigger('close');
     }
   });
 
@@ -103,19 +118,11 @@ Backbone.Marionette = (function(Backbone, _, $){
       return asyncRender;
     },
 
-    // Default `close` implementation, for removing a view from the
-    // DOM and unbinding it. Regions will call this method
-    // for you. You can specify an `onClose` method in your view to
-    // add custom code that is called after the view is closed.
+    // Override the default close event to add a few
+    // more events that are triggered.
     close: function(){
       this.trigger('item:before:close');
-      this.beforeClose && this.beforeClose();
-
-      this.unbindAll();
-      this.unbind();
-      this.remove();
-
-      this.onClose && this.onClose();
+      Marionette.View.prototype.close.apply(this, arguments);
       this.trigger('item:closed');
     }
   });
@@ -203,12 +210,12 @@ Backbone.Marionette = (function(Backbone, _, $){
       this.storeChild(view);
       this.trigger("item:added", view);
 
-      var promise = view.render();
-      $.when(promise).then(function(){
-        that.appendHtml(that.$el, view.$el);
+      var viewRendered = view.render();
+      $.when(viewRendered).then(function(){
+        that.appendHtml(that, view);
       });
       
-      return promise;
+      return viewRendered;
     },
 
     // Build an `itemView` for every model in the collection. 
@@ -232,8 +239,8 @@ Backbone.Marionette = (function(Backbone, _, $){
     // Append the HTML to the collection's `el`.
     // Override this method to do something other
     // then `.append`.
-    appendHtml: function(el, html){
-      el.append(html);
+    appendHtml: function(collectionView, itemView){
+      collectionView.$el.append(itemView.el);
     },
 
     // Store references to all of the child `itemView`
@@ -248,17 +255,9 @@ Backbone.Marionette = (function(Backbone, _, $){
     // Handle cleanup and other closing needs for
     // the collection of views.
     close: function(){
-      this.beforeClose && this.beforeClose();
       this.trigger("collection:before:close");
-
-      this.unbind();
-      this.unbindAll();
-
       this.closeChildren();
-
-      this.remove();
-
-      this.onClose && this.onClose();
+      Marionette.View.prototype.close.apply(this, arguments);
       this.trigger("collection:closed");
     },
 
