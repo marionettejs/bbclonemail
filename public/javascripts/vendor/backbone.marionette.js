@@ -20,7 +20,7 @@ Backbone.Marionette = (function(Backbone, _, $){
     // instance. You can set a `template` attribute in the view
     // definition or pass a `template: "whatever"` parameter in
     // to the constructor options. 
-    getTemplate: function(){
+    getTemplateSelector: function(){
       var template;
 
       // Get the template from `this.options.template` or
@@ -101,21 +101,24 @@ Backbone.Marionette = (function(Backbone, _, $){
     // You can override this in your view definition.
     render: function(){
       var that = this;
-      var template = this.getTemplate();
+      var template = this.getTemplateSelector();
       var data = this.serializeData();
 
       this.beforeRender && this.beforeRender();
       this.trigger("item:before:render", that);
 
+      var deferredRender = $.Deferred();
+
       var asyncRender = Marionette.Renderer.render(template, data);
-      asyncRender.done(function(html){
+      $.when(asyncRender).then(function(html){
         that.$el.html(html);
         that.onRender && that.onRender();
         that.trigger("item:rendered", that);
         that.trigger("render", that);
+        deferredRender.resolve();
       });
 
-      return asyncRender;
+      return deferredRender.promise();
     },
 
     // Override the default close event to add a few
@@ -334,7 +337,7 @@ Backbone.Marionette = (function(Backbone, _, $){
         data = this.model.toJSON();
       }
 
-      var template = this.getTemplate();
+      var template = this.getTemplateSelector();
       return Marionette.Renderer.render(template, data);
     }
   });

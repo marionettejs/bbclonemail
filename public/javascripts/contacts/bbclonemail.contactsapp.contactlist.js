@@ -39,7 +39,7 @@ BBCloneMail.ContactsApp.ContactList = (function(BBCloneMail, Backbone){
     var contactsView = new ContactListView({
       collection: contacts
     });
-    BBCloneMail.mainRegion.show(contactsView);
+    BBCloneMail.layout.main.show(contactsView);
   }
 
   return ContactList;

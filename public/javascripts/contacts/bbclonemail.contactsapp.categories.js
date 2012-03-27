@@ -39,7 +39,7 @@ BBCloneMail.ContactsApp.Categories = (function(BBCloneMail, Backbone){
   // Show the list of contact categories in the 
   // left hand navigation.
   Categories.show = function(){
-    BBCloneMail.navigationRegion.show(new Categories.ContactCategoriesView());
+    BBCloneMail.layout.navigation.show(new Categories.ContactCategoriesView());
   }
 
   return Categories;
