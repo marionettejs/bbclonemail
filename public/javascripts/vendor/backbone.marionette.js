@@ -5,7 +5,6 @@
 //
 // Documentation and Full License Available at:
 // http://github.com/derickbailey/backbone.marionette
-
 Backbone.Marionette = (function(Backbone, _, $){
   var Marionette = {};
 
@@ -19,7 +18,8 @@ Backbone.Marionette = (function(Backbone, _, $){
     // Get the template or template id/selector for this view
     // instance. You can set a `template` attribute in the view
     // definition or pass a `template: "whatever"` parameter in
-    // to the constructor options. 
+    // to the constructor options. The `template` can also be
+    // a function that returns a selector string.
     getTemplateSelector: function(){
       var template;
 
@@ -47,11 +47,11 @@ Backbone.Marionette = (function(Backbone, _, $){
       this.beforeClose && this.beforeClose();
 
       this.unbindAll();
-      this.unbind();
       this.remove();
 
       this.onClose && this.onClose();
       this.trigger('close');
+      this.unbind();
     }
   });
 
@@ -101,21 +101,23 @@ Backbone.Marionette = (function(Backbone, _, $){
     // You can override this in your view definition.
     render: function(){
       var that = this;
+
+      var deferredRender = $.Deferred();
       var template = this.getTemplateSelector();
-      var data = this.serializeData();
+      var deferredData = this.serializeData();
 
       this.beforeRender && this.beforeRender();
       this.trigger("item:before:render", that);
 
-      var deferredRender = $.Deferred();
-
-      var asyncRender = Marionette.Renderer.render(template, data);
-      $.when(asyncRender).then(function(html){
-        that.$el.html(html);
-        that.onRender && that.onRender();
-        that.trigger("item:rendered", that);
-        that.trigger("render", that);
-        deferredRender.resolve();
+      $.when(deferredData).then(function(data) {
+        var asyncRender = Marionette.Renderer.render(template, data);
+        $.when(asyncRender).then(function(html){
+          that.$el.html(html);
+          that.onRender && that.onRender();
+          that.trigger("item:rendered", that);
+          that.trigger("render", that);
+          deferredRender.resolve();
+        });
       });
 
       return deferredRender.promise();
