@@ -12,10 +12,10 @@
     </li>
   </ul>
   <ul class='customCategories'>
-    {{each items}}
-    <li>
-      <a href="#inbox/categories/${$value.name}" data-category="${$value.name}">${$value.name}</a>
-    </li>
-    {{/each}}
+    <% _.each(items, function(category) { %>
+      <li>
+        <a href="#inbox/categories/<%= category.name %>" data-category="<%= category.name %>"><%= category.name %></a>
+      </li>
+    <% }) %>
   </ul>
 </script>

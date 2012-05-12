@@ -2,27 +2,27 @@
   <li>
     <header>
       <span class='from'>
-        ${from}
+        <%= from %>
       </span>
       <span class='subject'>
-        ${subject}
+        <%= subject %>
       </span>
       <span class='date'>
-        ${date}
+        <%= date %>
       </span>
     </header>
     <article>
       <div class='body'>
-        {{if categories}}
-        <ul class='emailCategories'>
-          {{each categories}}
-          <li>${$value}</li>
-          {{/each}}
-        </ul>
-        {{/if}}
-        {{each body}}
-        <p>${$value}</p>
-        {{/each}}
+
+        <% if (categories){ %>
+          <ul class='emailCategories'>
+            <% _.each(categories, function(category){ %>
+            <li><%= category %></li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+        <p><%= body %></p>
       </div>
     </article>
   </li>
