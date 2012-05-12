@@ -13,14 +13,13 @@
 
 // The Mailbox is a sub-app of the Mail App. It controls the 
 // display of the mail list and the individual emails.
-BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
-  var MailBox = {};
+BBCloneMail.module("MailApp.MailBox", function(MailBox, BBCloneMail, Backbone, Marionette, $, _){
 
   // Mail Box Views
   // --------------
   
   // The the full contents of the email.
-  var EmailView = BBCloneMail.ItemView.extend({
+  var EmailView = Marionette.ItemView.extend({
     tagName: "ul",
     className: "email-list email-view",
     template: "#email-view-template"
@@ -28,7 +27,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
 
   // Show a preview of the email in the list. Clicking
   // on it will show the full contents of the email.
-  var EmailPreview = BBCloneMail.ItemView.extend({
+  var EmailPreview = Marionette.ItemView.extend({
     tagName: "li",
     template: "#email-preview-template",
 
@@ -43,7 +42,7 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
 
   // The actual mail box view, which renders each
   // of the individual email items. 
-  var EmailListView = BBCloneMail.CollectionView.extend({
+  var EmailListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
     itemView: EmailPreview
@@ -77,5 +76,4 @@ BBCloneMail.MailApp.MailBox = (function(BBCloneMail, Backbone, $){
     MailBox.showMessage(message);
   });
 
-  return MailBox;
-})(BBCloneMail, Backbone, jQuery);
+});

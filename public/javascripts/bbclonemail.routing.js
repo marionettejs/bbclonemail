@@ -11,8 +11,7 @@
 // Routing
 // -------
 
-BBCloneMail.Routing = (function(BBCloneMail, Backbone){
-  var Routing = {};
+BBCloneMail.module("Routing", function(Routing, BBCloneMail, Backbone, Marionette, $, _){
 
   // Public API
   // ----------
@@ -48,5 +47,4 @@ BBCloneMail.Routing = (function(BBCloneMail, Backbone){
     return route;
   }
 
-  return Routing;
-})(BBCloneMail, Backbone);
+});

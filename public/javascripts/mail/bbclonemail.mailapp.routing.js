@@ -12,8 +12,7 @@
 // ------------
 
 // Handle all of the routing needs related to mail
-BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
-  var MailRouting = {};
+BBCloneMail.module("Routing.MailRouting", function(MailRouting, BBCloneMail, Backbone, Marionette, $, _){
 
   // Router
   // ------
@@ -62,5 +61,4 @@ BBCloneMail.Routing.MailRouting = (function(BBCloneMail, Backbone){
     });
   });
 
-  return MailRouting;
-})(BBCloneMail, Backbone);
+});

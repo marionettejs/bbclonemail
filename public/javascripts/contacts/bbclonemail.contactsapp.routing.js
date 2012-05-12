@@ -12,8 +12,7 @@
 // ------------
 
 // Handle all of the routing needs related to contacts
-BBCloneMail.Routing.ContactsRouting = (function(BBCloneMail, Backbone){
-  var ContactsRouting = {};
+BBCloneMail.module("Routing.ContactsRouting", function(ContactsRouting, BBCloneMail, Backbone, Marionette, $, _){
 
   // Router
   // ------
@@ -49,6 +48,5 @@ BBCloneMail.Routing.ContactsRouting = (function(BBCloneMail, Backbone){
     });
   });
 
-  return ContactsRouting;
-})(BBCloneMail, Backbone);
+});
 

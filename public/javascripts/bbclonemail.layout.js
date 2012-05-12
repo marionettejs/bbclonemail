@@ -1,4 +1,4 @@
-(function(BBCloneMail, Backbone, $){
+BBCloneMail.module("Layout", function(Layout, BBCloneMail, Backbone, Marionette, $, _){
 
   // The application layout
   var Layout = Backbone.Marionette.Layout.extend({
@@ -76,4 +76,5 @@
     BBCloneMail.content.show(BBCloneMail.layout);
   });
 
-})(BBCloneMail, Backbone, $);
+  return Layout;
+});

@@ -14,8 +14,7 @@
 // Manage the list of contacts and the categories for
 // the contacts. Limited functionality at this point,
 // but slowly adding more.
-BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
-  var Contacts = {};
+BBCloneMail.module("ContactsApp", function(Contacts, BBCloneMail, Backbone, Marionette, $, _){
 
   // Contact Model And Collection
   // -----------------------------
@@ -45,6 +44,5 @@ BBCloneMail.ContactsApp = (function(BBCloneMail, Backbone){
     Contacts.contacts.fetch();
   });
   
-  return Contacts;
-})(BBCloneMail, Backbone);
+});
 

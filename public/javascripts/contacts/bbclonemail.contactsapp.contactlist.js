@@ -12,20 +12,19 @@
 // -------------
 
 // Manage the display of, and interaction with, the list of contacts.
-BBCloneMail.ContactsApp.ContactList = (function(BBCloneMail, Backbone){
-  var ContactList = {};
+BBCloneMail.module("ContactsApp.ContactList", function(ContactList, BBCloneMail, Backbone, Marionette, $, _){
 
   // Contact List Views
   // ------------------
 
   // Display an individual contact in the list.
-  var ContactItemView = BBCloneMail.ItemView.extend({
+  var ContactItemView = Marionette.ItemView.extend({
     tagName: "li",
     template: "#contact-item-template"
   });
 
   // Display the list of contacts.
-  var ContactListView = BBCloneMail.CollectionView.extend({
+  var ContactListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "contact-list",
     itemView: ContactItemView
@@ -42,5 +41,4 @@ BBCloneMail.ContactsApp.ContactList = (function(BBCloneMail, Backbone){
     BBCloneMail.layout.main.show(contactsView);
   }
 
-  return ContactList;
-})(BBCloneMail, Backbone);
+});

@@ -14,8 +14,7 @@
 // The list of categories for email. Right now this 
 // displayed a hard coded list, stuffed directly in
 // the HTML template. 
-BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
-  var Categories = {};
+BBCloneMail.module("MailApp.Categories", function(Categories, BBCloneMail, Backbone, Marionette, $, _){
 
   // The category model and collection
   var Category = Backbone.Model.extend({});
@@ -30,7 +29,7 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
   // The view to show the list of categories. The view
   // template includes the standard categories hard coded
   // and then it renders the individual categories, too.
-  Categories.CategoriesView = BBCloneMail.ItemView.extend({
+  Categories.CategoriesView = Marionette.ItemView.extend({
     template: "#mail-categories-view-template",
 
     events: {
@@ -73,5 +72,4 @@ BBCloneMail.MailApp.Categories = (function(BBCloneMail, Backbone, $){
     Categories.categoryCollection.fetch();
   });
 
-  return Categories;
-})(BBCloneMail, Backbone, jQuery);
+});

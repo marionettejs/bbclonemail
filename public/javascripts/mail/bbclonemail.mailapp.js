@@ -15,8 +15,7 @@
 // for email. It contains all of the 
 // high level knowledge of how to run the app
 // when it's in mail mode.
-BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
-  var MailApp = {};
+BBCloneMail.module("MailApp", function(MailApp, BBCloneMail, Backbone, Marionette, $, _){
 
   // Email Model And Collection
   // --------------------------
@@ -105,5 +104,4 @@ BBCloneMail.MailApp = (function(BBCloneMail, Backbone){
     MailApp.emailList.fetch();
   });
   
-  return MailApp;
-})(BBCloneMail, Backbone);
+});
