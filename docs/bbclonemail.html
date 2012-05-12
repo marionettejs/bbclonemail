@@ -1,0 +1,37 @@
+<!DOCTYPE html>  <html> <head>   <title>bbclonemail.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="bbclonemail.collection.html">                 bbclonemail.collection.js               </a>                                           <a class="source" href="bbclonemail.html">                 bbclonemail.js               </a>                                           <a class="source" href="bbclonemail.layout.html">                 bbclonemail.layout.js               </a>                                           <a class="source" href="bbclonemail.routing.html">                 bbclonemail.routing.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               bbclonemail.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>               <p>Backbone.BBCloneMail
+A reference application for Backbone.Marionette</p>
+
+<p>Copyright (C)2012 Derick Bailey, Muted Solutions, LLC
+Distributed Under MIT License</p>
+
+<p>Documentation and Full License Available at:
+http://github.com/derickbailey/backbone.bbclonemail
+http://github.com/derickbailey/backbone.marionette</p>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>BBCloneMail Application / Namespace</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>This is the primary application definition and
+application namespace. It's important to keep
+the JavaScript global scope clean, so everything
+we will do hangs off the 'Application' instance.</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">BBCloneMail</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Marionette</span><span class="p">.</span><span class="nx">Application</span><span class="p">();</span>
+
+<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">addRegions</span><span class="p">({</span>
+  <span class="nx">content</span><span class="o">:</span> <span class="s2">&quot;.content&quot;</span>
+<span class="p">});</span>
+
+<span class="nx">BBCloneMail</span><span class="p">.</span><span class="nx">vent</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;layout:rendered&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+  <span class="nx">Backbone</span><span class="p">.</span><span class="nx">history</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span>
+<span class="p">});</span></pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Set up async template loading from the server. A view with
+a template of <code>"#my-view-template"</code> will load a file called
+<code>"/templates/my-view-template.html"</code> from the server.</p>
+
+<p>Use the TrafficCop plugin to ensure we only make one
+request to get the template</p>             </td>             <td class="code">               <div class="highlight"><pre><span class="nx">Backbone</span><span class="p">.</span><span class="nx">Marionette</span><span class="p">.</span><span class="nx">TemplateCache</span><span class="p">.</span><span class="nx">loadTemplate</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">templateId</span><span class="p">,</span> <span class="nx">callback</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">tmpId</span> <span class="o">=</span> <span class="nx">templateId</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="s2">&quot;/templates/&quot;</span> <span class="o">+</span> <span class="nx">tmpId</span> <span class="o">+</span> <span class="s2">&quot;.html&quot;</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">trafficCop</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+  <span class="nx">promise</span><span class="p">.</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">templateHtml</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">$template</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">templateHtml</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">template</span> <span class="o">=</span> <span class="nx">that</span><span class="p">.</span><span class="nx">compileTemplate</span><span class="p">(</span><span class="nx">$template</span><span class="p">.</span><span class="nx">html</span><span class="p">());</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="nx">template</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
