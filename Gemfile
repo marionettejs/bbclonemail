@@ -8,9 +8,9 @@ gem 'haml'
 gem 'json'
 
 group :development do
-  gem 'rb-fsevent'
-  gem 'heroku'
   gem 'guard'
   gem 'guard-process'
   gem 'guard-compass'
+  gem 'listen'
+  gem 'jasmine'
 end
