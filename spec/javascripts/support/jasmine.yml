@@ -11,7 +11,11 @@
 #   - dist/**/*.js
 #
 src_files:
-    - public/javascripts/vendor/**/*.js
+    - public/javascripts/vendor/json2.js
+    - public/javascripts/vendor/underscore.js
+    - public/javascripts/vendor/jquery.js
+    - public/javascripts/vendor/backbone.js
+    - public/javascripts/vendor/backbone.marionette.js
     - public/javascripts/**/*.js
 
 # stylesheets
