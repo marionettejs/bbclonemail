@@ -1,4 +1,4 @@
-// Backbone.Marionette v0.9.4-pre
+// Backbone.Marionette v0.9.6
 //
 // Copyright (C)2012 Derick Bailey, Muted Solutions, LLC
 // Distributed Under MIT License
@@ -9,26 +9,26 @@
 Backbone.Marionette = (function(Backbone, _, $){
   var Marionette = {};
 
-// BindTo: Event Binding
-// ---------------------
+// EventBinder
+// -----------
 
-// BindTo facilitates the binding and unbinding of events
+// The event binder facilitates the binding and unbinding of events
 // from objects that extend `Backbone.Events`. It makes
 // unbinding events, even with anonymous callback functions,
 // easy. 
 //
-// Thanks to Johnny Oshika for this code.
-// http://stackoverflow.com/questions/7567404/backbone-js-repopulate-or-recreate-the-view/7607853#7607853
+// Inspired by [Johnny Oshika](http://stackoverflow.com/questions/7567404/backbone-js-repopulate-or-recreate-the-view/7607853#7607853)
 
-Marionette.BindTo = {
+Marionette.EventBinder = function(){
+  this._eventBindings = [];
+};
 
+_.extend(Marionette.EventBinder.prototype, {
   // Store the event binding in array so it can be unbound
   // easily, at a later point in time.
   bindTo: function (obj, eventName, callback, context) {
     context = context || this;
     obj.on(eventName, callback, context);
-
-    if (!this.bindings) { this.bindings = []; }
 
     var binding = { 
       obj: obj, 
@@ -37,7 +37,7 @@ Marionette.BindTo = {
       context: context 
     }
 
-    this.bindings.push(binding);
+    this._eventBindings.push(binding);
 
     return binding;
   },
@@ -46,7 +46,7 @@ Marionette.BindTo = {
   // returned from the `bindTo` method call. 
   unbindFrom: function(binding){
     binding.obj.off(binding.eventName, binding.callback, binding.context);
-    this.bindings = _.reject(this.bindings, function(bind){return bind === binding});
+    this._eventBindings = _.reject(this._eventBindings, function(bind){return bind === binding});
   },
 
   // Unbind all of the events that we have stored.
@@ -55,13 +55,15 @@ Marionette.BindTo = {
 
     // The `unbindFrom` call removes elements from the array
     // while it is being iterated, so clone it first.
-    var bindings = _.map(this.bindings, _.identity);
+    var bindings = _.map(this._eventBindings, _.identity);
     _.each(bindings, function (binding, index) {
       that.unbindFrom(binding);
     });
   }
-};
+});
 
+// Copy the `extend` function used by Backbone's classes
+Marionette.EventBinder.extend = Backbone.View.extend;
 
 // Marionette.View
 // ---------------
@@ -69,7 +71,11 @@ Marionette.BindTo = {
 // The core view type that other Marionette views extend from.
 Marionette.View = Backbone.View.extend({
   constructor: function(){
+    var eventBinder = new Marionette.EventBinder();
+    _.extend(this, eventBinder);
+
     Backbone.View.prototype.constructor.apply(this, arguments);
+
     this.bindTo(this, "show", this.onShowCalled, this);
   },
 
@@ -182,11 +188,31 @@ Marionette.View = Backbone.View.extend({
     this.trigger('close');
     this.unbindAll();
     this.unbind();
+  },
+
+  // This method binds the elements specified in the "ui" hash inside the view's code with
+  // the associated jQuery selectors.
+  bindUIElements: function(){
+    if (!this.ui) { return; }
+
+    var that = this;
+
+    if (!this.uiBindings) {
+      // We want to store the ui hash in uiBindings, since afterwards the values in the ui hash
+      // will be overridden with jQuery selectors.
+      this.uiBindings = this.ui;
+    }
+
+    // refreshing the associated selectors since they should point to the newly rendered elements.
+    this.ui = {};
+    _.each(_.keys(this.uiBindings), function(key) {
+      var selector = that.uiBindings[key];
+      that.ui[key] = that.$(selector);
+    });
   }
+
 });
 
-// Copy the features of `BindTo`
-_.extend(Marionette.View.prototype, Marionette.BindTo);
 
 // Item View
 // ---------
@@ -223,6 +249,7 @@ Marionette.ItemView =  Marionette.View.extend({
     var template = this.getTemplate();
     var html = Marionette.Renderer.render(template, data);
     this.$el.html(html);
+    this.bindUIElements();
 
     if (this.onRender){ this.onRender(); }
     this.trigger("render", this);
@@ -297,6 +324,7 @@ Marionette.CollectionView = Marionette.View.extend({
   // the collection view.
   render: function(){
     this.triggerBeforeRender();
+    this.closeEmptyView();
     this.closeChildren();
 
     if (this.collection && this.collection.length > 0) {
@@ -324,8 +352,8 @@ Marionette.CollectionView = Marionette.View.extend({
   // empty
   showEmptyView: function(){
     var EmptyView = this.options.emptyView || this.emptyView;
-    if (EmptyView){
-      this.showingEmptyView = true;
+    if (EmptyView && !this._showingEmptyView){
+      this._showingEmptyView = true;
       var model = new Backbone.Model();
       this.addItemView(model, EmptyView, 0);
     }
@@ -335,9 +363,9 @@ Marionette.CollectionView = Marionette.View.extend({
   // if one exists. Called when a collection view has been
   // rendered empty, and then an item is added to the collection.
   closeEmptyView: function(){
-    if (this.showingEmptyView){
+    if (this._showingEmptyView){
       this.closeChildren();
-      delete this.showingEmptyView;
+      delete this._showingEmptyView;
     }
   },
 
@@ -422,7 +450,7 @@ Marionette.CollectionView = Marionette.View.extend({
       delete this.children[item.cid];
     }
 
-    if (this.collection.length === 0){
+    if (!this.collection || this.collection.length === 0){
       this.showEmptyView();
     }
 
@@ -511,6 +539,9 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
 
     var html = this.renderModel();
     this.$el.html(html);
+    // the ui bindings is done here and not at the end of render since they should be
+    // available before the collection is rendered.
+    this.bindUIElements();
     this.trigger("composite:model:rendered");
     this.trigger("render");
 
@@ -554,6 +585,12 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
     } else {
       if (containerView.itemViewContainer){
         container = containerView.$(_.result(containerView, "itemViewContainer"));
+
+        if (container.length <= 0) {
+          var err = new Error("Missing `itemViewContainer`");
+          err.name = "ItemViewContainerMissingError";
+          throw err;
+        }
       } else {
         container = containerView.$el;
       }
@@ -579,7 +616,8 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
 Marionette.Region = function(options){
   this.options = options || {};
 
-  _.extend(this, options);
+  var eventBinder = new Marionette.EventBinder();
+  _.extend(this, eventBinder, options);
 
   if (!this.el){
     var err = new Error("An 'el' must be specified");
@@ -600,7 +638,6 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
   // `onShow` and `close` method on your view, just after showing
   // or just before closing the view, respectively.
   show: function(view){
-    var that = this;
 
     this.ensureEl();
     this.close();
@@ -659,9 +696,6 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
 // Copy the `extend` function used by Backbone's classes
 Marionette.Region.extend = Backbone.View.extend;
 
-// Copy the features of `BindTo`
-_.extend(Marionette.Region.prototype, Marionette.BindTo);
-
 // Layout
 // ------
 
@@ -672,6 +706,8 @@ _.extend(Marionette.Region.prototype, Marionette.BindTo);
 // attaches `Region` instances to the specified `regions`.
 // Used for composite view management and sub-application areas.
 Marionette.Layout = Marionette.ItemView.extend({
+  regionType: Marionette.Region,
+
   constructor: function () {
     Backbone.Marionette.ItemView.apply(this, arguments);
     this.initializeRegions();
@@ -716,9 +752,18 @@ Marionette.Layout = Marionette.ItemView.extend({
     }
 
     var that = this;
-    _.each(this.regions, function (selector, name) {
+    _.each(this.regions, function (region, name) {
+      if (    typeof region != 'string' 
+           && typeof region.selector != 'string' ) {
+        throw new Exception('Region must be specified as a selector ' +
+                            'string or an object with selector property');
+      }
 
-      var regionManager = new Backbone.Marionette.Region({
+      selector = typeof region === 'string' ? region : region.selector;
+      var regionType = typeof region.regionType === 'undefined' 
+        ? that.regionType : region.regionType 
+      
+      var regionManager = new regionType({
         el: selector,
           getEl: function(selector){
             return that.$(selector);
@@ -734,9 +779,13 @@ Marionette.Layout = Marionette.ItemView.extend({
   // Re-initialize all of the regions by updating the `el` that
   // they point to
   reInitializeRegions: function(){
-    _.each(this.regionManagers, function(region){
-      delete region.$el;
-    });
+    if (this.regionManagers && _.size(this.regionManagers)===0){
+      this.initializeRegions();
+    } else {
+      _.each(this.regionManagers, function(region){
+        delete region.$el;
+      });
+    }
   },
 
   // Close all of the regions that have been opened by
@@ -770,7 +819,10 @@ Marionette.Layout = Marionette.ItemView.extend({
 Marionette.Application = function(options){
   this.initCallbacks = new Marionette.Callbacks();
   this.vent = new Marionette.EventAggregator();
-  _.extend(this, options);
+  this.submodules = {};
+
+  var eventBinder = new Marionette.EventBinder();
+  _.extend(this, eventBinder, options);
 };
 
 _.extend(Marionette.Application.prototype, Backbone.Events, {
@@ -816,6 +868,14 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
     }
   },
 
+  // Removes a region from your app.
+  // Accepts the regions name
+  // removeRegion('myRegion')
+  removeRegion: function(region) {
+    this[region].close();
+    delete this[region]
+  },
+
   // Create a module, attached to the application
   module: function(moduleNames, moduleDefinition){
     // slice the args, and add this application object as the
@@ -824,15 +884,12 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
     args.unshift(this);
 
     // see the Marionette.Module object for more information
-    return Marionette.Module.create.apply(this, args);
+    return Marionette.Module.create.apply(Marionette.Module, args);
   }
 });
 
 // Copy the `extend` function used by Backbone's classes
 Marionette.Application.extend = Backbone.View.extend;
-
-// Copy the features of `BindTo`
-_.extend(Marionette.Application.prototype, Marionette.BindTo);
 
 // AppRouter
 // ---------
@@ -909,17 +966,27 @@ Marionette.AppRouter = Backbone.Router.extend({
 Marionette.Module = function(moduleName, app, customArgs){
   this.moduleName = moduleName;
 
-  this._initializerCallbacks = new Marionette.Callbacks();
+  // store sub-modules
+  this.submodules = {};
 
+  // callbacks for initializers and finalizers
+  this._initializerCallbacks = new Marionette.Callbacks();
+  this._finalizerCallbacks = new Marionette.Callbacks();
+
+  // store the configuration for this module
   this._config = {};
   this._config.app = app;
   this._config.customArgs = customArgs;
   this._config.definitions = [];
+
+  // extend this module with an event binder
+  var eventBinder = new Marionette.EventBinder();
+  _.extend(this, eventBinder);
 };
 
 // Extend the Module prototype with events / bindTo, so that the module
 // can be used as an event aggregator or pub/sub.
-_.extend(Marionette.Module.prototype, Backbone.Events, Marionette.BindTo, {
+_.extend(Marionette.Module.prototype, Backbone.Events, {
 
   // Initializer for a specific module. Initializers are run when the
   // module's `start` method is called.
@@ -927,11 +994,37 @@ _.extend(Marionette.Module.prototype, Backbone.Events, Marionette.BindTo, {
     this._initializerCallbacks.add(callback);
   },
 
+  // Finalizers are run when a module is stopped. They are used to teardown
+  // and finalize any variables, references, events and other code that the
+  // module had set up.
+  addFinalizer: function(callback){
+    this._finalizerCallbacks.add(callback);
+  },
+
   // Start the module, and run all of it's initializers
   start: function(options){
-    this._define();
-    // run the initializers
+    this._runModuleDefinition();
     this._initializerCallbacks.run(options, this);
+    this._isInitialized = true;
+
+    // start the sub-modules
+    if (this.submodules){
+      _.each(this.submodules, function(mod){
+        mod.start();
+      });
+    }
+  },
+
+  // Stop this module by running its finalizers and then stop all of
+  // the sub-modules for this module
+  stop: function(){
+    // if we are not initialized, don't bother finalizing
+    if (!this._isInitialized){ return; }
+    this._isInitialized = false;
+
+    this._finalizerCallbacks.run();
+    // stop the sub-modules
+    _.each(this.submodules, function(mod){ mod.stop(); });
   },
 
   // Configure the module with a definition function and any custom args
@@ -942,7 +1035,7 @@ _.extend(Marionette.Module.prototype, Backbone.Events, Marionette.BindTo, {
 
   // Internal method: run the module definition function with the correct
   // arguments
-  _define: function(){
+  _runModuleDefinition: function(){
     if (this._config.definitions.length === 0) { return; }
 
     // build the correct list of arguments for the module definition
@@ -971,6 +1064,7 @@ _.extend(Marionette.Module, {
 
   // Create a module, hanging off the app parameter as the parent object. 
   create: function(app, moduleNames, moduleDefinition){
+    var that = this;
     var parentModule = app;
     var moduleNames = moduleNames.split(".");
 
@@ -984,29 +1078,21 @@ _.extend(Marionette.Module, {
     _.each(moduleNames, function(moduleName, i){
       var isLastModuleInChain = (i === length-1);
 
-      // Get the module name, and check if it exists on
-      // the current parent already
+      // Get an existing module of this name if we have one
       var module = parentModule[moduleName];
-
-      // Create a new module if we don't have one already
       if (!module){ 
+        // Create a new module if we don't have one
         module = new Marionette.Module(moduleName, app, customArgs);
-        // start the module when the app starts
-        app.addInitializer(function(options){
-          module.start(options);
-        });
-      }
-
-      // If this is the final object in the chain, define
-      // this module with the function & extra args supplied
-      if (isLastModuleInChain && moduleDefinition){
-        module.addDefinition(moduleDefinition);
-      }
-
-      // If the defined module is not what we are
-      // currently storing as the module, replace it
-      if (parentModule[moduleName] !== module){
         parentModule[moduleName] = module;
+        // store the module on the parent
+        parentModule.submodules[moduleName] = module;
+      }
+
+      // Only add a module definition and initializer when this is
+      // the last module in a "parent.child.grandchild" hierarchy of
+      // module names
+      if (isLastModuleInChain ){
+        that._createModuleDefinition(module, moduleDefinition, app);
       }
 
       // Reset the parent module so that the next child
@@ -1016,6 +1102,48 @@ _.extend(Marionette.Module, {
 
     // Return the last module in the definition chain
     return parentModule;
+  },
+
+  _createModuleDefinition: function(module, moduleDefinition, app){
+    var moduleOptions = this._getModuleDefinitionOptions(moduleDefinition);
+    
+    // add the module definition
+    if (moduleOptions.definition){
+      module.addDefinition(moduleOptions.definition);
+    }
+
+    if (moduleOptions.startWithApp){
+      // start the module when the app starts
+      app.addInitializer(function(options){
+        module.start(options);
+      });
+    }
+  },
+
+  _getModuleDefinitionOptions: function(moduleDefinition){
+    // default to starting the module with the app
+    var options = { startWithApp: true };
+
+    // short circuit if we don't have a module definition
+    if (!moduleDefinition){ return options; }
+
+    if (_.isFunction(moduleDefinition)){
+      // if the definition is a function, assign it directly
+      // and use the defaults
+      options.definition = moduleDefinition;
+
+    } else {
+
+      // the definition is an object. grab the "define" attribute
+      // and the "startWithApp" attribute, as set the options
+      // appropriately
+      options.definition = moduleDefinition.define;
+      if (moduleDefinition.hasOwnProperty("startWithApp")){
+        options.startWithApp = moduleDefinition.startWithApp;
+      }
+    }
+
+    return options;
   }
 });
 
@@ -1173,17 +1301,26 @@ _.extend(Marionette.Callbacks.prototype, {
 
 // A pub-sub object that can be used to decouple various parts
 // of an application through event-driven architecture.
-Marionette.EventAggregator = function(options){
-  _.extend(this, options);
-};
+Marionette.EventAggregator = Marionette.EventBinder.extend({
+  
+  // Extend any provided options directly on to the event binder
+  constructor: function(options){
+    Marionette.EventBinder.apply(this, arguments);
+    _.extend(this, options);
+  },
 
-_.extend(Marionette.EventAggregator.prototype, Backbone.Events, Marionette.BindTo, {
-  // Assumes the event aggregator itself is the 
-  // object being bound to.
+  // Override the `bindTo` method to ensure that the event aggregator
+  // is used as the event binding storage
   bindTo: function(eventName, callback, context){
-    return Marionette.BindTo.bindTo.call(this, this, eventName, callback, context);
+    return Marionette.EventBinder.prototype.bindTo.call(this, this, eventName, callback, context);
   }
 });
+
+// Copy the basic Backbone.Events on to the event aggregator
+_.extend(Marionette.EventAggregator.prototype, Backbone.Events);
+
+// Copy the `extend` function used by Backbone's classes
+Marionette.EventAggregator.extend = Backbone.View.extend;
 
 
 // Helpers
@@ -1192,5 +1329,7 @@ _.extend(Marionette.EventAggregator.prototype, Backbone.Events, Marionette.BindT
 // For slicing `arguments` in functions
 var slice = Array.prototype.slice;
 
+
   return Marionette;
 })(Backbone, _, window.jQuery || window.Zepto || window.ender);
+

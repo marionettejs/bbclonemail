@@ -1,8 +1,10 @@
 BBCloneMail.module("AppLayout", function(AppLayout, BBCM, Backbone, Marionette, $, _){
 
-  AppLayout.Layout = Marionette.Layout.extend({});
+  AppLayout.Layout = Marionette.Layout.extend({
+  });
 
   var LayoutController = function(){};
+
   _.extend(LayoutController.prototype, {
     start: function(){
       this.layout = new AppLayout.Layout({
