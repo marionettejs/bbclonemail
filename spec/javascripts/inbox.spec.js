@@ -7,11 +7,14 @@ describe("inbox", function(){
     }
   };
 
+  beforeEach(function(){
+    affix("article#main");
+  });
+
   describe("when viewing the inbox", function(){
     var inbox;
 
     beforeEach(function(){
-      affix("article#main");
       affix("#email-preview-template div");
 
       BBCloneMail.Mail = mockMail;
