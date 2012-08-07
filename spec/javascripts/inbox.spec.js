@@ -9,7 +9,12 @@ describe("inbox", function(){
 
   beforeEach(function(){
     affix("article#main");
+    this._original_mail = BBCloneMail.Mail;
     BBCloneMail.Mail = mockMail;
+  });
+
+  afterEach(function(){
+    BBCloneMail.Mail = this._original_mail;
   });
 
   describe("when viewing the inbox", function(){
