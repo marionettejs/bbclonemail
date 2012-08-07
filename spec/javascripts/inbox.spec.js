@@ -9,6 +9,7 @@ describe("inbox", function(){
 
   beforeEach(function(){
     affix("article#main");
+    BBCloneMail.Mail = mockMail;
   });
 
   describe("when viewing the inbox", function(){
@@ -16,8 +17,6 @@ describe("inbox", function(){
 
     beforeEach(function(){
       affix("#email-preview-template div");
-
-      BBCloneMail.Mail = mockMail;
 
       inbox = BBCloneMail.module("Inbox");
       inbox.start();

@@ -1,9 +1,5 @@
 describe("application layout", function(){
 
-  beforeEach(function(){
-
-  });
-
   describe("when the application starts", function(){
     var controller;
 
