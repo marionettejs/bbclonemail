@@ -13,4 +13,5 @@ group :development do
   gem 'guard-compass'
   gem 'listen'
   gem 'jasmine'
+  gem 'rake'
 end
