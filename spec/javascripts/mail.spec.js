@@ -14,10 +14,10 @@ describe("mail", function(){
   describe("when getting mail for the inbox", function(){
     var mockJaxId, emailList;
 
-    beforeEach(function(){
-      var done = false;
+    var async = new AsyncSpec(this);
 
-      runs(function(){
+    async.beforeEach(function(done){
+
         mockJaxId = $.mockjax({
           url: "/email",
           status: "200",
@@ -35,13 +35,9 @@ describe("mail", function(){
         var emailPromise = mail.getInbox();
         emailPromise.done(function(mail){
           emailList = mail;
-          done = true;
+          done();
         });
-      });
 
-      waitsFor(function(){
-        return done;
-      });
     });
 
     afterEach(function(){
