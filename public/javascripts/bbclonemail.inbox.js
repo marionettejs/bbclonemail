@@ -41,7 +41,9 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
           collection: email
         });
 
-        that.mainRegion.ensureEl();
+        mainEl = $("#main");
+        console.log("# of #main el's", mainEl.length);
+        console.log(mainEl[0].outerHTML);
         that.mainRegion.show(listView);
       });
     }
@@ -59,7 +61,6 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   });
 
   Inbox.addFinalizer(function(){
-    console.log('running finalizer');
     delete Inbox.controller;
   });
 });
