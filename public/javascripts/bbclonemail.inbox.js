@@ -3,8 +3,11 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   // Router
   // ------
 
-
-
+  var Router = Marionette.AppRouter.extend({
+    appRoutes: {
+      "": "show"
+    }
+  });
 
   // Views
   // -----
@@ -29,14 +32,18 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
   _.extend(InboxController.prototype, {
 
-    show: function(region){
-      var email = App.Mail.getInbox();
+    show: function(){
+      var that = this;
+      console.log("showing the inbox");
+      var whenEmail = App.Mail.getInbox();
 
-      var listView = new MailListView({
-        collection: email
+      whenEmail.done(function(email){
+        var listView = new MailListView({
+          collection: email
+        });
+
+        that.mainRegion.show(listView);
       });
-
-      this.mainRegion.show(listView);
     }
 
   });
@@ -45,11 +52,15 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   // ------------
   
   Inbox.addInitializer(function(){
+    console.log("initializing the inbox");
     Inbox.controller = new InboxController(App.main);
-    Inbox.controller.show();
+    new Router({
+      controller: Inbox.controller
+    });
   });
 
   Inbox.addFinalizer(function(){
+    console.log("finalizing the inbox");
     delete Inbox.controller;
   });
 });

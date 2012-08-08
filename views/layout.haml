@@ -4,6 +4,8 @@
     %title BBCloneMail: A Backbone.Marionette Reference Application
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
 
+    =haml :"templates/email-preview-template"
+
   %body
     %section.header
       .container
@@ -82,7 +84,10 @@
     %script{:src=>"/javascripts/vendor/backbone.marionette.js"}
 
     %script{:src=>"/javascripts/bbclonemail.js"}
+    %script{:src=>"/javascripts/bbclonemail.mail.js"}
+    %script{:src=>"/javascripts/bbclonemail.inbox.js"}
 
     :javascript
       $(function(){
+        BBCloneMail.start();
       });
