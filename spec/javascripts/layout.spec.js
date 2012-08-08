@@ -15,6 +15,7 @@ describe("application layout", function(){
     it("should attach the layout to the main content", function(){
       expect(controller.layout.$el).toEqual($("section.content"));
     });
+
   });
 
 });

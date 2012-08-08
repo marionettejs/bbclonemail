@@ -12,9 +12,9 @@ describe("mail", function(){
   });
 
   describe("when getting mail for the inbox", function(){
-    var mockJaxId, emailList;
-
     var async = new AsyncSpec(this);
+
+    var mockJaxId, emailList;
 
     async.beforeEach(function(done){
 
@@ -40,8 +40,9 @@ describe("mail", function(){
 
     });
 
-    afterEach(function(){
+    async.afterEach(function(done){
       $.mockjaxClear(mockJaxId);
+      done();
     });
 
     it("should return a collection with all the mail in it", function(){
