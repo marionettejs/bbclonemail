@@ -34,18 +34,14 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
     show: function(){
       var that = this;
-      console.log("showing the inbox");
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        console.log("got the collection", email);
         var listView = new MailListView({
           collection: email
         });
 
-        console.log(that.mainRegion.el);
         that.mainRegion.ensureEl();
-        console.log("the main region is", that.mainRegion.$el[0], $("#main")[0]);
         that.mainRegion.show(listView);
       });
     }
@@ -56,7 +52,6 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   // ------------
   
   Inbox.addInitializer(function(){
-    console.log("initializing the inbox");
     Inbox.controller = new InboxController(App.main);
     new Router({
       controller: Inbox.controller
@@ -64,7 +59,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   });
 
   Inbox.addFinalizer(function(){
-    console.log("finalizing the inbox");
+    console.log('running finalizer');
     delete Inbox.controller;
   });
 });

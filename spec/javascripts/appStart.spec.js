@@ -16,6 +16,7 @@ describe("app start", function(){
 
     afterEach(function(){
       Backbone.history.stop();
+      inbox.stop();
     });
 
     it("should show the inbox", function(){
