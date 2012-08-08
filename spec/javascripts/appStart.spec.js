@@ -2,14 +2,11 @@ describe("app start", function(){
 
   mockMailModule();
 
-  beforeEach(function(){
-    affix("article#main");
-  });
-
   describe("when starting the app with an empty route (#)", function(){
     var inbox;
 
     beforeEach(function(){
+      affix("#main");
       affix("#email-preview-template div");
       inbox = BBCloneMail.module("Inbox");
       inbox.start();
@@ -19,7 +16,6 @@ describe("app start", function(){
 
     afterEach(function(){
       Backbone.history.stop();
-      //inbox.stop();
     });
 
     it("should show the inbox", function(){

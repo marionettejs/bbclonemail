@@ -38,10 +38,14 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
+        console.log("got the collection", email);
         var listView = new MailListView({
           collection: email
         });
 
+        console.log(that.mainRegion.el);
+        that.mainRegion.ensureEl();
+        console.log("the main region is", that.mainRegion.$el[0], $("#main")[0]);
         that.mainRegion.show(listView);
       });
     }

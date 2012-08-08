@@ -2,15 +2,12 @@ describe("inbox", function(){
 
   mockMailModule();
 
-  beforeEach(function(){
-    affix("article#main");
-  });
-
   describe("when viewing the inbox", function(){
     var inbox;
 
     beforeEach(function(){
-      affix("#email-preview-template div");
+      affix("article#main");
+      affix("#email-preview-template div, article#main");
 
       console.log("about to start the inbox");
       inbox = BBCloneMail.module("Inbox");
