@@ -2,7 +2,10 @@ function mockMailModule(){
   var mockMail = {
     getInbox: function(){
       var m1 = new Backbone.Model();
-      return new Backbone.Collection([m1]);
+      var collection = new Backbone.Collection([m1]);
+      var deferred = $.Deferred();
+      deferred.resolve(collection);
+      return deferred.promise();
     }
   };
 
