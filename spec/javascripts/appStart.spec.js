@@ -1,25 +1,24 @@
-describe("inbox", function(){
+describe("app Start", function(){
 
   mockMailModule();
 
-  describe("when viewing the inbox", function(){
+  describe("when starting the app with an empty route (#)", function(){
     var inbox;
 
     beforeEach(function(){
       affix("#email-preview-template div, article#main");
-
       inbox = BBCloneMail.module("Inbox");
       inbox.start();
 
-      inbox.controller.show();
+      Backbone.history.start();
     });
 
     afterEach(function(){
       inbox.stop();
     });
 
-    it("should show all messages", function(){
-      expect($("#main .email-list li").length).toBe(1);
+    it("should show the inbox", function(){
+      expect($("#main")[0].outerHTML).toMatch(/<ul class="email-list">/);
     });
 
   });

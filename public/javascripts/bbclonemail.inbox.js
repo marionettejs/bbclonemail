@@ -41,9 +41,6 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
           collection: email
         });
 
-        mainEl = $("#main");
-        console.log("# of #main el's", mainEl.length);
-        console.log(mainEl[0].outerHTML);
         that.mainRegion.show(listView);
       });
     }
