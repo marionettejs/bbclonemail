@@ -1,8 +1,8 @@
-describe("inbox", function(){
+describe("viewing an email", function(){
 
   mockMailModule();
 
-  describe("when viewing the inbox", function(){
+  describe("when clicking an email preview", function(){
     var inbox;
 
     beforeEach(function(){
@@ -12,14 +12,17 @@ describe("inbox", function(){
       inbox.start();
 
       inbox.controller.showInbox();
+
+      console.log($("#main")[0]);
+      $("#email-list li").trigger("click");
     });
 
     afterEach(function(){
       inbox.stop();
     });
 
-    it("should show all messages", function(){
-      expect($("#main .email-list li").length).toBe(1);
+    it("should show the full email contents", function(){
+      console.log($("#main")[0]);
     });
 
   });

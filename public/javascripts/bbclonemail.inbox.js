@@ -5,7 +5,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
   var Router = Marionette.AppRouter.extend({
     appRoutes: {
-      "": "show"
+      "": "showInbox"
     }
   });
 
@@ -14,7 +14,16 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   
   var MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
-    tagName: "li"
+    tagName: "li",
+
+    events: {
+      "click": "previewClicked"
+    },
+
+    previewClicked: function(e){
+      e.preventDefault();
+      this.trigger("email:selected", this.model);
+    }
   });
 
   var MailListView = Marionette.CollectionView.extend({
@@ -32,7 +41,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
   _.extend(InboxController.prototype, {
 
-    show: function(){
+    showInbox: function(){
       var that = this;
       var whenEmail = App.Mail.getInbox();
 
@@ -41,8 +50,18 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
           collection: email
         });
 
+        listView.on("email:selected", this.showEmail, this);
+
         that.mainRegion.show(listView);
       });
+    },
+
+    showEmail: function(email){
+      var emailView = new EmailView({
+        model: email
+      });
+
+      this.mainRegion.show(emailView);
     }
 
   });
