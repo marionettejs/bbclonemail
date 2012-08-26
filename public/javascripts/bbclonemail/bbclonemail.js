@@ -6,7 +6,6 @@ BBCloneMail.addRegions({
 });
 
 BBCloneMail.on("initialize:after", function(){
-  console.log("running history");
   if (Backbone.history){
     Backbone.history.start();
   }

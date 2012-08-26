@@ -26,6 +26,6 @@ BBCloneMail.module("Mail", function(Mail, App, Backbone, Marionette, $, _){
 
     emailCollection.fetch();
     return deferred.promise();
-  }
+  };
 
 });
