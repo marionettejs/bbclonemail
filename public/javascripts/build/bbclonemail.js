@@ -2983,14 +2983,10 @@ a){var b=F.exec(a);b&&(b[1]=(b[1]||"").toLowerCase(),b[3]=b[3]&&new RegExp("(?:^
 
 }).call(this);
 
-// Backbone.Marionette v0.9.9
-//
-// Copyright (C)2012 Derick Bailey, Muted Solutions, LLC
-// Distributed Under MIT License
-//
-// Documentation and Full License Available at:
+// Backbone.Marionette, v0.9.11
+// Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
+// Distributed under MIT license
 // http://github.com/derickbailey/backbone.marionette
-
 Backbone.Marionette = (function(Backbone, _, $){
   var Marionette = {};
 
@@ -3020,7 +3016,7 @@ _.extend(Marionette.EventBinder.prototype, {
       eventName: eventName, 
       callback: callback, 
       context: context 
-    }
+    };
 
     this._eventBindings.push(binding);
 
@@ -3031,7 +3027,7 @@ _.extend(Marionette.EventBinder.prototype, {
   // returned from the `bindTo` method call. 
   unbindFrom: function(binding){
     binding.obj.off(binding.eventName, binding.callback, binding.context);
-    this._eventBindings = _.reject(this._eventBindings, function(bind){return bind === binding});
+    this._eventBindings = _.reject(this._eventBindings, function(bind){return bind === binding;});
   },
 
   // Unbind all of the events that we have stored.
@@ -3137,7 +3133,7 @@ Marionette.View = Backbone.View.extend({
         if (e && e.preventDefault){ e.preventDefault(); }
         if (e && e.stopPropagation){ e.stopPropagation(); }
         that.trigger(value);
-      }
+      };
 
     });
 
@@ -3148,7 +3144,7 @@ Marionette.View = Backbone.View.extend({
   // to handle the `triggers` configuration
   delegateEvents: function(events){
     events = events || this.events;
-    if (_.isFunction(events)){ events = events.call(this)}
+    if (_.isFunction(events)){ events = events.call(this); }
 
     var combinedEvents = {};
     var triggers = this.configureTriggers();
@@ -3208,15 +3204,9 @@ Marionette.View = Backbone.View.extend({
 Marionette.ItemView =  Marionette.View.extend({
   constructor: function(){
     Marionette.View.prototype.constructor.apply(this, arguments);
-    this.initialEvents();
-  },
 
-  // Configured the initial events that the item view 
-  // binds to. Override this method to prevent the initial
-  // events, or to add your own initial events.
-  initialEvents: function(){
-    if (this.collection){
-      this.bindTo(this.collection, "reset", this.render, this);
+    if (this.initialEvents){
+      this.initialEvents();
     }
   },
 
@@ -3722,7 +3712,7 @@ Marionette.Layout = Marionette.ItemView.extend({
 
       var result = Marionette.ItemView.prototype.render.apply(this, arguments);
       return result;
-    }
+    };
 
     return result;
   },
@@ -3753,9 +3743,9 @@ Marionette.Layout = Marionette.ItemView.extend({
                             'string or an object with selector property');
       }
 
-      selector = typeof region === 'string' ? region : region.selector;
+      var selector = typeof region === 'string' ? region : region.selector;
       var regionType = typeof region.regionType === 'undefined' 
-        ? that.regionType : region.regionType 
+        ? that.regionType : region.regionType;
       
       var regionManager = new regionType({
         el: selector,
@@ -3867,7 +3857,7 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
   // removeRegion('myRegion')
   removeRegion: function(region) {
     this[region].close();
-    delete this[region]
+    delete this[region];
   },
 
   // Create a module, attached to the application
@@ -4073,7 +4063,7 @@ _.extend(Marionette.Module, {
   create: function(app, moduleNames, moduleDefinition){
     var that = this;
     var parentModule = app;
-    var moduleNames = moduleNames.split(".");
+    moduleNames = moduleNames.split(".");
 
     // get the custom args passed in after the module definition and
     // get rid of the module name and definition function
@@ -4340,7 +4330,6 @@ var slice = Array.prototype.slice;
   return Marionette;
 })(Backbone, _, window.jQuery || window.Zepto || window.ender);
 
-
 BBCloneMail = new Backbone.Marionette.Application();
 
 BBCloneMail.addRegions({
@@ -4353,6 +4342,29 @@ BBCloneMail.on("initialize:after", function(){
     Backbone.history.start();
   }
 });
+
+(function(){
+
+  var handlers = {};
+
+  BBCloneMail.registerCommand = function(name, handler){
+    handlers[name] = handler;
+  };
+
+  BBCloneMail.removeCommand = function(name){
+    delete handlers[name];
+  };
+
+  BBCloneMail.execute = function(name, args){
+    var handler = handlers[name];
+    if (!handler){
+      throw new Error("Handler not found for '" + name + "'");
+    }
+
+    handler(args);
+  };
+
+})(BBCloneMail);
 
 BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
@@ -4379,13 +4391,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        var listView = new App.Mailbox.MailListView({
-          collection: email
-        });
-
-        listView.on("email:selected", this.showEmail, this);
-
-        that.mainRegion.show(listView);
+        App.execute("show:mail", email);
       });
     },
 
@@ -4471,9 +4477,6 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
   // Views
   // -----
-  //
-  
-  console.log("defining mailbox");
   
   Mailbox.MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
@@ -4493,6 +4496,32 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     tagName: "ul",
     className: "email-list",
     itemView: Mailbox.MailPreview
+  });
+
+  // Controller
+  // ----------
+  
+  Mailbox.Controller = function(mainRegion){
+    this.mainRegion = mainRegion;
+  };
+
+  _.extend(Mailbox.Controller.prototype, {
+
+    showMail: function(email){
+      var listView = new App.Mailbox.MailListView({
+        collection: email
+      });
+
+      listView.on("email:selected", this.showEmail, this);
+
+      this.mainRegion.show(listView);
+    }
+
+  });
+
+  App.registerCommand("show:mail", function(email){
+    var controller = new Mailbox.Controller(App.main);
+    controller.showMail(email);
   });
 
 });
