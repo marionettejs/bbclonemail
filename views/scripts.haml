@@ -1,0 +1,18 @@
+- if Sinatra::Base.development?
+
+  // load all scripts individually for development purposes
+  %script{:src=>"/javascripts/vendor/json2.js"}
+  %script{:src=>"/javascripts/vendor/jquery.js"}
+  %script{:src=>"/javascripts/vendor/underscore.js"}
+  %script{:src=>"/javascripts/vendor/backbone.js"}
+  %script{:src=>"/javascripts/vendor/backbone.marionette.js"}
+
+  %script{:src=>"/javascripts/bbclonemail/bbclonemail.js"}
+  %script{:src=>"/javascripts/bbclonemail/bbclonemail.mail.js"}
+  %script{:src=>"/javascripts/bbclonemail/bbclonemail.layout.js"}
+  %script{:src=>"/javascripts/bbclonemail/bbclonemail.inbox.js"}
+
+- else 
+
+  // for production, just load the one script that has been concatenated and minified.
+  %script{:src=>"/javascripts/build/bbclonemail.min.js"}

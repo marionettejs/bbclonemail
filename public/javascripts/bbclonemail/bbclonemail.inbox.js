@@ -12,7 +12,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   // Views
   // -----
   
-  var MailPreview = Marionette.ItemView.extend({
+  Inbox.MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
     tagName: "li",
 
@@ -26,10 +26,10 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
     }
   });
 
-  var MailListView = Marionette.CollectionView.extend({
+  Inbox.MailListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
-    itemView: MailPreview
+    itemView: Inbox.MailPreview
   });
 
   // Controller
@@ -46,7 +46,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        var listView = new MailListView({
+        var listView = new Inbox.MailListView({
           collection: email
         });
 
