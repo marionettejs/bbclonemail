@@ -8,13 +8,9 @@ describe("viewing an email", function(){
     beforeEach(function(){
       affix("#email-preview-template div, article#main");
 
-      inbox = BBCloneMail.module("Inbox");
+      inbox = BBCloneMail.module("Mailbox");
       inbox.start();
 
-      inbox.controller.showInbox();
-
-      console.log($("#main")[0]);
-      $("#email-list li").trigger("click");
     });
 
     afterEach(function(){
@@ -22,7 +18,7 @@ describe("viewing an email", function(){
     });
 
     it("should show the full email contents", function(){
-      console.log($("#main")[0]);
+      throw new Error("not yet implemented");
     });
 
   });

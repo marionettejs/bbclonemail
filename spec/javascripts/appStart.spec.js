@@ -3,10 +3,12 @@ describe("app Start", function(){
   mockMailModule();
 
   describe("when starting the app with an empty route (#)", function(){
-    var inbox;
+    var inbox, handler;
 
     beforeEach(function(){
-      affix("#email-preview-template div, article#main");
+      handler = jasmine.createSpy();
+      BBCloneMail.registerCommand("show:mail", handler);
+
       inbox = BBCloneMail.module("Inbox");
       inbox.start();
 
@@ -15,10 +17,11 @@ describe("app Start", function(){
 
     afterEach(function(){
       inbox.stop();
+      BBCloneMail.removeCommand("show:mail");
     });
 
     it("should show the inbox", function(){
-      expect($("#main")[0].outerHTML).toMatch(/<ul class="email-list">/);
+      expect(handler.wasCalled).toBe(true);
     });
 
   });

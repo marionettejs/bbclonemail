@@ -3,10 +3,11 @@ describe("inbox", function(){
   mockMailModule();
 
   describe("when viewing the inbox", function(){
-    var inbox;
+    var inbox, handler;
 
     beforeEach(function(){
-      affix("#email-preview-template div, article#main");
+      handler = jasmine.createSpy();
+      BBCloneMail.registerCommand("show:mail", handler);
 
       inbox = BBCloneMail.module("Inbox");
       inbox.start();
@@ -16,10 +17,11 @@ describe("inbox", function(){
 
     afterEach(function(){
       inbox.stop();
+      BBCloneMail.removeCommand("show:mail");
     });
 
     it("should show all messages", function(){
-      expect($("#main .email-list li").length).toBe(1);
+      expect(handler.wasCalled).toBe(true);
     });
 
   });

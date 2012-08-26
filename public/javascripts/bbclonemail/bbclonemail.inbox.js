@@ -23,13 +23,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        var listView = new App.Mailbox.MailListView({
-          collection: email
-        });
-
-        listView.on("email:selected", this.showEmail, this);
-
-        that.mainRegion.show(listView);
+        App.execute("show:mail", email);
       });
     },
 

@@ -4365,29 +4365,6 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
     }
   });
 
-  // Views
-  // -----
-  
-  var MailPreview = Marionette.ItemView.extend({
-    template: "#email-preview-template",
-    tagName: "li",
-
-    events: {
-      "click": "previewClicked"
-    },
-
-    previewClicked: function(e){
-      e.preventDefault();
-      this.trigger("email:selected", this.model);
-    }
-  });
-
-  var MailListView = Marionette.CollectionView.extend({
-    tagName: "ul",
-    className: "email-list",
-    itemView: MailPreview
-  });
-
   // Controller
   // ----------
 
@@ -4402,7 +4379,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        var listView = new MailListView({
+        var listView = new App.Mailbox.MailListView({
           collection: email
         });
 
@@ -4487,5 +4464,35 @@ BBCloneMail.module("Mail", function(Mail, App, Backbone, Marionette, $, _){
     emailCollection.fetch();
     return deferred.promise();
   };
+
+});
+
+BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+
+  // Views
+  // -----
+  //
+  
+  console.log("defining mailbox");
+  
+  Mailbox.MailPreview = Marionette.ItemView.extend({
+    template: "#email-preview-template",
+    tagName: "li",
+
+    events: {
+      "click": "previewClicked"
+    },
+
+    previewClicked: function(e){
+      e.preventDefault();
+      this.trigger("email:selected", this.model);
+    }
+  });
+
+  Mailbox.MailListView = Marionette.CollectionView.extend({
+    tagName: "ul",
+    className: "email-list",
+    itemView: Mailbox.MailPreview
+  });
 
 });

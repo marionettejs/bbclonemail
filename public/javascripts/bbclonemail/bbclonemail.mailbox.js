@@ -26,4 +26,14 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     itemView: Mailbox.MailPreview
   });
 
+  App.registerCommand("show:mail", function(email){
+    var listView = new App.Mailbox.MailListView({
+      collection: email
+    });
+
+    listView.on("email:selected", this.showEmail, this);
+
+    App.mainRegion.show(listView);
+  });
+
 });
