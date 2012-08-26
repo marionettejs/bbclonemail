@@ -10,7 +10,7 @@ describe("mailbox", function(){
       mailbox = BBCloneMail.module("Mailbox");
       mailbox.start();
 
-      email = new Backbone.Collection();
+      email = new Backbone.Collection([{}]);
       
       BBCloneMail.execute("show:mail", email);
     });
@@ -20,7 +20,7 @@ describe("mailbox", function(){
     });
 
     it("should show the mail", function(){
-      throw new Error("not yet implemented");
+      expect($("#main .email-list li").length).toBe(1);
     });
   });
 
