@@ -44,9 +44,19 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
   });
 
-  App.registerCommand("show:mail", function(email){
-    var controller = new Mailbox.Controller(App.main);
-    controller.showMail(email);
+  // Initializers And Finalizers
+  // ---------------------------
+
+  Mailbox.addInitializer(function(){
+    Mailbox.controller = new Mailbox.Controller(App.main);
+
+    App.registerCommand("show:mail", function(email){
+      Mailbox.controller.showMail(email);
+    });
+  });
+
+  Mailbox.addFinalizer(function(){
+    delete Mailbox.controller;
   });
 
 });
