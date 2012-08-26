@@ -4,7 +4,9 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
   // -----
 
   Mailbox.MailView = Marionette.ItemView.extend({
-    template: "#email-view-template"
+    template: "#email-view-template",
+    tagName: "ul",
+    className: "email-list"
   });
   
   Mailbox.MailPreview = Marionette.ItemView.extend({
@@ -73,6 +75,8 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
   Mailbox.addFinalizer(function(){
     delete Mailbox.controller;
+    App.removeCommand("show:mail:list");
+    App.removeCommand("show:mail:item");
   });
 
 });

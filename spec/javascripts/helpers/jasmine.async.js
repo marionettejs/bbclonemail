@@ -1,4 +1,8 @@
-AsyncSpec = (function(){
+// Jasmine.Async, v0.1.0
+// Copyright (c)2012 Muted Solutions, LLC. All Rights Reserved.
+// Distributed under MIT license
+// http://github.com/derickbailey/jasmine.async
+this.AsyncSpec = (function(global){
 
   // Private Methods
   // ---------------
@@ -6,7 +10,7 @@ AsyncSpec = (function(){
   function runAsync(block){
     return function(){
       var done = false;
-      var complete = function(){ done = true; }
+      var complete = function(){ done = true; };
 
       runs(function(){
         block(complete);
@@ -15,7 +19,7 @@ AsyncSpec = (function(){
       waitsFor(function(){
         return done;
       });
-    }
+    };
   }
 
   // Constructor Function
@@ -23,7 +27,7 @@ AsyncSpec = (function(){
 
   function AsyncSpec(spec){
     this.spec = spec;
-  };
+  }
 
   // Public API
   // ----------
@@ -36,5 +40,12 @@ AsyncSpec = (function(){
     this.spec.afterEach(runAsync(block));
   };
 
+  AsyncSpec.prototype.it = function(description, block){
+    // For some reason, `it` is not attached to the current
+    // test suite, so it has to be called from the global
+    // context.
+    global.it(description, runAsync(block));
+  };
+
   return AsyncSpec;
-})();
+})(this);

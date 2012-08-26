@@ -4,8 +4,8 @@ describe("mailbox", function(){
     var mailbox, email;
 
     beforeEach(function(){
-      affix("#email-preview-template div, article#main");
-      mockMailView = jasmine.createSpy();
+      affix("#email-preview-template div");
+      affix("article#main");
 
       mailbox = BBCloneMail.module("Mailbox");
       mailbox.start();
@@ -20,7 +20,8 @@ describe("mailbox", function(){
     });
 
     it("should show the mail", function(){
-      expect($("#main .email-list li").length).toBe(1);
+      var el = $("#main .email-list li");
+      expect(el.length).toBe(1);
     });
   });
 
