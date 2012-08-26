@@ -6,22 +6,17 @@ describe("viewing an email", function(){
     var mailbox;
 
     beforeEach(function(){
-      BBCloneMail.main.reset();
-      affix("article#main");
-      affix("#email-view-template div");
+      affix("article#main; #email-view-template div");
 
+      BBCloneMail.main.reset();
       BBCloneMail.main.ensureEl();
-      console.log(BBCloneMail.main.$el[0]);
 
       mailbox = BBCloneMail.module("Mailbox");
       mailbox.start();
 
       var email = new Backbone.Model();
       
-      var el = $("#main");
-
       BBCloneMail.execute("show:mail:item", email);
-      console.log(BBCloneMail.main.$el[0]);
     });
 
     afterEach(function(){

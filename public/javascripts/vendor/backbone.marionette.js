@@ -632,6 +632,8 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
     this.ensureEl();
     this.close();
 
+    this.currentView = view;
+
     view.render();
     this.open(view);
 
@@ -641,7 +643,6 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
     if (this.onShow) { this.onShow(view); }
     this.trigger("view:show", view);
 
-    this.currentView = view;
   },
 
   ensureEl: function(){
