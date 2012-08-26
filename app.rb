@@ -4,6 +4,14 @@ require 'sinatra/reloader' if development?
 require 'haml'
 require 'json'
 
+# set :environment, :production
+
+if development?
+  puts "DEV MODE!!!"
+else
+  puts "another mode"
+end
+
 get "/" do
   haml :layout
 end
