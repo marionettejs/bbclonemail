@@ -53,7 +53,8 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
         model: email
       });
 
-      this.mainRegion.show(itemView);
+      itemView.render();
+      $("#main").html(itemView.el);
     }
 
   });

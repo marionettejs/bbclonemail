@@ -1,12 +1,10 @@
 describe("viewing an email", function(){
 
-  mockMailModule();
-
   describe("when clicking an email preview", function(){
     var mailbox;
 
     beforeEach(function(){
-      affix("article#main; #email-view-template div");
+      affix("article#main; #email-view-template li");
 
       BBCloneMail.main.reset();
       BBCloneMail.main.ensureEl();
