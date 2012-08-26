@@ -23,7 +23,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
       var whenEmail = App.Mail.getInbox();
 
       whenEmail.done(function(email){
-        App.execute("show:mail", email);
+        App.execute("show:mail:list", email);
       });
     },
 

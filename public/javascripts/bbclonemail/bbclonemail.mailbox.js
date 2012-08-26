@@ -50,7 +50,7 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
   Mailbox.addInitializer(function(){
     Mailbox.controller = new Mailbox.Controller(App.main);
 
-    App.registerCommand("show:mail", function(email){
+    App.registerCommand("show:mail:list", function(email){
       Mailbox.controller.showMail(email);
     });
   });

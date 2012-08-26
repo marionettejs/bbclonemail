@@ -12,7 +12,7 @@ describe("mailbox", function(){
 
       email = new Backbone.Collection([{}]);
       
-      BBCloneMail.execute("show:mail", email);
+      BBCloneMail.execute("show:mail:list", email);
     });
 
     afterEach(function(){

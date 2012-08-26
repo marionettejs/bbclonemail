@@ -7,7 +7,7 @@ describe("inbox", function(){
 
     beforeEach(function(){
       handler = jasmine.createSpy();
-      BBCloneMail.registerCommand("show:mail", handler);
+      BBCloneMail.registerCommand("show:mail:list", handler);
 
       inbox = BBCloneMail.module("Inbox");
       inbox.start();
@@ -17,7 +17,7 @@ describe("inbox", function(){
 
     afterEach(function(){
       inbox.stop();
-      BBCloneMail.removeCommand("show:mail");
+      BBCloneMail.removeCommand("show:mail:list");
     });
 
     it("should show all messages", function(){
