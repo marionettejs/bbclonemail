@@ -1,0 +1,27 @@
+describe("mailbox", function(){
+
+  describe("when showing mail", function(){
+    var mailbox, email;
+
+    beforeEach(function(){
+      affix("#email-preview-template div, article#main");
+      mockMailView = jasmine.createSpy();
+
+      mailbox = BBCloneMail.module("Mailbox");
+      mailbox.start();
+
+      email = new Backbone.Collection();
+      
+      BBCloneMail.execute("show:mail", email);
+    });
+
+    afterEach(function(){
+      mailbox.stop();
+    });
+
+    it("should show the mail", function(){
+      throw new Error("not yet implemented");
+    });
+  });
+
+});

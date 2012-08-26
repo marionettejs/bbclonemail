@@ -2,9 +2,6 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
   // Views
   // -----
-  //
-  
-  console.log("defining mailbox");
   
   Mailbox.MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
@@ -26,14 +23,30 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     itemView: Mailbox.MailPreview
   });
 
+  // Controller
+  // ----------
+  
+  Mailbox.Controller = function(mainRegion){
+    this.mainRegion = mainRegion;
+  };
+
+  _.extend(Mailbox.Controller.prototype, {
+
+    showMail: function(email){
+      var listView = new App.Mailbox.MailListView({
+        collection: email
+      });
+
+      listView.on("email:selected", this.showEmail, this);
+
+      this.mainRegion.show(listView);
+    }
+
+  });
+
   App.registerCommand("show:mail", function(email){
-    var listView = new App.Mailbox.MailListView({
-      collection: email
-    });
-
-    listView.on("email:selected", this.showEmail, this);
-
-    App.mainRegion.show(listView);
+    var controller = new Mailbox.Controller(App.main);
+    controller.showMail(email);
   });
 
 });
