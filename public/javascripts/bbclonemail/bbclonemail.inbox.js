@@ -42,7 +42,6 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
   _.extend(InboxController.prototype, {
 
     showInbox: function(){
-      console.log("foo");
       var that = this;
       var whenEmail = App.Mail.getInbox();
 

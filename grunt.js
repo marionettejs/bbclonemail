@@ -19,7 +19,7 @@ module.exports = function(grunt) {
           "public/javascripts/vendor/backbone.js",
           "public/javascripts/vendor/backbone.marionette.js",
           "public/javascripts/bbclonemail/bbclonemail.js",
-          "public/javascripts/bbclonemail/js"
+          "public/javascripts/bbclonemail/**/*.js"
         ],
         dest: 'public/javascripts/build/bbclonemail.js'
       }
