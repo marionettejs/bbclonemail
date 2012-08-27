@@ -74,9 +74,9 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
   });
 
   Mailbox.addFinalizer(function(){
-    delete Mailbox.controller;
     App.removeCommand("show:mail:list");
     App.removeCommand("show:mail:item");
+    delete Mailbox.controller;
   });
 
 });
