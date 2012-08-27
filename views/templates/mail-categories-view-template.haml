@@ -10,5 +10,5 @@
   %ul.customCategories
     <% _.each(items, function(category) { %>
     %li
-      %a{:"data-category" => "<%= category.name", :href => "#inbox/categories/<%= category.name %>" } <%= category.name %>
+      %a{:"data-category" => "<%= category.name %>", :href => "#inbox/categories/<%= category.name %>" } <%= category.name %>
     <% }); %>

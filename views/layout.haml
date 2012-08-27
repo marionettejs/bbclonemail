@@ -4,9 +4,9 @@
     %title BBCloneMail: A Backbone.Marionette Reference Application
     %link{:href=>"/css/bbclonemail.css", :rel=>"stylesheet", :type=>"text/css"}
 
-    =haml :"templates/email-preview-template"
-    =haml :"templates/email-view-template"
-    =haml :"templates/mail-categories-view-template"
+    =haml :"templates/email-preview-template", :escape_attrs => false
+    =haml :"templates/email-view-template", :escape_attrs => false
+    =haml :"templates/mail-categories-view-template", :escape_attrs => false
 
   %body
     %section.header
