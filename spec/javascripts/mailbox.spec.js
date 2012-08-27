@@ -30,19 +30,19 @@ describe("mailbox", function(){
 
     beforeEach(function(){
       affix("#email-preview-template div");
+      affix("#email-view-template li");
       affix("article#main");
-
-      mailbox = BBCloneMail.module("Mailbox");
-      mailbox.start();
 
       email = new Backbone.Model();
       var emailList = new Backbone.Collection([email]);
       
-      spyOn(mailbox.MailListView.prototype, "trigger");
+      mailbox = BBCloneMail.module("Mailbox");
+      mailbox.start();
+
+      spyOn(mailbox.controller, "showMailItem").andCallThrough();
       BBCloneMail.execute("show:mail:list", emailList);
 
       var el = $("#main .email-list li");
-      console.log(el[0].outerHTML);
       el.trigger("click");
     });
 
@@ -51,7 +51,7 @@ describe("mailbox", function(){
     });
 
     it("should show the selected email", function(){
-      expect(mailbox.MailListView.prototype.trigger).toHaveBeenCalledWith("itemview:email:selected", email);
+      expect(mailbox.controller.showMailItem).toHaveBeenCalledWith(email);
     });
 
   });
