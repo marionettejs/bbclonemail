@@ -1,7 +1,8 @@
 BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
 
-  // Views
-  // -----
+  // Mail View
+  // ---------
+  // Displays the contents of a single mail item.
 
   Mailbox.MailView = Marionette.ItemView.extend({
     template: "#email-view-template",
@@ -9,6 +10,12 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     className: "email-list"
   });
   
+  // Mail Preview
+  // ------------
+  // Displays an individual preview line item, when multiple
+  // mail items are displayed as a list. When clicked, the
+  // email item contents will be displayed.
+
   Mailbox.MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
     tagName: "li",
@@ -23,6 +30,10 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     }
   });
 
+  // Mail List View
+  // --------------
+  // Displays a list of email preview items.
+
   Mailbox.MailListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
@@ -31,6 +42,8 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
   // Controller
   // ----------
+  // Manages the states / transitions between displaying a
+  // list of items, and single email item view
   
   Mailbox.Controller = function(mainRegion){
     this.mainRegion = mainRegion;
@@ -67,6 +80,8 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
   Mailbox.addInitializer(function(){
     var controller = new Mailbox.Controller(App.main);
 
+    // Register command handlers to show a list of
+    // email items, or a single email item
     App.registerCommand("show:mail:list", controller.showMailList, controller);
     App.registerCommand("show:mail:item", controller.showMailItem, controller);
 
