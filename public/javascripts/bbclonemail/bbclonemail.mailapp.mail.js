@@ -37,12 +37,13 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
 
   Mail.addInitializer(function(){
     var controller = new Controller();
-    App.respondTo("mail:inbox", controller.getAll);
+    App.respondTo("mail:inbox", controller.getAll, controller);
 
     this.controller = controller;
   });
 
   Mail.addFinalizer(function(){
+    App.removeRequestHandler("mail:inbox");
     delete this.controller;
   });
 
