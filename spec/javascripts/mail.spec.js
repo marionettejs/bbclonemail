@@ -32,7 +32,7 @@ describe("mail", function(){
           }]
         });
 
-        var emailPromise = mail.getInbox();
+        var emailPromise = BBCloneMail.request("mail:inbox");
         emailPromise.done(function(mail){
           emailList = mail;
           done();
