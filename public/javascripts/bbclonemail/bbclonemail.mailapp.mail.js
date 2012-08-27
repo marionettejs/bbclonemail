@@ -1,4 +1,4 @@
-BBCloneMail.module("Mail", function(Mail, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, _){
 
   // Entities
   // --------

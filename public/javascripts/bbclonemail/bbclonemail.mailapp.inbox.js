@@ -1,4 +1,4 @@
-BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
   // Router
   // ------
@@ -20,7 +20,7 @@ BBCloneMail.module("Inbox", function(Inbox, App, Backbone, Marionette, $, _){
 
     showInbox: function(){
       var that = this;
-      var whenEmail = App.Mail.getInbox();
+      var whenEmail = App.MailApp.Mail.getInbox();
 
       whenEmail.done(function(email){
         App.execute("show:mail:list", email);

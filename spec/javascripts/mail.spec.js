@@ -3,7 +3,7 @@ describe("mail", function(){
   var mail;
 
   beforeEach(function(){
-    mail = BBCloneMail.module("Mail");
+    mail = BBCloneMail.module("MailApp.Mail");
     mail.start();
   });
 

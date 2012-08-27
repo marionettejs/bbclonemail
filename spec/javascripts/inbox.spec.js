@@ -9,7 +9,7 @@ describe("inbox", function(){
       handler = jasmine.createSpy();
       BBCloneMail.registerCommand("show:mail:list", handler);
 
-      inbox = BBCloneMail.module("Inbox");
+      inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
 
       inbox.controller.showInbox();

@@ -10,11 +10,11 @@ function mockMailModule(){
   };
 
   beforeEach(function(){
-    this._original_mail = BBCloneMail.Mail;
-    BBCloneMail.Mail = mockMail;
+    this._original_mail = BBCloneMail.MailApp.Mail;
+    BBCloneMail.MailApp.Mail = mockMail;
   });
 
   afterEach(function(){
-    BBCloneMail.Mail = this._original_mail;
+    BBCloneMail.MailApp.Mail = this._original_mail;
   });
 }

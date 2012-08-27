@@ -1,4 +1,4 @@
-BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
 
   // Mail View
   // ---------
@@ -52,7 +52,7 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
   _.extend(Mailbox.Controller.prototype, {
 
     showMailList: function(email){
-      var listView = new App.Mailbox.MailListView({
+      var listView = new Mailbox.MailListView({
         collection: email
       });
 
@@ -64,7 +64,7 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
     },
 
     showMailItem: function(email){
-      var itemView = new App.Mailbox.MailView({
+      var itemView = new Mailbox.MailView({
         model: email
       });
 

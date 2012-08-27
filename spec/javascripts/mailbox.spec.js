@@ -7,7 +7,7 @@ describe("mailbox", function(){
       affix("#email-preview-template div");
       affix("article#main");
 
-      mailbox = BBCloneMail.module("Mailbox");
+      mailbox = BBCloneMail.module("MailApp.Mailbox");
       mailbox.start();
 
       email = new Backbone.Collection([{}]);
@@ -36,7 +36,7 @@ describe("mailbox", function(){
       email = new Backbone.Model();
       var emailList = new Backbone.Collection([email]);
       
-      mailbox = BBCloneMail.module("Mailbox");
+      mailbox = BBCloneMail.module("MailApp.Mailbox");
       mailbox.start();
 
       spyOn(mailbox.controller, "showMailItem").andCallThrough();
@@ -65,7 +65,7 @@ describe("mailbox", function(){
       BBCloneMail.main.reset();
       BBCloneMail.main.ensureEl();
 
-      mailbox = BBCloneMail.module("Mailbox");
+      mailbox = BBCloneMail.module("MailApp.Mailbox");
       mailbox.start();
 
       var email = new Backbone.Model();
