@@ -1,13 +1,31 @@
 describe("inbox", function(){
 
-  mockMailModule();
+  var showMailItemHandler, showMailListHandler, getInboxHandler;
+
+  beforeEach(function(){
+    showMailItemHandler = jasmine.createSpy();
+    showMailListHandler = jasmine.createSpy();
+    getInboxHandler = jasmine.createSpy();
+
+    BBCloneMail.registerCommand("show:mail:item", showMailItemHandler);
+    BBCloneMail.registerCommand("show:mail:list", showMailListHandler);
+    BBCloneMail.respondTo("mail:inbox", getInboxHandler);
+
+    var emailItem = new Backbone.Model({id: 1});
+    var emailList = new Backbone.Collection([emailItem]);
+    getInboxHandler.andReturn(emailList);
+  });
+
+  afterEach(function(){
+    BBCloneMail.removeCommand("show:mail:item");
+    BBCloneMail.removeCommand("show:mail:list");
+    BBCloneMail.removeRequestHandler("mail:inbox");
+  });
 
   describe("when viewing the inbox", function(){
-    var inbox, handler;
+    var inbox;
 
     beforeEach(function(){
-      handler = jasmine.createSpy();
-      BBCloneMail.registerCommand("show:mail:list", handler);
 
       inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
@@ -17,21 +35,18 @@ describe("inbox", function(){
 
     afterEach(function(){
       inbox.stop();
-      BBCloneMail.removeCommand("show:mail:list");
     });
 
     it("should show all messages", function(){
-      expect(handler.wasCalled).toBe(true);
+      expect(showMailListHandler.wasCalled).toBe(true);
     });
 
   });
 
   describe("when routing to an individual email", function(){
-    var inbox, email, handler;
+    var inbox, email;
 
     beforeEach(function(){
-      handler = jasmine.createSpy();
-      BBCloneMail.registerCommand("show:mail:item", handler);
       affix("article#main; #email-view-template li");
 
       BBCloneMail.main.reset();
@@ -46,11 +61,10 @@ describe("inbox", function(){
 
     afterEach(function(){
       inbox.stop();
-      BBCloneMail.removeCommand("show:mail:item");
     });
 
     it("should show the full email contents", function(){
-      expect(handler.wasCalled).toBe(true);
+      expect(showMailItemHandler.wasCalled).toBe(true);
     });
 
   });

@@ -1,6 +1,15 @@
 describe("mail app start", function(){
 
-  mockMailModule();
+  var getInboxHandler;
+
+  beforeEach(function(){
+    getInboxHandler = jasmine.createSpy();
+    BBCloneMail.respondTo("mail:inbox", getInboxHandler);
+  });
+
+  afterEach(function(){
+    BBCloneMail.removeRequestHandler("mail:inbox");
+  });
 
   describe("when starting the mail app with an empty route (#)", function(){
     var inbox, handler;

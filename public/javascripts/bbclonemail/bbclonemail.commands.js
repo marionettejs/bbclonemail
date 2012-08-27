@@ -1,4 +1,4 @@
-(function(){
+(function(BBCloneMail){
 
   var handlers = {};
 

@@ -21,21 +21,22 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
     showInbox: function(){
       var that = this;
-      var whenEmail = App.MailApp.Mail.getInbox();
-
-      whenEmail.done(function(email){
-        App.execute("show:mail:list", email);
+      this.getEmail(function(emailList){
+        App.execute("show:mail:list", emailList);
       });
     },
 
     showMailById: function(id){
       var that = this;
-      var whenEmail = App.MailApp.Mail.getInbox();
-
-      whenEmail.done(function(emailList){
+      this.getEmail(function(emailList){
         var emailItem = emailList.get(id);
         App.execute("show:mail:item", emailItem);
       });
+    },
+
+    getEmail: function(callback){
+      var emailLoaded = App.request("mail:inbox");
+      $.when(emailLoaded).then(callback);
     }
 
   });
