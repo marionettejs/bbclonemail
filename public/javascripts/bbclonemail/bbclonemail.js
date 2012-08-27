@@ -1,7 +1,7 @@
 BBCloneMail = new Backbone.Marionette.Application();
 
 BBCloneMail.addRegions({
-  navigation: "#navigation",
+  nav: "#navigation",
   main: "#main"
 });
 

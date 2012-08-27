@@ -17,16 +17,12 @@ describe("mail categories", function(){
     var categoryList;
 
     async.beforeEach(function(done){
-        var categoryPromise = categories.getAll();
+      var categoryPromise = categories.getAll();
 
-        categoryPromise.done(function(categories){
-          categoryList = categories;
-          done();
-        });
-    });
-
-    async.afterEach(function(done){
-      done();
+      categoryPromise.done(function(categories){
+        categoryList = categories;
+        done();
+      });
     });
 
     it("should return a collection with all the categories in it", function(){

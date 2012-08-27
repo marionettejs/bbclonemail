@@ -2,13 +2,13 @@
   %p Mail Categories
   %ul
     %li
-      %a{"data-category" => "", :href => "#inbox"} Inbox
+      %a{:"data-category" => "", :href => "#inbox"} Inbox
     %li
-      %a{"data-category" => "sent", :href => "#inbox/sent"} Sent
+      %a{:"data-category" => "sent", :href => "#inbox/sent"} Sent
     %li
-      %a{"data-category" => "trash", :href => "#inbox/trash"} Trash
+      %a{:"data-category" => "trash", :href => "#inbox/trash"} Trash
   %ul.customCategories
-    - _.each(items, function(category) {
+    <% _.each(items, function(category) { %>
     %li
-      %a{"data-category" => category.name, :href => "#inbox/categories/#{category.name}"}= category.name
-    - })
+      %a{:"data-category" => "<%= category.name", :href => "#inbox/categories/<%= category.name %>" } <%= category.name %>
+    <% }); %>

@@ -24,4 +24,5 @@ BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Mar
     categoryCollection.fetch();
     return deferred.promise();
   };
+
 });
