@@ -2,8 +2,11 @@
 
   var handlers = {};
 
-  BBCloneMail.registerCommand = function(name, handler){
-    handlers[name] = handler;
+  BBCloneMail.registerCommand = function(name, handler, context){
+    handlers[name] = {
+      handler: handler,
+      context: context
+    };
   };
 
   BBCloneMail.removeCommand = function(name){
@@ -11,12 +14,12 @@
   };
 
   BBCloneMail.execute = function(name, args){
-    var handler = handlers[name];
-    if (!handler){
+    var config = handlers[name];
+    if (!config){
       throw new Error("Handler not found for '" + name + "'");
     }
 
-    handler(args);
+    config.handler.call(config.context, args);
   };
 
 })(BBCloneMail);
