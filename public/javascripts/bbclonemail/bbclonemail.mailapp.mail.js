@@ -6,26 +6,44 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
   var Email = Backbone.Model.extend({
   });
 
-
   var EmailCollection = Backbone.Collection.extend({
     model: Email,
     url: "/email"
   });
 
-
-  // Public API
+  // Controller
   // ----------
 
-  Mail.getInbox = function(){
-    var deferred = $.Deferred();
+  function Controller(){}
 
-    var emailCollection = new EmailCollection();
-    emailCollection.on("reset", function(mail){
-      deferred.resolve(mail);
-    });
+  _.extend(Controller.prototype, {
 
-    emailCollection.fetch();
-    return deferred.promise();
-  };
+    getAll: function(){
+      var deferred = $.Deferred();
+
+      var emailCollection = new EmailCollection();
+      emailCollection.on("reset", function(mail){
+        deferred.resolve(mail);
+      });
+
+      emailCollection.fetch();
+      return deferred.promise();
+    }
+
+  });
+
+  // Init & Finalize
+  // ---------------
+
+  Mail.addInitializer(function(){
+    var controller = new Controller();
+    App.respondTo("mail:inbox", controller.getAll);
+
+    this.controller = controller;
+  });
+
+  Mail.addFinalizer(function(){
+    delete this.controller;
+  });
 
 });
