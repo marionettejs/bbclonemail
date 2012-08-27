@@ -13567,7 +13567,7 @@ BBCloneMail.on("initialize:after", function(){
   }
 });
 
-(function(){
+(function(BBCloneMail){
 
   var handlers = {};
 
@@ -13717,21 +13717,22 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
     showInbox: function(){
       var that = this;
-      var whenEmail = App.MailApp.Mail.getInbox();
-
-      whenEmail.done(function(email){
-        App.execute("show:mail:list", email);
+      this.getEmail(function(emailList){
+        App.execute("show:mail:list", emailList);
       });
     },
 
     showMailById: function(id){
       var that = this;
-      var whenEmail = App.MailApp.Mail.getInbox();
-
-      whenEmail.done(function(emailList){
+      this.getEmail(function(emailList){
         var emailItem = emailList.get(id);
         App.execute("show:mail:item", emailItem);
       });
+    },
+
+    getEmail: function(callback){
+      var emailLoaded = App.request("mail:inbox");
+      $.when(emailLoaded).then(callback);
     }
 
   });
@@ -13764,27 +13765,45 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
   var Email = Backbone.Model.extend({
   });
 
-
   var EmailCollection = Backbone.Collection.extend({
     model: Email,
     url: "/email"
   });
 
-
-  // Public API
+  // Controller
   // ----------
 
-  Mail.getInbox = function(){
-    var deferred = $.Deferred();
+  function Controller(){}
 
-    var emailCollection = new EmailCollection();
-    emailCollection.on("reset", function(mail){
-      deferred.resolve(mail);
-    });
+  _.extend(Controller.prototype, {
 
-    emailCollection.fetch();
-    return deferred.promise();
-  };
+    getAll: function(){
+      var deferred = $.Deferred();
+
+      var emailCollection = new EmailCollection();
+      emailCollection.on("reset", function(mail){
+        deferred.resolve(mail);
+      });
+
+      emailCollection.fetch();
+      return deferred.promise();
+    }
+
+  });
+
+  // Init & Finalize
+  // ---------------
+
+  Mail.addInitializer(function(){
+    var controller = new Controller();
+    App.respondTo("mail:inbox", controller.getAll);
+
+    this.controller = controller;
+  });
+
+  Mail.addFinalizer(function(){
+    delete this.controller;
+  });
 
 });
 
@@ -13888,3 +13907,32 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   });
 
 });
+
+(function(BBCloneMail){
+
+  var handlers = {};
+
+  BBCloneMail.respondTo = function(name, handler, context){
+    var config = {
+      handler: handler,
+      context: context
+    };
+
+    handlers[name] = config;
+  };
+
+  BBCloneMail.request = function(name, args){
+    var config = handlers[name];
+
+    if (!config){
+      throw new Error("Request handler not found for '" + name + "'");
+    }
+
+    return config.handler.apply(config.context, args);
+  };
+
+  BBCloneMail.removeRequestHandler = function(name){
+    delete handlers[name];
+  };
+
+})(BBCloneMail);
