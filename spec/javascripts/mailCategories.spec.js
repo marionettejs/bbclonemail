@@ -1,6 +1,8 @@
 describe("mail categories", function(){
   var categories;
 
+  mockCategoriesAjax();
+
   beforeEach(function(){
     categories = BBCloneMail.module("MailApp.Categories");
     categories.start();
@@ -12,31 +14,18 @@ describe("mail categories", function(){
 
   describe("when getting categories", function(){
     var async = new AsyncSpec(this);
-
-    var mockJaxId, categoryList;
+    var categoryList;
 
     async.beforeEach(function(done){
-
-        mockJaxId = $.mockjax({
-          url: "/categories",
-          status: "200",
-          responseTime: 0,
-          contentType: "application/json",
-          responseText: [{
-            name: "some category"
-          }]
-        });
-
         var categoryPromise = categories.getAll();
+
         categoryPromise.done(function(categories){
           categoryList = categories;
           done();
         });
-
     });
 
     async.afterEach(function(done){
-      $.mockjaxClear(mockJaxId);
       done();
     });
 
