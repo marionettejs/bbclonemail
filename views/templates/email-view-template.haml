@@ -2,17 +2,17 @@
   %li
     %header
       %span.from
-        = from
+        <%= from %>
       %span.subject
-        = subject
+        <%= subject %>
       %span.date
-        = date
+        <%= date %>
     %article
       .body
-        - if (categories){
+        <% if (categories){ %>
         %ul.emailCategories
-          - _.each(categories, function(category){
-          %li= category
-          - })
-        - }
-        %p= body
+          <% _.each(categories, function(category){ %>
+          %li <%= category %>
+          <% }); %>
+        <% } %>
+        %p <%= body %>

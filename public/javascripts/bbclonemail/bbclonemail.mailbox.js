@@ -19,6 +19,7 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
 
     previewClicked: function(e){
       e.preventDefault();
+      console.log("clicking");
       this.trigger("email:selected", this.model);
     }
   });
@@ -43,12 +44,16 @@ BBCloneMail.module("Mailbox", function(Mailbox, App, Backbone, Marionette, $, _)
         collection: email
       });
 
-      listView.on("email:selected", this.showEmail, this);
+      listView.on("itemview:email:selected", function(view, email){
+        console.log("................");
+        this.showMailItem(email);
+      }, this);
 
       this.mainRegion.show(listView);
     },
 
     showMailItem: function(email){
+      console.log("FOOOOOOOOOOOOO", email);
       var itemView = new App.Mailbox.MailView({
         model: email
       });
