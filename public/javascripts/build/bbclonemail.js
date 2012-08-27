@@ -13671,6 +13671,7 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
         var view = new Nav.CategoryListView({
           collection: categories
         });
+
         that.region.show(view);
 
       });
@@ -13700,7 +13701,8 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
   var Router = Marionette.AppRouter.extend({
     appRoutes: {
-      "": "showInbox"
+      "": "showInbox",
+      "inbox/mail/:id": "showMailById"
     }
   });
 
@@ -13722,12 +13724,14 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
       });
     },
 
-    showEmail: function(email){
-      //var emailView = new EmailView({
-      //  model: email
-      //});
+    showMailById: function(id){
+      var that = this;
+      var whenEmail = App.MailApp.Mail.getInbox();
 
-      //this.mainRegion.show(emailView);
+      whenEmail.done(function(emailList){
+        var emailItem = emailList.get(id);
+        App.execute("show:mail:item", emailItem);
+      });
     }
 
   });
@@ -13736,14 +13740,19 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
   // ------------
   
   Inbox.addInitializer(function(){
-    Inbox.controller = new InboxController(App.main);
-    new Router({
-      controller: Inbox.controller
+    var controller = new InboxController(App.main);
+
+    var router = new Router({
+      controller: controller
     });
+
+    Inbox.controller = controller;
+    Inbox.router = router;
   });
 
   Inbox.addFinalizer(function(){
     delete Inbox.controller;
+    delete Inbox.router;
   });
 });
 
@@ -13851,6 +13860,8 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
 
       itemView.render();
       $("#main").html(itemView.el);
+
+      Backbone.history.navigate("inbox/mail/" + email.id);
     }
 
   });
@@ -13872,6 +13883,7 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   Mailbox.addFinalizer(function(){
     App.removeCommand("show:mail:list");
     App.removeCommand("show:mail:item");
+
     delete Mailbox.controller;
   });
 
