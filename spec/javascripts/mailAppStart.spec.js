@@ -1,8 +1,8 @@
-describe("app Start", function(){
+describe("mail app start", function(){
 
   mockMailModule();
 
-  describe("when starting the app with an empty route (#)", function(){
+  describe("when starting the mail app with an empty route (#)", function(){
     var inbox, handler;
 
     beforeEach(function(){

@@ -26,4 +26,33 @@ describe("inbox", function(){
 
   });
 
+  describe("when routing to an individual email", function(){
+    var inbox, email, handler;
+
+    beforeEach(function(){
+      handler = jasmine.createSpy();
+      BBCloneMail.registerCommand("show:mail:item", handler);
+      affix("article#main; #email-view-template li");
+
+      BBCloneMail.main.reset();
+      BBCloneMail.main.ensureEl();
+
+      inbox = BBCloneMail.module("MailApp.Inbox");
+      inbox.start();
+
+      window.location.hash = "inbox/mail/1";
+      startHistory();
+    });
+
+    afterEach(function(){
+      inbox.stop();
+      BBCloneMail.removeCommand("show:mail:item");
+    });
+
+    it("should show the full email contents", function(){
+      expect(handler.wasCalled).toBe(true);
+    });
+
+  });
+
 });

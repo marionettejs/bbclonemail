@@ -26,6 +26,7 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
         var view = new Nav.CategoryListView({
           collection: categories
         });
+
         that.region.show(view);
 
       });

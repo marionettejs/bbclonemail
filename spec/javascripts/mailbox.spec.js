@@ -29,6 +29,8 @@ describe("mailbox", function(){
     var mailbox, view, email;
 
     beforeEach(function(){
+      startHistory();
+
       affix("#email-preview-template div");
       affix("#email-view-template li");
       affix("article#main");
@@ -56,10 +58,11 @@ describe("mailbox", function(){
 
   });
 
-  describe("when show an individual email", function(){
-    var mailbox;
+  describe("when showing an individual email", function(){
+    var mailbox, email;
 
     beforeEach(function(){
+      startHistory();
       affix("article#main; #email-view-template li");
 
       BBCloneMail.main.reset();
@@ -68,7 +71,7 @@ describe("mailbox", function(){
       mailbox = BBCloneMail.module("MailApp.Mailbox");
       mailbox.start();
 
-      var email = new Backbone.Model();
+      email = new Backbone.Model({id: 1});
       
       BBCloneMail.execute("show:mail:item", email);
     });
@@ -80,6 +83,10 @@ describe("mailbox", function(){
     it("should show the full email contents", function(){
       var el = $("#main .email-list li");
       expect(el.length).toBe(1);
+    });
+
+    it("should route to that email", function(){
+      expect(window.location.hash).toBe("#inbox/mail/" + email.id);
     });
 
   });

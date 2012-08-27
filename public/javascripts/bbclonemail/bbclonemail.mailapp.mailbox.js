@@ -70,6 +70,8 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
 
       itemView.render();
       $("#main").html(itemView.el);
+
+      Backbone.history.navigate("inbox/mail/" + email.id);
     }
 
   });
@@ -91,6 +93,7 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   Mailbox.addFinalizer(function(){
     App.removeCommand("show:mail:list");
     App.removeCommand("show:mail:item");
+
     delete Mailbox.controller;
   });
 
