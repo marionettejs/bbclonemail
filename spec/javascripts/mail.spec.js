@@ -1,5 +1,7 @@
 describe("mail", function(){
 
+  mockMailAjax();
+
   var mail;
 
   beforeEach(function(){
@@ -13,36 +15,15 @@ describe("mail", function(){
 
   describe("when getting mail for the inbox", function(){
     var async = new AsyncSpec(this);
-
-    var mockJaxId, emailList;
+    var emailList;
 
     async.beforeEach(function(done){
-
-        mockJaxId = $.mockjax({
-          url: "/email",
-          status: "200",
-          responseTime: 0,
-          contentType: "application/json",
-          responseText: [{
-            from: "bob",
-            to: "joe",
-            date: "1/1/2011",
-            subject: "test email",
-            message: "this is a test email"
-          }]
-        });
-
         var emailPromise = BBCloneMail.request("mail:inbox");
+
         emailPromise.done(function(mail){
           emailList = mail;
           done();
         });
-
-    });
-
-    async.afterEach(function(done){
-      $.mockjaxClear(mockJaxId);
-      done();
     });
 
     it("should return a collection with all the mail in it", function(){
