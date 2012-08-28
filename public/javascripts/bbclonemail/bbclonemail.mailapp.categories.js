@@ -10,19 +10,40 @@ BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Mar
     url: "/categories"
   });
 
-  // Public API
+  // Controller
   // ----------
 
-  Categories.getAll = function(){
-    var deferred = $.Deferred();
+  function Controller(){}
+  
+  _.extend(Controller.prototype, {
 
-    var categoryCollection = new CategoryCollection();
-    categoryCollection.on("reset", function(categories){
-      deferred.resolve(categories);
-    });
+    getAll: function(){
+      var deferred = $.Deferred();
 
-    categoryCollection.fetch();
-    return deferred.promise();
-  };
+      var categoryCollection = new CategoryCollection();
+      categoryCollection.on("reset", function(categories){
+        deferred.resolve(categories);
+      });
+
+      categoryCollection.fetch();
+      return deferred.promise();
+    }
+
+  });
+
+  // Init & Finialize
+  // ----------------
+
+  Categories.addInitializer(function(){
+    var controller = new Controller();
+    this.controller = controller;
+
+    App.respondTo("mail:categories", controller.getAll, controller);
+  });
+
+  Categories.addFinalizer(function(){
+    App.removeRequestHandler("mail:categories");
+    delete this.controller;
+  });
 
 });

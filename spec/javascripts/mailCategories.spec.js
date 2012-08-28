@@ -17,7 +17,7 @@ describe("mail categories", function(){
     var categoryList;
 
     async.beforeEach(function(done){
-      var categoryPromise = categories.getAll();
+      var categoryPromise = BBCloneMail.request("mail:categories");
 
       categoryPromise.done(function(categories){
         categoryList = categories;

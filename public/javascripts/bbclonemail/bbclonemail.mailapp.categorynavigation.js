@@ -19,18 +19,20 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
 
     showCategories: function(){
       var that = this;
-      var categoryLoader = App.MailApp.Categories.getAll();
-
-      $.when(categoryLoader).then(function(categories){
         
+      this.getCategories(function(categories){
         var view = new Nav.CategoryListView({
           collection: categories
         });
 
         that.region.show(view);
-
       });
 
+    },
+
+    getCategories: function(callback){
+      var categoryLoader = App.request("mail:categories");
+      $.when(categoryLoader).then(callback);
     }
 
   });

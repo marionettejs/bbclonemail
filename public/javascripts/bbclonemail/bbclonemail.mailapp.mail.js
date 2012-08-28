@@ -37,9 +37,9 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
 
   Mail.addInitializer(function(){
     var controller = new Controller();
-    App.respondTo("mail:inbox", controller.getAll, controller);
-
     this.controller = controller;
+
+    App.respondTo("mail:inbox", controller.getAll, controller);
   });
 
   Mail.addFinalizer(function(){
