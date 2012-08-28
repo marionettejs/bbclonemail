@@ -1,3 +1,6 @@
+// A command pattern module for BBCloneMail
+// ----------------------------------------
+
 (function(BBCloneMail){
 
   var handlers = {};

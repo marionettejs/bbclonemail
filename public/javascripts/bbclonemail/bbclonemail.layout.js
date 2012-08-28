@@ -1,7 +1,13 @@
 BBCloneMail.module("AppLayout", function(AppLayout, BBCM, Backbone, Marionette, $, _){
 
+  // Views
+  // -----
+
   AppLayout.Layout = Marionette.Layout.extend({});
 
+  // Controller
+  // ---------
+  
   var LayoutController = function(){};
 
   _.extend(LayoutController.prototype, {
@@ -11,6 +17,9 @@ BBCloneMail.module("AppLayout", function(AppLayout, BBCM, Backbone, Marionette, 
       });
     }
   });
+
+  // Initializer
+  // -----------
 
   AppLayout.addInitializer(function(){
     AppLayout.controller = new LayoutController();

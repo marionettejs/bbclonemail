@@ -1,3 +1,6 @@
+// A request/response module for BBCloneMail
+// -----------------------------------------
+
 (function(BBCloneMail){
 
   var handlers = {};
