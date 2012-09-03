@@ -30,38 +30,10 @@ module.exports = function(grunt) {
         src: ['public/javascripts/build/bbclonemail.js'],
         dest: 'public/javascripts/build/bbclonemail.min.js'
       }
-    },
-
-    lint: {
-      files: ['public/javascripts/bbclonemail/**/*.js']
-    },
-
-    jshint: {
-      options: {
-        curly: true,
-        eqeqeq: true,
-        immed: false,
-        latedef: true,
-        newcap: true,
-        noarg: true,
-        sub: true,
-        undef: true,
-        boss: true,
-        eqnull: true,
-        browser: true
-      },
-      globals: {
-        jQuery: true,
-        Backbone: true,
-        _: true,
-        BBCloneMail: true,
-        console: true
-      }
-    },
-    uglify: {}
+    }
   });
 
   // Default task.
-  grunt.registerTask('default', 'lint concat min');
+  grunt.registerTask('default', 'concat min');
 
 };
