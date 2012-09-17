@@ -1,0 +1,93 @@
+doctype 5
+html
+  head
+    title BBCloneMail: A Backbone.Marionette Reference Application
+    link(href="/css/bbclonemail.css", rel="stylesheet", type"=text/css")
+
+    include templates/email-preview-template
+    include templates/email-view-template
+    include templates/mail-categories-view-template
+
+  body
+    section.header
+      .container
+        header
+          h1 BBCloneMail
+          p.tag-line
+           A
+            a(href="http://github.com/derickbailey/backbone.marionette") Backbone.Marionette
+           | Reference Application
+        header.help
+          | This application demonstrates the use of my
+          a(href="http://github.com/derickbailey/backbone.marionette") Backbone.Marionette
+          | plugin for BackboneJS. To see it in action, change the selected app
+          | in the drop list to the left. Be sure to check out
+          a(href="http://github.com/derickbailey/bbclonemail") the source code
+          | to see how it works.
+
+    section.content
+      .container
+        p.notice
+          | BBCloneMail is currently undergoing a major re-write. Not all of the
+          | functionality is in place. However, the functionality that is here is
+          | shows a more up to date implementation of an application with
+          | Backbone.Marionette. For more information, watch the 'dev' branch of
+          | the repository.
+
+        navigation
+          section#app-selector
+            select
+              option(value"mail") Mail
+              option(value"contacts") Contacts
+          section#navigation
+        article#main
+          #loading
+            block content
+
+    section.footer
+      .container
+        footer
+          ul
+            li
+              | Copyright &copy;2012
+              a(href="http://mutedsolutions.com") Muted Solutions, LLC.
+              | All rights reserved.
+          ul
+            li
+              | BBCloneMail is a reference app for building awesomeness with
+              a(href="http://backbonejs.org") Backbone.js
+              | and
+              a(href="http://github.com/derickbailey/backbone.marionette") Backbone.Marionette
+          ul
+            li.title BBCloneMail Source:
+            li
+              a(href="http://github.com/derickbailey/bbclonemail") The Github Project
+            li
+              a(href="http://derickbailey.github.com/bbclonemail/docs/bbclonemail.html") The Annoted Code
+          ul
+            li.title
+               | Find me Twitter:
+            li
+              a(href="http://twitter.com/derickbailey") @derickbailey
+            li
+              a(href="http://twitter.com/backbonejsclass") @backbonejsclass
+            li
+              a(href="http://twitter.com/mutedsolutions") @mutedsolutions
+          ul
+            li.title
+               | Find me on the web:
+            li
+              a(href="http://backbonetraining.net") BackboneTraining.net
+            li
+              a(href="http://watchmecode.net") WatchMeCode.net
+            li
+              a(href="http://derickbailey.lostechies.com") DerickBailey.lostechies.com
+            li
+              a(href="http://mutedsolutions.com") MutedSolutions.com
+
+    include scripts
+
+    script
+      $(function(){
+        BBCloneMail.start();
+      });
