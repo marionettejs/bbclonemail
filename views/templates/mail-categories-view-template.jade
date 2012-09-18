@@ -2,13 +2,13 @@ script#mail-categories-view-template(type = "text/template")
   p Mail Categories
   ul
     li
-      a(data-category = "", href = "#") Inbox
+      a(class="mail-category", data-category = "", href = "#") Inbox
     li
-      a(data-category = "sent", href = "#inbox/sent") Sent
+      a(class="mail-category", data-category = "sent", href = "#categories/sent") Sent
     li
-      a(data-category = "trash", href = "#inbox/trash") Trash
+      a(class="mail-category", data-category = "trash", href = "#categories/trash") Trash
   ul.customCategories
     |<% _.each(items, function(category) { %>
     li
-      a(class="mail-category", data-category != "<%= category.name %>", href != "#inbox/categories/<%= category.name %>" ) <%= category.name %>
+      a(class="mail-category", data-category != "<%= category.name %>", href != "#categories/<%= category.name %>" ) <%= category.name %>
     |<% }); %>

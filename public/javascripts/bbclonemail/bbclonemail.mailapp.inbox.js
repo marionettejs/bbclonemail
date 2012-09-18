@@ -22,13 +22,13 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
     showInbox: function(){
       var that = this;
+      Backbone.history.navigate("");
       this.getEmail(function(emailList){
         App.execute("show:mail:list", emailList);
       });
     },
 
     showMailById: function(id){
-      Backbone.history.navigate("");
       this.getEmail(function(emailList){
         var emailItem = emailList.get(id);
         App.execute("show:mail:item", emailItem);
@@ -63,6 +63,7 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
     });
 
     App.registerCommand("show:category", controller.showMailByCategory, controller);
+    App.registerCommand("show:inbox", controller.showInbox, controller);
 
     Inbox.controller = controller;
     Inbox.router = router;

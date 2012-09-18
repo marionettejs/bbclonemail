@@ -47,7 +47,11 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
     },
 
     showCategory: function(categoryName){
-      App.execute("show:category", categoryName);
+      if (categoryName){
+        App.execute("show:category", categoryName);
+      } else {
+        App.execute("show:inbox");
+      }
     },
 
     getCategories: function(callback){
