@@ -2,13 +2,21 @@
   "name": "BBCloneMail",
   "version": "0.2.0",
   "private": true,
+
   "scripts": {
     "start": "node app"
   },
+
   "dependencies": {
     "express": "3.0.0rc4",
     "jade": "*"
   },
+
+  "engines": {
+    "node": "0.8.x",
+    "npm": "1.1.x"
+  },
+
   "devDependencies": {
     "grunt-jasmine-runner": "*"
   }
