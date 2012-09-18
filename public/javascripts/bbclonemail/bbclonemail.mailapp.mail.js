@@ -28,6 +28,9 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
 
       emailCollection.fetch();
       return deferred.promise();
+    },
+
+    getByCategory: function(){
     }
 
   });
@@ -40,6 +43,7 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     this.controller = controller;
 
     App.respondTo("mail:inbox", controller.getAll, controller);
+    App.respondTo("mail:category", controller.getByCategory, controller);
   });
 
   Mail.addFinalizer(function(){
