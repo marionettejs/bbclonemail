@@ -8,5 +8,8 @@
   "dependencies": {
     "express": "3.0.0rc4",
     "jade": "*"
+  },
+  "devDependencies": {
+    "grunt-jasmine-runner": "*"
   }
 }

@@ -1,6 +1,8 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  grunt.loadNpmTasks('grunt-jasmine-runner');
+
   grunt.initConfig({
     meta: {
       version: '0.2.0',
@@ -30,7 +32,28 @@ module.exports = function(grunt) {
         src: ['public/javascripts/build/bbclonemail.js'],
         dest: 'public/javascripts/build/bbclonemail.min.js'
       }
-    }
+    },
+
+    jasmine : {
+      src : [
+        'public/javascripts/vendor/jquery.js',
+        'public/javascripts/vendor/json2.js',
+        'public/javascripts/vendor/underscore.js',
+        'public/javascripts/vendor/backbone.js',
+        'public/javascripts/vendor/backbone.marionette.js',
+        'public/javascripts/bbclonemail/bbclonemail.js',
+        'public/javascripts/bbclonemail/bbclonemail.commands.js',
+        'public/javascripts/bbclonemail/bbclonemail.reqres.js',
+        'public/javascripts/bbclonemail/**/*.js',
+      ],
+      helpers : 'spec/javascripts/helpers/*.js',
+      specs : 'spec/javascripts/**/*.spec.js'
+    },
+
+    'jasmine-server' : {
+      browser : false
+    },
+
   });
 
   // Default task.
