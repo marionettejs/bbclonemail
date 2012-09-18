@@ -21,7 +21,7 @@
       throw new Error("Request handler not found for '" + name + "'");
     }
 
-    return config.handler.apply(config.context, args);
+    return config.handler.call(config.context, args);
   };
 
   BBCloneMail.removeRequestHandler = function(name){
