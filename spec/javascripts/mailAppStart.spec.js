@@ -1,20 +1,12 @@
 describe("mail app start", function(){
 
-  var getInboxHandler;
-
-  beforeEach(function(){
-    getInboxHandler = jasmine.createSpy();
-    BBCloneMail.respondTo("mail:inbox", getInboxHandler);
-  });
-
-  afterEach(function(){
-    BBCloneMail.removeRequestHandler("mail:inbox");
-  });
-
   describe("when starting the mail app with an empty route (#)", function(){
-    var inbox, handler;
+    var inbox, handler, getInboxHandler;
 
     beforeEach(function(){
+      getInboxHandler = jasmine.createSpy();
+      BBCloneMail.respondTo("mail:inbox", getInboxHandler);
+
       handler = jasmine.createSpy();
       BBCloneMail.registerCommand("show:mail:list", handler);
 
@@ -27,6 +19,7 @@ describe("mail app start", function(){
     afterEach(function(){
       inbox.stop();
       BBCloneMail.removeCommand("show:mail:list");
+      BBCloneMail.removeRequestHandler("mail:inbox");
     });
 
     it("should show the inbox", function(){
@@ -35,4 +28,32 @@ describe("mail app start", function(){
 
   });
 
+  describe("when the mail app initializes", function(){
+    var categoryNav, getCategoriesHandler;
+
+    beforeEach(function(){
+      affix("#mail-categories-view-template ul.categories li; #navigation");
+      getCategoriesHandler = jasmine.createSpy();
+
+      var cat = new Backbone.Model({id: 1, name: "cat"});
+      var catCol = new Backbone.Collection([cat]);
+      getCategoriesHandler.andReturn(catCol);
+
+      BBCloneMail.respondTo("mail:categories", getCategoriesHandler);
+
+      categoryNav = BBCloneMail.module("MailApp.CategoryNavigation");
+      categoryNav.start();
+    });
+
+    afterEach(function(){
+      categoryNav.stop();
+      BBCloneMail.removeRequestHandler("mail:categories");
+    });
+
+    it("should show the list of categories", function(){
+      var el = $("#navigation ul.categories li");
+      expect(el.length).toBe(1);
+    });
+
+  });
 });
