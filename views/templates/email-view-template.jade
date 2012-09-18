@@ -12,7 +12,8 @@ script#email-view-template(type = "text/template")
         |<% if (categories){ %>
         ul.emailCategories
           |<% _.each(categories, function(category){ %>
-          li <%= category %>
+          li 
+            a(href!="#categories/<%= category %>") <%= category %>
           |<% }); %>
         |<% } %>
         p |<%= body %>
