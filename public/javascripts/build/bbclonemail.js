@@ -12206,7 +12206,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-// Backbone.Marionette, v0.9.11
+// Backbone.Marionette, v0.9.13
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
 // http://github.com/derickbailey/backbone.marionette
@@ -12274,11 +12274,15 @@ Marionette.EventBinder.extend = Backbone.View.extend;
 
 // The core view type that other Marionette views extend from.
 Marionette.View = Backbone.View.extend({
+
   constructor: function(){
     var eventBinder = new Marionette.EventBinder();
     _.extend(this, eventBinder);
 
     Backbone.View.prototype.constructor.apply(this, arguments);
+
+    this.bindBackboneEntityTo(this.model, this.modelEvents);
+    this.bindBackboneEntityTo(this.collection, this.collectionEvents);
 
     this.bindTo(this, "show", this.onShowCalled, this);
   },
@@ -12286,7 +12290,7 @@ Marionette.View = Backbone.View.extend({
   // Get the template for this view
   // instance. You can set a `template` attribute in the view
   // definition or pass a `template: "whatever"` parameter in
-  // to the constructor options. 
+  // to the constructor options.
   getTemplate: function(){
     var template;
 
@@ -12304,14 +12308,14 @@ Marionette.View = Backbone.View.extend({
   // Serialize the model or collection for the view. If a model is
   // found, `.toJSON()` is called. If a collection is found, `.toJSON()`
   // is also called, but is used to populate an `items` array in the
-  // resulting data. If both are found, defaults to the model. 
-  // You can override the `serializeData` method in your own view 
+  // resulting data. If both are found, defaults to the model.
+  // You can override the `serializeData` method in your own view
   // definition, to provide custom serialization for your view's data.
   serializeData: function(){
     var data;
 
-    if (this.model) { 
-      data = this.model.toJSON(); 
+    if (this.model) {
+      data = this.model.toJSON();
     }
     else if (this.collection) {
       data = { items: this.collection.toJSON() };
@@ -12413,10 +12417,24 @@ Marionette.View = Backbone.View.extend({
       var selector = that.uiBindings[key];
       that.ui[key] = that.$(selector);
     });
+  },
+
+  // This method is used to bind a backbone "entity" (collection/model) to methods on the view.
+  bindBackboneEntityTo: function(entity, bindings){
+    if (!entity || !bindings) { return; }
+
+    var view = this;
+    _.each(bindings, function(methodName, evt){
+
+      var method = view[methodName];
+      if(!method) {
+        throw new Error("View method '"+ methodName +"' was configured as an event handler, but does not exist.");
+      }
+
+      view.bindTo(entity, evt, method, view);
+    });
   }
-
 });
-
 
 // Item View
 // ---------
@@ -12477,7 +12495,7 @@ Marionette.CollectionView = Marionette.View.extend({
     this.onShowCallbacks = new Marionette.Callbacks();
   },
 
-  // Configured the initial events that the collection view 
+  // Configured the initial events that the collection view
   // binds to. Override this method to prevent the initial
   // events, or to add your own initial events.
   initialEvents: function(){
@@ -12491,7 +12509,7 @@ Marionette.CollectionView = Marionette.View.extend({
   // Handle a child item added to the collection
   addChildView: function(item, collection, options){
     this.closeEmptyView();
-    var ItemView = this.getItemView();
+    var ItemView = this.getItemView(item);
     return this.addItemView(item, ItemView, options.index);
   },
 
@@ -12539,8 +12557,9 @@ Marionette.CollectionView = Marionette.View.extend({
   // collection view and show it
   showCollection: function(){
     var that = this;
-    var ItemView = this.getItemView();
+    var ItemView;
     this.collection.each(function(item, index){
+      ItemView = that.getItemView(item);
       that.addItemView(item, ItemView, index);
     });
   },
@@ -12570,7 +12589,7 @@ Marionette.CollectionView = Marionette.View.extend({
   // Retrieve the itemView type, either from `this.options.itemView`
   // or from the `itemView` in the object definition. The "options"
   // takes precedence.
-  getItemView: function(){
+  getItemView: function(item){
     var itemView = this.options.itemView || this.itemView;
 
     if (!itemView){
@@ -12589,7 +12608,7 @@ Marionette.CollectionView = Marionette.View.extend({
 
     var view = this.buildItemView(item, ItemView);
 
-    // Store the child view itself so we can properly 
+    // Store the child view itself so we can properly
     // remove and/or close it later
     this.storeChild(view);
     if (this.onItemAdded){ this.onItemAdded(view); }
@@ -12617,17 +12636,17 @@ Marionette.CollectionView = Marionette.View.extend({
     // them when removing / closing the child view
     this.childBindings = this.childBindings || {};
     this.childBindings[view.cid] = childBinding;
-    
+
     return renderResult;
   },
-  
+
   // render the item view
   renderItemView: function(view, index) {
     view.render();
     this.appendHtml(this, view, index);
   },
 
-  // Build an `itemView` for every model in the collection. 
+  // Build an `itemView` for every model in the collection.
   buildItemView: function(item, ItemView){
     var itemViewOptions = _.result(this, "itemViewOptions");
     var options = _.extend({model: item}, itemViewOptions);
@@ -12679,8 +12698,8 @@ Marionette.CollectionView = Marionette.View.extend({
   close: function(){
     this.trigger("collection:before:close");
     this.closeChildren();
-    Marionette.View.prototype.close.apply(this, arguments);
     this.trigger("collection:closed");
+    Marionette.View.prototype.close.apply(this, arguments);
   },
 
   // Close the child views that this collection view
@@ -12708,7 +12727,7 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
     this.itemView = this.getItemView();
   },
 
-  // Configured the initial events that the composite view 
+  // Configured the initial events that the composite view
   // binds to. Override this method to prevent the initial
   // events, or to add your own initial events.
   initialEvents: function(){
@@ -12723,8 +12742,16 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
   // the items in the collection. The default is to return
   // `this.itemView` or Marionette.CompositeView if no `itemView`
   // has been defined
-  getItemView: function(){
-    return this.itemView || this.constructor;
+  getItemView: function(item){
+    var itemView = this.options.itemView || this.itemView || this.constructor;
+
+    if (!itemView){
+      var err = new Error("An `itemView` must be specified");
+      err.name = "NoItemViewError";
+      throw err;
+    }
+
+    return itemView;
   },
 
   // Renders the model once, and the collection once. Calling
@@ -12840,8 +12867,6 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
     this.ensureEl();
     this.close();
 
-    this.currentView = view;
-
     view.render();
     this.open(view);
 
@@ -12851,6 +12876,7 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
     if (this.onShow) { this.onShow(view); }
     this.trigger("view:show", view);
 
+    this.currentView = view;
   },
 
   ensureEl: function(){
@@ -12917,8 +12943,8 @@ Marionette.Layout = Marionette.ItemView.extend({
   regionType: Marionette.Region,
 
   constructor: function () {
-    Backbone.Marionette.ItemView.apply(this, arguments);
     this.initializeRegions();
+    Backbone.Marionette.ItemView.apply(this, arguments);
   },
 
   // Layout's render will use the existing region objects the
@@ -12961,17 +12987,29 @@ Marionette.Layout = Marionette.ItemView.extend({
 
     var that = this;
     _.each(this.regions, function (region, name) {
-      if (    typeof region != 'string' 
-           && typeof region.selector != 'string' ) {
-        throw new Exception('Region must be specified as a selector ' +
-                            'string or an object with selector property');
+      var regionIsString = (typeof region === "string");
+      var regionSelectorIsString = (typeof region.selector === "string");
+      var regionTypeIsUndefined = (typeof region.regionType === "undefined");
+
+      if (!regionIsString && !regionSelectorIsString) {
+        throw new Error("Region must be specified as a selector string or an object with selector property");
       }
 
-      var selector = typeof region === 'string' ? region : region.selector;
-      var regionType = typeof region.regionType === 'undefined' 
-        ? that.regionType : region.regionType;
+      var selector, RegionType;
+     
+      if (regionIsString) {
+        selector = region;
+      } else {
+        selector = region.selector;
+      }
+
+      if (regionTypeIsUndefined){
+        RegionType = that.regionType;
+      } else {
+        RegionType = region.regionType;
+      }
       
-      var regionManager = new regionType({
+      var regionManager = new RegionType({
         el: selector,
           getEl: function(selector){
             return that.$(selector);
@@ -13057,18 +13095,18 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
   // addRegions({something: "#someRegion"})
   // addRegions{{something: Region.extend({el: "#someRegion"}) });
   addRegions: function(regions){
-    var regionValue, regionObj, region;
+    var RegionValue, regionObj, region;
 
     for(region in regions){
       if (regions.hasOwnProperty(region)){
-        regionValue = regions[region];
+        RegionValue = regions[region];
 
-        if (typeof regionValue === "string"){
+        if (typeof RegionValue === "string"){
           regionObj = new Marionette.Region({
-            el: regionValue
+            el: RegionValue
           });
         } else {
-          regionObj = new regionValue();
+          regionObj = new RegionValue();
         }
 
         this[region] = regionObj;
@@ -13683,7 +13721,21 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
   // Display a list of categories in the navigation area
 
   Nav.CategoryListView = Marionette.ItemView.extend({
-    template: "#mail-categories-view-template"
+    template: "#mail-categories-view-template",
+
+    render: function(){
+      Marionette.ItemView.prototype.render.apply(this, arguments);
+    },
+
+    events: {
+      "click .mail-category": "mailCategoryClicked"
+    },
+
+    mailCategoryClicked: function(e){
+      e.preventDefault();
+      var categoryName = $(e.currentTarget).data("category");
+      this.trigger("category:selected", categoryName);
+    }
   });
 
   // Controller
@@ -13696,16 +13748,22 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
   _.extend(Nav.Controller.prototype, {
 
     showCategories: function(){
-      var that = this;
-        
-      this.getCategories(function(categories){
-        var view = new Nav.CategoryListView({
-          collection: categories
-        });
+      var showCatListView = _.bind(this.showCatListView, this);
+      this.getCategories(showCatListView);
+    },
 
-        that.region.show(view);
+    showCatListView: function(categories){
+      var view = new Nav.CategoryListView({
+        collection: categories
       });
 
+      view.bindTo(view, "category:selected", this.showCategory, this);
+
+      this.region.show(view);
+    },
+
+    showCategory: function(categoryName){
+      App.execute("show:category", categoryName);
     },
 
     getCategories: function(callback){
@@ -13737,6 +13795,7 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
   var Router = Marionette.AppRouter.extend({
     appRoutes: {
       "": "showInbox",
+      "categories/:id": "showMailByCategory",
       "inbox/mail/:id": "showMailById"
     }
   });
@@ -13758,18 +13817,29 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
     },
 
     showMailById: function(id){
-      var that = this;
+      Backbone.history.navigate("");
       this.getEmail(function(emailList){
         var emailItem = emailList.get(id);
         App.execute("show:mail:item", emailItem);
       });
     },
 
+    showMailByCategory: function(categoryName){
+      Backbone.history.navigate("categories/" + categoryName);
+      this.getEmailByCategory(categoryName, function(emailList){
+        App.execute("show:mail:list", emailList);
+      });
+    },
+
     getEmail: function(callback){
       var emailLoaded = App.request("mail:inbox");
       $.when(emailLoaded).then(callback);
-    }
+    },
 
+    getEmailByCategory: function(categoryName, callback){
+      var emailLoaded = App.request("mail:category", categoryName);
+      $.when(emailLoaded).then(callback);
+    }
   });
 
   // Initializers
@@ -13777,10 +13847,11 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
   
   Inbox.addInitializer(function(){
     var controller = new InboxController(App.main);
-
     var router = new Router({
       controller: controller
     });
+
+    App.registerCommand("show:category", controller.showMailByCategory, controller);
 
     Inbox.controller = controller;
     Inbox.router = router;
@@ -13815,13 +13886,33 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     getAll: function(){
       var deferred = $.Deferred();
 
-      var emailCollection = new EmailCollection();
-      emailCollection.on("reset", function(mail){
+      this.getMail(function(mail){
         deferred.resolve(mail);
       });
 
-      emailCollection.fetch();
       return deferred.promise();
+    },
+
+    getByCategory: function(categoryName){
+      var deferred = $.Deferred();
+
+      this.getMail(function(unfiltered){
+        var filtered = unfiltered.filter(function(mail){
+          var categories = mail.get("categories");
+          return _.include(categories, categoryName);
+        });
+
+        var mail = new EmailCollection(filtered);
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
+    getMail: function(callback){
+      var emailCollection = new EmailCollection();
+      emailCollection.on("reset", callback);
+      emailCollection.fetch();
     }
 
   });
@@ -13834,6 +13925,7 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     this.controller = controller;
 
     App.respondTo("mail:inbox", controller.getAll, controller);
+    App.respondTo("mail:category", controller.getByCategory, controller);
   });
 
   Mail.addFinalizer(function(){
@@ -13967,11 +14059,15 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
       throw new Error("Request handler not found for '" + name + "'");
     }
 
-    return config.handler.apply(config.context, args);
+    return config.handler.call(config.context, args);
   };
 
   BBCloneMail.removeRequestHandler = function(name){
     delete handlers[name];
+  };
+
+  BBCloneMail.clearRequestHandlers = function(){
+    handlers = {};
   };
 
 })(BBCloneMail);
