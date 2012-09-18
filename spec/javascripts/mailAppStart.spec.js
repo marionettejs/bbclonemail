@@ -13,7 +13,7 @@ describe("mail app start", function(){
       inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
 
-      Backbone.history.start();
+      startHistory();
     });
 
     afterEach(function(){

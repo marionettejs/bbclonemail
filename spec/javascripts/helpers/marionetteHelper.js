@@ -1,12 +1,15 @@
 function startHistory(){
-  if(!Backbone.history){
+  if (!Backbone.hisory){
     // Initial router that provides a route we don't use
     // so Backbone.history will exist
-    var router = new Backbone.Router();
-    router.route("-/-/-/mockroute", function(){});
+    var router = new (Backbone.Router.extend({ 
+      routes: { "empty-route": "emptyRoute"}
+    }));
   }
 
-  Backbone.history.start();
+  if (!Backbone.History.started){
+    Backbone.history.start();
+  }
 }
 
 beforeEach(function(){
@@ -19,6 +22,8 @@ afterEach(function(){
     Backbone.history.stop();
     delete Backbone.history;
   }
+
+  Backbone.Marionette.TemplateCache.clear();
 
   window.location.hash = "";
 });

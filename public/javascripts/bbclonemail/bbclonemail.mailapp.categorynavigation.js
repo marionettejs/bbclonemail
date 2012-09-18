@@ -5,7 +5,21 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
   // Display a list of categories in the navigation area
 
   Nav.CategoryListView = Marionette.ItemView.extend({
-    template: "#mail-categories-view-template"
+    template: "#mail-categories-view-template",
+
+    render: function(){
+      Marionette.ItemView.prototype.render.apply(this, arguments);
+    },
+
+    events: {
+      "click .mail-category": "mailCategoryClicked"
+    },
+
+    mailCategoryClicked: function(e){
+      e.preventDefault();
+      var categoryName = $(e.currentTarget).data("category");
+      this.trigger("category:selected", categoryName);
+    }
   });
 
   // Controller
@@ -18,16 +32,22 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
   _.extend(Nav.Controller.prototype, {
 
     showCategories: function(){
-      var that = this;
-        
-      this.getCategories(function(categories){
-        var view = new Nav.CategoryListView({
-          collection: categories
-        });
+      var showCatListView = _.bind(this.showCatListView, this);
+      this.getCategories(showCatListView);
+    },
 
-        that.region.show(view);
+    showCatListView: function(categories){
+      var view = new Nav.CategoryListView({
+        collection: categories
       });
 
+      view.bindTo(view, "category:selected", this.showCategory, this);
+
+      this.region.show(view);
+    },
+
+    showCategory: function(categoryName){
+      Backbone.history.navigate("categories/" + categoryName);
     },
 
     getCategories: function(callback){

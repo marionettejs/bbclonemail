@@ -1,4 +1,4 @@
-script#mail-categories-view-template(type = "text/x-jquery-tmpl")
+script#mail-categories-view-template(type = "text/template")
   p Mail Categories
   ul
     li
@@ -10,5 +10,5 @@ script#mail-categories-view-template(type = "text/x-jquery-tmpl")
   ul.customCategories
     |<% _.each(items, function(category) { %>
     li
-      a(data-category = "<%= category.name %>", href = "#inbox/categories/<%= category.name %>" ) <%= category.name %>
+      a(class="mail-category", data-category != "<%= category.name %>", href != "#inbox/categories/<%= category.name %>" ) <%= category.name %>
     |<% }); %>

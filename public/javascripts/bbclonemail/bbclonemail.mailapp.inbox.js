@@ -46,7 +46,6 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
   
   Inbox.addInitializer(function(){
     var controller = new InboxController(App.main);
-
     var router = new Router({
       controller: controller
     });
