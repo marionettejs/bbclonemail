@@ -25,5 +25,7 @@ afterEach(function(){
 
   Backbone.Marionette.TemplateCache.clear();
 
+  BBCloneMail.clearRequestHandlers();
+
   window.location.hash = "";
 });

@@ -28,4 +28,8 @@
     delete handlers[name];
   };
 
+  BBCloneMail.clearRequestHandlers = function(){
+    handlers = {};
+  };
+
 })(BBCloneMail);
