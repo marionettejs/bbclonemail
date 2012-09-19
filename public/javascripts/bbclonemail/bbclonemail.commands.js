@@ -1,28 +1,35 @@
-// A command pattern module for BBCloneMail
-// ----------------------------------------
+// A command pattern module for Marionette
+// ---------------------------------------
 
-(function(BBCloneMail){
+(function(Marionette){
 
   var handlers = {};
 
-  BBCloneMail.registerCommand = function(name, handler, context){
-    handlers[name] = {
-      handler: handler,
-      context: context
-    };
-  };
+  _.extend(Marionette.Application.prototype, {
 
-  BBCloneMail.removeCommand = function(name){
-    delete handlers[name];
-  };
+    registerCommand: function(name, handler, context){
+      handlers[name] = {
+        handler: handler,
+        context: context
+      };
+    },
 
-  BBCloneMail.execute = function(name, args){
-    var config = handlers[name];
-    if (!config){
-      throw new Error("Handler not found for '" + name + "'");
+    removeCommand: function(name){
+      delete handlers[name];
+    },
+
+    clearCommands: function(){
+      handlers = {};
+    },
+
+    execute: function(name, args){
+      var config = handlers[name];
+      if (!config){
+        throw new Error("Handler not found for '" + name + "'");
+      }
+
+      config.handler.call(config.context, args);
     }
+  });
 
-    config.handler.call(config.context, args);
-  };
-
-})(BBCloneMail);
+})(Backbone.Marionette);

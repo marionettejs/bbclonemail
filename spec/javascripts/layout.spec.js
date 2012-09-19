@@ -22,29 +22,48 @@ describe("application layout", function(){
 
   });
 
-  describe("when selecting the mail app", function(){
-    var appLayout, startMailHandler;
+  describe("given the app layout in place", function(){
+    var appLayout, startHandler;
 
     beforeEach(function(){
       affix("section.content .container select#app-selector option[value=mail]");
 
-      startMailHandler = jasmine.createSpy("start mail handler");
-      BBCloneMail.registerCommand("start:mailApp", startMailHandler);
+      startHandler = jasmine.createSpy("start mail handler");
+      BBCloneMail.registerCommand("start:app", startHandler);
 
       appLayout = BBCloneMail.module("AppLayout");
       appLayout.start();
-
-      var $app = $("#app-selector");
-      $app.val("mail");
-      $app.trigger("change");
     });
 
     afterEach(function(){
       appLayout.stop();
+      BBCloneMail.removeCommand("start:app");
     });
 
-    it("should switch to the mail app", function(){
-      expect(startMailHandler).toHaveBeenCalled();
+    describe("when selecting the mail app", function(){
+      beforeEach(function(){
+        var $app = $("#app-selector");
+
+        $app.val("mail");
+        $app.trigger("change");
+      });
+
+      it("should switch to the mail app", function(){
+        expect(startHandler).toHaveBeenCalledWith("MailApp");
+      });
+    });
+
+    describe("when selecting the contacts app", function(){
+      beforeEach(function(){
+        var $app = $("#app-selector");
+
+        $app.val("contacts");
+        $app.trigger("change");
+      });
+
+      it("should switch to the contacts app", function(){
+        expect(startHandler).toHaveBeenCalledWith("ContactsApp");
+      });
     });
   });
 

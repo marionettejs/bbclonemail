@@ -1,28 +1,49 @@
 describe("switching apps", function(){
+  "use strict";
+  var mailApp, contactsApp;
 
-  describe("when switching from the mail app to contacts app", function(){
-    var mailAppShutdown, contactsAppStart;
+  beforeEach(function(){
+    mailApp = BBCloneMail.module("MailApp");
+    contactsApp = BBCloneMail.module("ContactsApp");
+  });
+
+  describe("when starting the mail app", function(){
+    var mailAppStart, contactsAppStop;
 
     beforeEach(function(){
+      BBCloneMail.currentApp = contactsApp;
+      mailAppStart = spyOn(mailApp, "start");
+      contactsAppStop = spyOn(contactsApp, "stop");
 
+      BBCloneMail.execute("start:app", "MailApp");
+    });
+
+    it("should shut down the contacts app", function(){
+      expect(contactsAppStop).toHaveBeenCalled();
+    });
+
+    it("should start the mail app", function(){
+      expect(mailAppStart).toHaveBeenCalled();
+    });
+  });
+
+  describe("when starting the contacts app", function(){
+    var mailAppStop, contactsAppStart;
+
+    beforeEach(function(){
+      BBCloneMail.currentApp = mailApp;
+      mailAppStop = spyOn(mailApp, "stop");
+      contactsAppStart = spyOn(contactsApp, "start");
+
+      BBCloneMail.execute("start:app", "ContactsApp");
     });
 
     it("should shut down the mail app", function(){
-      expect(mailAppShutdown).toHaveBeenCalled();
+      expect(mailAppStop).toHaveBeenCalled();
     });
 
     it("should start the contacts app", function(){
       expect(contactsAppStart).toHaveBeenCalled();
-    });
-  });
-
-  describe("when switching from the contacts app to the mail app", function(){
-    it("should start the mail app", function(){
-      throw "not yet implemented";
-    });
-
-    it("should shut down the contacts app", function(){
-      throw "not yet implemented";
     });
   });
 

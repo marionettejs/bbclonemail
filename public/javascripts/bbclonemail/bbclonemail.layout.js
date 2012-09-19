@@ -32,7 +32,7 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
 
     appSelected: function(appName){
       if (appName === "mail"){
-        App.execute("start:mailApp");
+        App.execute("start:app", "MailApp");
       }
     }
 

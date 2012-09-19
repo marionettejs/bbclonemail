@@ -1,35 +1,37 @@
-// A request/response module for BBCloneMail
-// -----------------------------------------
+// A request/response module for Marionette
+// ----------------------------------------
 
-(function(BBCloneMail){
+(function(Marionette){
 
   var handlers = {};
 
-  BBCloneMail.respondTo = function(name, handler, context){
-    var config = {
-      handler: handler,
-      context: context
-    };
+  _.extend(Marionette.Application.prototype, {
+    respondTo: function(name, handler, context){
+      var config = {
+        handler: handler,
+        context: context
+      };
 
-    handlers[name] = config;
-  };
+      handlers[name] = config;
+    },
 
-  BBCloneMail.request = function(name, args){
-    var config = handlers[name];
+    request: function(name, args){
+      var config = handlers[name];
 
-    if (!config){
-      throw new Error("Request handler not found for '" + name + "'");
+      if (!config){
+        throw new Error("Request handler not found for '" + name + "'");
+      }
+
+      return config.handler.call(config.context, args);
+    },
+
+    removeRequestHandler: function(name){
+      delete handlers[name];
+    },
+
+    clearRequestHandlers: function(){
+      handlers = {};
     }
+  });
 
-    return config.handler.call(config.context, args);
-  };
-
-  BBCloneMail.removeRequestHandler = function(name){
-    delete handlers[name];
-  };
-
-  BBCloneMail.clearRequestHandlers = function(){
-    handlers = {};
-  };
-
-})(BBCloneMail);
+})(Backbone.Marionette);
