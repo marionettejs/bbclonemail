@@ -13606,35 +13606,6 @@ var slice = Array.prototype.slice;
   return Marionette;
 })(Backbone, _, window.jQuery || window.Zepto || window.ender);
 
-BBCloneMail = (function(Backbone){
-  var App = new Backbone.Marionette.Application();
-
-  App.addRegions({
-    nav: "#navigation",
-    main: "#main"
-  });
-
-  App.on("initialize:after", function(){
-    if (Backbone.history){
-      Backbone.history.start();
-    }
-  });
-
-  App.startSubApp = function(appName){
-    if (App.currentApp){
-      App.currentApp.stop();
-    }
-
-    var currentApp = App.module(appName);
-    App.currentApp = currentApp;
-    currentApp.start();
-  };
-
-  App.registerCommand("start:app", App.startSubApp, App);
-
-  return App;
-})(Backbone);
-
 // A command pattern module for Marionette
 // ---------------------------------------
 
@@ -13670,6 +13641,73 @@ BBCloneMail = (function(Backbone){
   });
 
 })(Backbone.Marionette);
+
+// A request/response module for Marionette
+// ----------------------------------------
+
+(function(Marionette){
+
+  var handlers = {};
+
+  _.extend(Marionette.Application.prototype, {
+    respondTo: function(name, handler, context){
+      var config = {
+        handler: handler,
+        context: context
+      };
+
+      handlers[name] = config;
+    },
+
+    request: function(name, args){
+      var config = handlers[name];
+
+      if (!config){
+        throw new Error("Request handler not found for '" + name + "'");
+      }
+
+      return config.handler.call(config.context, args);
+    },
+
+    removeRequestHandler: function(name){
+      delete handlers[name];
+    },
+
+    clearRequestHandlers: function(){
+      handlers = {};
+    }
+  });
+
+})(Backbone.Marionette);
+
+BBCloneMail = (function(Backbone){
+  var App = new Backbone.Marionette.Application();
+
+  App.addRegions({
+    nav: "#navigation",
+    main: "#main"
+  });
+
+  App.on("initialize:after", function(){
+    if (Backbone.history){
+      Backbone.history.start();
+    }
+  });
+
+  App.startSubApp = function(appName){
+    if (App.currentApp){
+      App.currentApp.stop();
+    }
+
+    var currentApp = App.module(appName);
+    App.currentApp = currentApp;
+    currentApp.start();
+  };
+
+  App.registerCommand("start:app", App.startSubApp, App);
+
+  return App;
+})(Backbone);
 
 BBCloneMail.module("ContactsApp.ContactList", { 
   startWithApp: false,
@@ -14219,41 +14257,3 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   });
 
 });
-
-// A request/response module for Marionette
-// ----------------------------------------
-
-(function(Marionette){
-
-  var handlers = {};
-
-  _.extend(Marionette.Application.prototype, {
-    respondTo: function(name, handler, context){
-      var config = {
-        handler: handler,
-        context: context
-      };
-
-      handlers[name] = config;
-    },
-
-    request: function(name, args){
-      var config = handlers[name];
-
-      if (!config){
-        throw new Error("Request handler not found for '" + name + "'");
-      }
-
-      return config.handler.call(config.context, args);
-    },
-
-    removeRequestHandler: function(name){
-      delete handlers[name];
-    },
-
-    clearRequestHandlers: function(){
-      handlers = {};
-    }
-  });
-
-})(Backbone.Marionette);
