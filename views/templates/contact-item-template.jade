@@ -1,11 +1,7 @@
-script#contact-categories-view-template(type = "text/template")
-  p Contact Categories
-  ul
-    li
-      a Everyone
-    li
-      a Friends
-    li
-      a Family
-    li
-      a Coworkers
+script#contact-item-template(type = "text/template")
+  span.name
+    |<%= name %>
+  span.email
+    |<%= email %>
+  span.phone
+    |<%= phone %>

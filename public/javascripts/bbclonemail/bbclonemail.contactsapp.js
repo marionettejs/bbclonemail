@@ -1,1 +1,4 @@
-BBCloneMail.module("ContactsApp", { startWithApp: false });
+BBCloneMail.module("ContactsApp", { 
+  startWithApp: false,
+  define: function(){}
+});
