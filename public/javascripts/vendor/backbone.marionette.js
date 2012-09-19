@@ -1,4 +1,4 @@
-// Backbone.Marionette, v0.9.13-a
+// Backbone.Marionette, v0.10.0
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
 // http://github.com/derickbailey/backbone.marionette
@@ -440,7 +440,14 @@ Marionette.CollectionView = Marionette.View.extend({
 
   // Build an `itemView` for every model in the collection.
   buildItemView: function(item, ItemView){
-    var itemViewOptions = _.result(this, "itemViewOptions");
+    var itemViewOptions;
+
+    if (_.isFunction(this.itemViewOptions)){
+      itemViewOptions = this.itemViewOptions(item);
+    } else {
+      itemViewOptions = this.itemViewOptions;
+    }
+
     var options = _.extend({model: item}, itemViewOptions);
     var view = new ItemView(options);
     return view;
@@ -1060,15 +1067,16 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     if (!this._isInitialized){ return; }
     this._isInitialized = false;
 
+    // stop the sub-modules; depth-first, to make sure the
+    // sub-modules are stopped / finalized before parents
+    _.each(this.submodules, function(mod){ mod.stop(); });
+
     // run the finalizers
     this._finalizerCallbacks.run();
 
     // reset the initializers and finalizers
     this._initializerCallbacks.reset();
     this._finalizerCallbacks.reset();
-
-    // stop the sub-modules
-    _.each(this.submodules, function(mod){ mod.stop(); });
   },
 
   // Configure the module with a definition function and any custom args
