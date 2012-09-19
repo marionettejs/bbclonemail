@@ -12206,7 +12206,7 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
-// Backbone.Marionette, v0.9.13
+// Backbone.Marionette, v0.10.0
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
 // http://github.com/derickbailey/backbone.marionette
@@ -12648,7 +12648,14 @@ Marionette.CollectionView = Marionette.View.extend({
 
   // Build an `itemView` for every model in the collection.
   buildItemView: function(item, ItemView){
-    var itemViewOptions = _.result(this, "itemViewOptions");
+    var itemViewOptions;
+
+    if (_.isFunction(this.itemViewOptions)){
+      itemViewOptions = this.itemViewOptions(item);
+    } else {
+      itemViewOptions = this.itemViewOptions;
+    }
+
     var options = _.extend({model: item}, itemViewOptions);
     var view = new ItemView(options);
     return view;
@@ -13250,7 +13257,6 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     // Prevent re-start the module
     if (this._isInitialized){ return; }
 
-    this._runModuleDefinition();
     this._initializerCallbacks.run(options, this);
     this._isInitialized = true;
 
@@ -13269,25 +13275,28 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     if (!this._isInitialized){ return; }
     this._isInitialized = false;
 
+    // stop the sub-modules; depth-first, to make sure the
+    // sub-modules are stopped / finalized before parents
+    _.each(this.submodules, function(mod){ mod.stop(); });
+
     // run the finalizers
     this._finalizerCallbacks.run();
-    // then reset the initializers and finalizers
-    this._setupInitializersAndFinalizers();
 
-    // stop the sub-modules
-    _.each(this.submodules, function(mod){ mod.stop(); });
+    // reset the initializers and finalizers
+    this._initializerCallbacks.reset();
+    this._finalizerCallbacks.reset();
   },
 
   // Configure the module with a definition function and any custom args
   // that are to be passed in to the definition function
   addDefinition: function(moduleDefinition){
-    this._config.definitions.push(moduleDefinition);
+    this._runModuleDefinition(moduleDefinition);
   },
 
   // Internal method: run the module definition function with the correct
   // arguments
-  _runModuleDefinition: function(){
-    if (this._config.definitions.length === 0) { return; }
+  _runModuleDefinition: function(definition){
+    if (!definition){ return; }
 
     // build the correct list of arguments for the module definition
     var args = _.flatten([
@@ -13299,14 +13308,7 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
       this._config.customArgs
     ]);
 
-    // run the module definition function with the correct args
-    var definitionCount = this._config.definitions.length-1;
-    for(var i=0; i <= definitionCount; i++){
-
-      var definition = this._config.definitions[i];
-      definition.apply(this, args);
-
-    }
+    definition.apply(this, args);
   },
 
   // Internal method: set up new copies of initializers and finalizers.
@@ -13530,8 +13532,8 @@ Marionette.Renderer = {
 // and executing them at a later point in time, using jQuery's
 // `Deferred` object.
 Marionette.Callbacks = function(){
-  this.deferred = $.Deferred();
-  this.promise = this.deferred.promise();
+  this._deferred = $.Deferred();
+  this._callbacks = [];
 };
 
 _.extend(Marionette.Callbacks.prototype, {
@@ -13540,7 +13542,9 @@ _.extend(Marionette.Callbacks.prototype, {
   // guaranteed to execute, even if they are added after the 
   // `run` method is called.
   add: function(callback, contextOverride){
-    this.promise.done(function(context, options){
+    this._callbacks.push({cb: callback, ctx: contextOverride});
+
+    this._deferred.done(function(context, options){
       if (contextOverride){ context = contextOverride; }
       callback.call(context, options);
     });
@@ -13550,7 +13554,17 @@ _.extend(Marionette.Callbacks.prototype, {
   // Additional callbacks can be added after this has been run 
   // and they will still be executed.
   run: function(options, context){
-    this.deferred.resolve(context, options);
+    this._deferred.resolve(context, options);
+  },
+
+  // Resets the list of callbacks to be run, allowing the same list
+  // to be run multiple times - whenever the `run` method is called.
+  reset: function(){
+    var that = this;
+    this._deferred = $.Deferred();
+    _.each(this._callbacks, function(cb){
+      that.add(cb.cb, cb.ctx);
+    });
   }
 });
 
@@ -13592,54 +13606,211 @@ var slice = Array.prototype.slice;
   return Marionette;
 })(Backbone, _, window.jQuery || window.Zepto || window.ender);
 
-BBCloneMail = new Backbone.Marionette.Application();
+BBCloneMail = (function(Backbone){
+  var App = new Backbone.Marionette.Application();
 
-BBCloneMail.addRegions({
-  nav: "#navigation",
-  main: "#main"
-});
+  App.addRegions({
+    nav: "#navigation",
+    main: "#main"
+  });
 
-BBCloneMail.on("initialize:after", function(){
-  if (Backbone.history){
-    Backbone.history.start();
-  }
-});
+  App.on("initialize:after", function(){
+    if (Backbone.history){
+      Backbone.history.start();
+    }
+  });
 
-// A command pattern module for BBCloneMail
-// ----------------------------------------
+  App.startSubApp = function(appName){
+    if (App.currentApp){
+      App.currentApp.stop();
+    }
 
-(function(BBCloneMail){
+    var currentApp = App.module(appName);
+    App.currentApp = currentApp;
+    currentApp.start();
+  };
+
+  App.registerCommand("start:app", App.startSubApp, App);
+
+  return App;
+})(Backbone);
+
+// A command pattern module for Marionette
+// ---------------------------------------
+
+(function(Marionette){
 
   var handlers = {};
 
-  BBCloneMail.registerCommand = function(name, handler, context){
-    handlers[name] = {
-      handler: handler,
-      context: context
-    };
-  };
+  _.extend(Marionette.Application.prototype, {
 
-  BBCloneMail.removeCommand = function(name){
-    delete handlers[name];
-  };
+    registerCommand: function(name, handler, context){
+      handlers[name] = {
+        handler: handler,
+        context: context
+      };
+    },
 
-  BBCloneMail.execute = function(name, args){
-    var config = handlers[name];
-    if (!config){
-      throw new Error("Handler not found for '" + name + "'");
+    removeCommand: function(name){
+      delete handlers[name];
+    },
+
+    clearCommands: function(){
+      handlers = {};
+    },
+
+    execute: function(name, args){
+      var config = handlers[name];
+      if (!config){
+        throw new Error("Handler not found for '" + name + "'");
+      }
+
+      config.handler.call(config.context, args);
     }
+  });
 
-    config.handler.call(config.context, args);
-  };
+})(Backbone.Marionette);
 
-})(BBCloneMail);
+BBCloneMail.module("ContactsApp.ContactList", { 
+  startWithApp: false,
+  define: function(ContactList, App, Backbone, Marionette, $, _){
 
-BBCloneMail.module("AppLayout", function(AppLayout, BBCM, Backbone, Marionette, $, _){
+    // Contact List Views
+    // ------------------
+
+    ContactList.ContactView = Marionette.ItemView.extend({
+      template: "#contact-item-template",
+      tagName: "li"
+    });
+
+    ContactList.ContactListView = Marionette.CollectionView.extend({
+      itemView: ContactList.ContactView,
+      tagName: "ul",
+      id: "contact-list",
+      className: "contact-list"
+    });
+
+    // Contact List Controller
+    // -----------------------
+
+    ContactList.Controller = function(region){
+      this.region = region;
+    };
+
+    _.extend(ContactList.Controller.prototype, {
+
+      showContacts: function(){
+        var that = this;
+
+        this.getContacts(function(contacts){
+          var view = new ContactList.ContactListView({
+            collection: contacts
+          });
+
+          that.region.show(view);
+        });
+      },
+
+      getContacts: function(callback){
+        var contactRequest = App.request("contacts:all");
+        $.when(contactRequest).then(function(contacts){
+          callback(contacts);
+        });
+      }
+
+    });
+
+    // Initializers and Finalizers
+    // ---------------------------
+
+    ContactList.addInitializer(function(){
+      var controller = new ContactList.Controller(App.main);
+      controller.showContacts();
+
+      this.controller = controller;
+    });
+
+    ContactList.addFinalizer(function(){
+      delete this.controller;
+    });
+  }
+});
+
+BBCloneMail.module("ContactsApp.Contacts", { 
+  startWithApp: false,
+  define: function(Contacts, App, Backbone, Marionette, $, _){
+
+    // Entities
+    // --------
+
+    var Contact = Backbone.Model.extend({
+    });
+
+    var ContactCollection = Backbone.Collection.extend({
+      model: Contact,
+      url: "/contacts"
+    });
+
+    // Contacts Controller
+    // -------------------
+
+    Contacts.Controller = function(){};
+
+    _.extend(Contacts.Controller.prototype, {
+
+      getAll: function(){
+        var deferred = $.Deferred();
+
+        this.getContacts(function(contacts){
+          deferred.resolve(contacts);
+        });
+
+        return deferred.promise();
+      },
+
+      getContacts: function(callback){
+        var contactCollection = new ContactCollection();
+        contactCollection.on("reset", callback);
+        contactCollection.fetch();
+      }
+
+    });
+
+    Contacts.addInitializer(function(){
+      var controller = new Contacts.Controller();
+      App.respondTo("contacts:all", controller.getAll, controller);
+
+      this.controller = controller;
+    });
+
+    Contacts.addFinalizer(function(){
+      App.removeRequestHandler("contacts:all");
+      delete this.controller;
+    });
+  }
+});
+
+BBCloneMail.module("ContactsApp", { 
+  startWithApp: false,
+  define: function(){}
+});
+
+BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $, _){
 
   // Views
   // -----
 
-  AppLayout.Layout = Marionette.Layout.extend({});
+  AppLayout.Layout = Marionette.Layout.extend({
+    events: {
+      "change #app-selector select": "appSelected"
+    },
+
+    appSelected: function(e){
+      e.preventDefault();
+      var appName = $(e.currentTarget).val();
+      this.trigger("app:selected", appName);
+    }
+  });
 
   // Controller
   // ---------
@@ -13647,11 +13818,19 @@ BBCloneMail.module("AppLayout", function(AppLayout, BBCM, Backbone, Marionette, 
   var LayoutController = function(){};
 
   _.extend(LayoutController.prototype, {
+
     start: function(){
       this.layout = new AppLayout.Layout({
         el: "section.content"
       });
+
+      this.layout.on("app:selected", this.appSelected, this);
+    },
+
+    appSelected: function(appName){
+      App.execute("start:app", appName);
     }
+
   });
 
   // Initializer
@@ -13763,7 +13942,11 @@ BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Ma
     },
 
     showCategory: function(categoryName){
-      App.execute("show:category", categoryName);
+      if (categoryName){
+        App.execute("show:category", categoryName);
+      } else {
+        App.execute("show:inbox");
+      }
     },
 
     getCategories: function(callback){
@@ -13811,13 +13994,13 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
     showInbox: function(){
       var that = this;
+      Backbone.history.navigate("");
       this.getEmail(function(emailList){
         App.execute("show:mail:list", emailList);
       });
     },
 
     showMailById: function(id){
-      Backbone.history.navigate("");
       this.getEmail(function(emailList){
         var emailItem = emailList.get(id);
         App.execute("show:mail:item", emailItem);
@@ -13852,6 +14035,7 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
     });
 
     App.registerCommand("show:category", controller.showMailByCategory, controller);
+    App.registerCommand("show:inbox", controller.showInbox, controller);
 
     Inbox.controller = controller;
     Inbox.router = router;
@@ -14036,38 +14220,40 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
 
 });
 
-// A request/response module for BBCloneMail
-// -----------------------------------------
+// A request/response module for Marionette
+// ----------------------------------------
 
-(function(BBCloneMail){
+(function(Marionette){
 
   var handlers = {};
 
-  BBCloneMail.respondTo = function(name, handler, context){
-    var config = {
-      handler: handler,
-      context: context
-    };
+  _.extend(Marionette.Application.prototype, {
+    respondTo: function(name, handler, context){
+      var config = {
+        handler: handler,
+        context: context
+      };
 
-    handlers[name] = config;
-  };
+      handlers[name] = config;
+    },
 
-  BBCloneMail.request = function(name, args){
-    var config = handlers[name];
+    request: function(name, args){
+      var config = handlers[name];
 
-    if (!config){
-      throw new Error("Request handler not found for '" + name + "'");
+      if (!config){
+        throw new Error("Request handler not found for '" + name + "'");
+      }
+
+      return config.handler.call(config.context, args);
+    },
+
+    removeRequestHandler: function(name){
+      delete handlers[name];
+    },
+
+    clearRequestHandlers: function(){
+      handlers = {};
     }
+  });
 
-    return config.handler.call(config.context, args);
-  };
-
-  BBCloneMail.removeRequestHandler = function(name){
-    delete handlers[name];
-  };
-
-  BBCloneMail.clearRequestHandlers = function(){
-    handlers = {};
-  };
-
-})(BBCloneMail);
+})(Backbone.Marionette);
