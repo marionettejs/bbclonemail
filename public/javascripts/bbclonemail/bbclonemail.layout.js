@@ -5,7 +5,7 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
 
   AppLayout.Layout = Marionette.Layout.extend({
     events: {
-      "change #app-selector": "appSelected"
+      "change #app-selector select": "appSelected"
     },
 
     appSelected: function(e){

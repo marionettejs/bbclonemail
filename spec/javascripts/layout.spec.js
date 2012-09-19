@@ -26,7 +26,7 @@ describe("application layout", function(){
     var appLayout, startHandler;
 
     beforeEach(function(){
-      affix("section.content .container select#app-selector option[value=MailApp]+option[value=ContactsApp]");
+      affix("section.content .container #app-selector select option[value=MailApp]+option[value=ContactsApp]");
 
       startHandler = spyOn(BBCloneMail, "execute");
 
@@ -40,7 +40,7 @@ describe("application layout", function(){
 
     describe("when selecting the mail app", function(){
       beforeEach(function(){
-        var $app = $("#app-selector");
+        var $app = $("#app-selector select");
 
         $app.val("MailApp");
         $app.trigger("change");
@@ -53,7 +53,7 @@ describe("application layout", function(){
 
     describe("when selecting the contacts app", function(){
       beforeEach(function(){
-        var $app = $("#app-selector");
+        var $app = $("#app-selector select");
 
         $app.val("ContactsApp");
         $app.trigger("change");
