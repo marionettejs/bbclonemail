@@ -1,5 +1,1 @@
-BBCloneMail.module("ContactsApp", {
-  startWithApp: false,
-  define: function(Contacts, App, Backbone, Marionette, $, _){
-  }
-});
+BBCloneMail.module("ContactsApp", { startWithApp: false });

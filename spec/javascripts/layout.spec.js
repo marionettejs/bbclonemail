@@ -26,10 +26,9 @@ describe("application layout", function(){
     var appLayout, startHandler;
 
     beforeEach(function(){
-      affix("section.content .container select#app-selector option[value=mail]");
+      affix("section.content .container select#app-selector option[value=MailApp]+option[value=ContactsApp]");
 
-      startHandler = jasmine.createSpy("start mail handler");
-      BBCloneMail.registerCommand("start:app", startHandler);
+      startHandler = spyOn(BBCloneMail, "execute");
 
       appLayout = BBCloneMail.module("AppLayout");
       appLayout.start();
@@ -37,19 +36,18 @@ describe("application layout", function(){
 
     afterEach(function(){
       appLayout.stop();
-      BBCloneMail.removeCommand("start:app");
     });
 
     describe("when selecting the mail app", function(){
       beforeEach(function(){
         var $app = $("#app-selector");
 
-        $app.val("mail");
+        $app.val("MailApp");
         $app.trigger("change");
       });
 
       it("should switch to the mail app", function(){
-        expect(startHandler).toHaveBeenCalledWith("MailApp");
+        expect(startHandler).toHaveBeenCalledWith("start:app", "MailApp");
       });
     });
 
@@ -57,12 +55,12 @@ describe("application layout", function(){
       beforeEach(function(){
         var $app = $("#app-selector");
 
-        $app.val("contacts");
+        $app.val("ContactsApp");
         $app.trigger("change");
       });
 
       it("should switch to the contacts app", function(){
-        expect(startHandler).toHaveBeenCalledWith("ContactsApp");
+        expect(startHandler).toHaveBeenCalledWith("start:app", "ContactsApp");
       });
     });
   });

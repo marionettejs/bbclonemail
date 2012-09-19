@@ -12,7 +12,7 @@ BBCloneMail = (function(Backbone){
     }
   });
 
-  App.registerCommand("start:app", function(appName){
+  App.startSubApp = function(appName){
     if (App.currentApp){
       App.currentApp.stop();
     }
@@ -20,7 +20,9 @@ BBCloneMail = (function(Backbone){
     var currentApp = App.module(appName);
     App.currentApp = currentApp;
     currentApp.start();
-  });
+  };
+
+  App.registerCommand("start:app", App.startSubApp, App);
 
   return App;
 })(Backbone);
