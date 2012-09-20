@@ -3,20 +3,13 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
   // Mail Router
   // -----------
 
-  var Router = Marionette.AppRouter.extend({
-    appRoutes: {
+  var Router = Backbone.Router.extend({
+    routes: {
       "": "showInbox",
       "categories/:id": "showMailByCategory",
       "inbox/mail/:id": "showMailById"
-    }
-  });
+    },
 
-  // Controller
-  // ----------
-
-  var Controller = function(){};
-
-  _.extend(Controller.prototype, {
     showInbox: function(id){
       App.startSubApp("MailApp");
       App.execute("show:inbox");
@@ -38,10 +31,7 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
 
   MailRouter.addInitializer(function(){
     console.log("starting the mail router");
-    var controller = new Controller(App.main);
-    var router = new Router({
-      controller: controller
-    });
+    var router = new Router();
   });
 
 });
