@@ -43,12 +43,12 @@ BBCloneMail.module("ContactsApp.Contacts", {
       var controller = new Contacts.Controller();
       App.respondTo("contacts:all", controller.getAll, controller);
 
-      this.controller = controller;
+      Contacts.controller = controller;
     });
 
     Contacts.addFinalizer(function(){
       App.removeRequestHandler("contacts:all");
-      delete this.controller;
+      delete Contacts.controller;
     });
   }
 });

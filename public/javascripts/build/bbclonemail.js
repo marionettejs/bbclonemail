@@ -13690,46 +13690,18 @@ var slice = Array.prototype.slice;
   return Marionette;
 })(Backbone, _, window.jQuery || window.Zepto || window.ender);
 
-// A command pattern module for Marionette
-// ---------------------------------------
+// Marionette.Wreqr v0.0.0
+// -----------------------
+// A basic Request/Response and Command pattern implementation
+// for Backbone.js applications
+//
+// Copyright 2012 Muted Solutions, LLC. All Rights Reserved
+
+// Request/Response
+// ----------------
 
 (function(Marionette){
-
-  var handlers = {};
-
-  _.extend(Marionette.Application.prototype, {
-
-    registerCommand: function(name, handler, context){
-      handlers[name] = {
-        handler: handler,
-        context: context
-      };
-    },
-
-    removeCommand: function(name){
-      delete handlers[name];
-    },
-
-    clearCommands: function(){
-      handlers = {};
-    },
-
-    execute: function(name, args){
-      var config = handlers[name];
-      if (!config){
-        throw new Error("Handler not found for '" + name + "'");
-      }
-
-      config.handler.call(config.context, args);
-    }
-  });
-
-})(Backbone.Marionette);
-
-// A request/response module for Marionette
-// ----------------------------------------
-
-(function(Marionette){
+  "use strict";
 
   var handlers = {};
 
@@ -13764,7 +13736,46 @@ var slice = Array.prototype.slice;
 
 })(Backbone.Marionette);
 
+// Command Pattern
+// ---------------
+
+(function(Marionette){
+  "use strict";
+
+  var handlers = {};
+
+  _.extend(Marionette.Application.prototype, {
+
+    registerCommand: function(name, handler, context){
+      handlers[name] = {
+        handler: handler,
+        context: context
+      };
+    },
+
+    removeCommand: function(name){
+      delete handlers[name];
+    },
+
+    clearCommands: function(){
+      handlers = {};
+    },
+
+    execute: function(name, args){
+      var config = handlers[name];
+      if (!config){
+        throw new Error("Handler not found for '" + name + "'");
+      }
+
+      config.handler.call(config.context, args);
+    }
+  });
+
+})(Backbone.Marionette);
+
 BBCloneMail = (function(Backbone){
+  "use strict";
+
   var App = new Backbone.Marionette.Application();
 
   App.addRegions({
@@ -13796,6 +13807,7 @@ BBCloneMail = (function(Backbone){
 })(Backbone);
 
 BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette, $, _){
+  "use strict";
 
   // Mail Router
   // -----------
@@ -13831,7 +13843,6 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
   // -----------------------
 
   MailRouter.addInitializer(function(){
-    console.log("starting the mail router");
     var router = new Router();
   });
 
@@ -13839,12 +13850,19 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
 
 BBCloneMail.module("MailApp", { 
   startWithApp: false,
-  define: function(){}
+  define: function(MailApp, App){
+    "use strict";
+
+    MailApp.addInitializer(function(){
+      App.vent.trigger("app:started", "MailApp");
+    });
+  }
 });
 
 BBCloneMail.module("MailApp.Mail", {
   startWithApp: false,
   define: function(Mail, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Entities
     // --------
@@ -13920,6 +13938,7 @@ BBCloneMail.module("MailApp.Mail", {
 BBCloneMail.module("MailApp.Inbox", {
   startWithApp: false,
   define: function(Inbox, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Controller
     // ----------
@@ -13967,7 +13986,6 @@ BBCloneMail.module("MailApp.Inbox", {
     // ------------
 
     Inbox.addInitializer(function(){
-      console.log("starting the inbox");
       var controller = new InboxController(App.main);
       App.registerCommand("show:inbox", controller.showInbox, controller);
       App.registerCommand("show:mail", controller.showMailById, controller);
@@ -13977,7 +13995,6 @@ BBCloneMail.module("MailApp.Inbox", {
     });
 
     Inbox.addFinalizer(function(){
-      console.log("stopping the inbox");
       App.removeCommand("show:inbox");
       App.removeCommand("show:mail");
       App.removeCommand("show:category");
@@ -13988,7 +14005,14 @@ BBCloneMail.module("MailApp.Inbox", {
 
 BBCloneMail.module("ContactsApp", { 
   startWithApp: false,
-  define: function(){}
+
+  define: function(ContactsApp, App){
+    "use strict";
+
+    ContactsApp.addInitializer(function(){
+      App.vent.trigger("app:started", "ContactsApp");
+    });
+  }
 });
 
 BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Marionette, $, _){
@@ -14010,7 +14034,6 @@ BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Mario
   // -----------------------
 
   ContactRouter.addInitializer(function(){
-    console.log("starting the contact router");
     var router = new Router();
   });
 
@@ -14019,6 +14042,7 @@ BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Mario
 BBCloneMail.module("ContactsApp.Contacts", { 
   startWithApp: false,
   define: function(Contacts, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Entities
     // --------
@@ -14073,6 +14097,7 @@ BBCloneMail.module("ContactsApp.Contacts", {
 BBCloneMail.module("ContactsApp.ContactList", { 
   startWithApp: false,
   define: function(ContactList, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Contact List Views
     // ------------------
@@ -14138,6 +14163,7 @@ BBCloneMail.module("ContactsApp.ContactList", {
 });
 
 BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $, _){
+  "use strict";
 
   // Views
   // -----
@@ -14147,16 +14173,24 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
       "change #app-selector select": "appSelected"
     },
 
+    initialize: function(){
+      this.bindTo(App.vent, "app:started", this.showAppName, this);
+    },
+
     appSelected: function(e){
       e.preventDefault();
       var appName = $(e.currentTarget).val();
       this.trigger("app:selected", appName);
+    },
+
+    showAppName: function(appName){
+      this.$("#app-selector select").val(appName);
     }
   });
 
   // Controller
   // ---------
-  
+
   var LayoutController = function(){};
 
   _.extend(LayoutController.prototype, {
@@ -14188,6 +14222,8 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
 BBCloneMail.module("MailApp.Categories", {
   startWithApp: false,
   define: function(Categories, App, Backbone, Marionette, $, _){
+    "use strict";
+
 
     // Entities
     // --------
@@ -14241,6 +14277,7 @@ BBCloneMail.module("MailApp.Categories", {
 BBCloneMail.module("MailApp.CategoryNavigation", {
   startWithApp: false,
   define: function(Nav, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Category List View
     // ------------------
@@ -14321,6 +14358,7 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
 BBCloneMail.module("MailApp.Mailbox", {
   startWithApp: false,
   define: function(Mailbox, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Mail View
     // ---------

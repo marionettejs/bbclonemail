@@ -57,11 +57,11 @@ BBCloneMail.module("ContactsApp.ContactList", {
       var controller = new ContactList.Controller(App.main);
       controller.showContacts();
 
-      this.controller = controller;
+      ContactList.controller = controller;
     });
 
     ContactList.addFinalizer(function(){
-      delete this.controller;
+      delete ContactList.controller;
     });
   }
 });

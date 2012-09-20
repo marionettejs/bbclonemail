@@ -40,14 +40,14 @@ BBCloneMail.module("MailApp.Categories", {
 
     Categories.addInitializer(function(){
       var controller = new Controller();
-      this.controller = controller;
+      Categories.controller = controller;
 
       App.respondTo("mail:categories", controller.getAll, controller);
     });
 
     Categories.addFinalizer(function(){
       App.removeRequestHandler("mail:categories");
-      delete this.controller;
+      delete Categories.controller;
     });
 
   }

@@ -68,12 +68,12 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
     // -----------------------
 
     Nav.addInitializer(function(){
-      this.controller = new Nav.Controller(App.nav);
-      this.controller.showCategories();
+      Nav.controller = new Nav.Controller(App.nav);
+      Nav.controller.showCategories();
     });
 
     Nav.addFinalizer(function(){
-      delete this.controller;
+      delete Nav.controller;
     });
 
   }

@@ -60,7 +60,7 @@ BBCloneMail.module("MailApp.Mail", {
 
     Mail.addInitializer(function(){
       var controller = new Controller();
-      this.controller = controller;
+      Mail.controller = controller;
 
       App.respondTo("mail:inbox", controller.getAll, controller);
       App.respondTo("mail:category", controller.getByCategory, controller);
@@ -68,7 +68,7 @@ BBCloneMail.module("MailApp.Mail", {
 
     Mail.addFinalizer(function(){
       App.removeRequestHandler("mail:inbox");
-      delete this.controller;
+      delete Mail.controller;
     });
 
   }
