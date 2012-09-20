@@ -54,10 +54,8 @@ BBCloneMail.module("ContactsApp.ContactList", {
     // ---------------------------
 
     ContactList.addInitializer(function(){
-      var controller = new ContactList.Controller(App.main);
-      controller.showContacts();
-
-      ContactList.controller = controller;
+      ContactList.controller = new ContactList.Controller(App.main);
+      ContactList.controller.showContacts();
     });
 
     ContactList.addFinalizer(function(){
