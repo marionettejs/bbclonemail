@@ -14004,7 +14004,6 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
   Inbox.addInitializer(function(){
     Inbox.controller = new InboxController(App.main);
-    Inbox.controller.showInbox();
   });
 
   Inbox.addFinalizer(function(){
