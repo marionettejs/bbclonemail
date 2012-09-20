@@ -13309,10 +13309,10 @@ Marionette.Module = function(moduleName, app, customArgs){
   this._setupInitializersAndFinalizers();
 
   // store the configuration for this module
-  this._config = {};
-  this._config.app = app;
-  this._config.customArgs = customArgs;
-  this._config.definitions = [];
+  this.config = {};
+  this.config.app = app;
+  this.config.customArgs = customArgs;
+  this.config.definitions = [];
 
   // extend this module with an event binder
   var eventBinder = new Marionette.EventBinder();
@@ -13341,15 +13341,16 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     // Prevent re-start the module
     if (this._isInitialized){ return; }
 
+    // start the sub-modules (depth-first hierarchy)
+    _.each(this.submodules, function(mod){
+      if (mod.config.options.startWithParent){
+        mod.start(options);
+      }
+    });
+
+    // run the callbacks to "start" the current module
     this._initializerCallbacks.run(options, this);
     this._isInitialized = true;
-
-    // start the sub-modules
-    if (this.submodules){
-      _.each(this.submodules, function(mod){
-        mod.start(options);
-      });
-    }
   },
 
   // Stop this module by running its finalizers and then stop all of
@@ -13385,11 +13386,11 @@ _.extend(Marionette.Module.prototype, Backbone.Events, {
     // build the correct list of arguments for the module definition
     var args = _.flatten([
       this, 
-      this._config.app, 
+      this.config.app, 
       Backbone, 
       Marionette, 
       $, _, 
-      this._config.customArgs
+      this.config.customArgs
     ]);
 
     definition.apply(this, args);
@@ -13422,22 +13423,22 @@ _.extend(Marionette.Module, {
     var length = moduleNames.length;
     _.each(moduleNames, function(moduleName, i){
       var isLastModuleInChain = (i === length-1);
+      var isFirstModuleInChain = (i === 0);
 
-      // Get an existing module of this name if we have one
-      var module = parentModule[moduleName];
-      if (!module){ 
-        // Create a new module if we don't have one
-        module = new Marionette.Module(moduleName, app, customArgs);
-        parentModule[moduleName] = module;
-        // store the module on the parent
-        parentModule.submodules[moduleName] = module;
+      var module = that._getModuleDefinition(parentModule, moduleName, app, customArgs);
+      module.config.options = that._getModuleOptions(parentModule, moduleDefinition);
+
+      // if it's the first module in the chain, configure it
+      // for auto-start, as specified by the options
+      if (isFirstModuleInChain){
+        that._configureAutoStart(app, module);
       }
 
       // Only add a module definition and initializer when this is
       // the last module in a "parent.child.grandchild" hierarchy of
       // module names
-      if (isLastModuleInChain ){
-        that._createModuleDefinition(module, moduleDefinition, app);
+      if (isLastModuleInChain && module.config.options.hasDefinition){
+        module.addDefinition(module.config.options.definition);
       }
 
       // Reset the parent module so that the next child
@@ -13449,28 +13450,46 @@ _.extend(Marionette.Module, {
     return parentModule;
   },
 
-  _createModuleDefinition: function(module, moduleDefinition, app){
-    var moduleOptions = this._getModuleDefinitionOptions(moduleDefinition);
-    
-    // add the module definition
-    if (moduleOptions.definition){
-      module.addDefinition(moduleOptions.definition);
-    }
-
-    if (moduleOptions.startWithApp){
+  _configureAutoStart: function(app, module){
+    // Only add the initializer if it's the first module, and
+    // if it is set to auto-start, and if it has not yet been added
+    if (module.config.options.startWithParent && !module.config.autoStartConfigured){
       // start the module when the app starts
       app.addInitializer(function(options){
         module.start(options);
       });
     }
+
+    // prevent this module from being configured for
+    // auto start again. the first time the module
+    // is defined, determines it's auto-start
+    module.config.autoStartConfigured = true;
   },
 
-  _getModuleDefinitionOptions: function(moduleDefinition){
+  _getModuleDefinition: function(parentModule, moduleName, app, customArgs){
+    // Get an existing module of this name if we have one
+    var module = parentModule[moduleName];
+
+    if (!module){ 
+      // Create a new module if we don't have one
+      module = new Marionette.Module(moduleName, app, customArgs);
+      parentModule[moduleName] = module;
+      // store the module on the parent
+      parentModule.submodules[moduleName] = module;
+    }
+
+    return module;
+  },
+
+  _getModuleOptions: function(parentModule, moduleDefinition){
     // default to starting the module with the app
-    var options = { startWithApp: true };
+    var options = { 
+      startWithParent: true,
+      hasDefinition: !!moduleDefinition
+    };
 
     // short circuit if we don't have a module definition
-    if (!moduleDefinition){ return options; }
+    if (!options.hasDefinition){ return options; }
 
     if (_.isFunction(moduleDefinition)){
       // if the definition is a function, assign it directly
@@ -13479,12 +13498,15 @@ _.extend(Marionette.Module, {
 
     } else {
 
-      // the definition is an object. grab the "define" attribute
-      // and the "startWithApp" attribute, as set the options
-      // appropriately
+      // the definition is an object. 
+
+      // grab the "define" attribute
+      options.hasDefinition = !!moduleDefinition.define;
       options.definition = moduleDefinition.define;
-      if (moduleDefinition.hasOwnProperty("startWithApp")){
-        options.startWithApp = moduleDefinition.startWithApp;
+      
+      // grab the "startWithParent" attribute if one exists
+      if (moduleDefinition.hasOwnProperty("startWithParent")){
+        options.startWithParent = moduleDefinition.startWithParent;
       }
     }
 
@@ -13849,7 +13871,7 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
 });
 
 BBCloneMail.module("MailApp", { 
-  startWithApp: false,
+  startWithParent: false,
   define: function(MailApp, App){
     "use strict";
 
@@ -13859,147 +13881,140 @@ BBCloneMail.module("MailApp", {
   }
 });
 
-BBCloneMail.module("MailApp.Mail", {
-  startWithApp: false,
-  define: function(Mail, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Entities
-    // --------
+  // Entities
+  // --------
 
-    var Email = Backbone.Model.extend({
-    });
+  var Email = Backbone.Model.extend({
+  });
 
-    var EmailCollection = Backbone.Collection.extend({
-      model: Email,
-      url: "/email"
-    });
+  var EmailCollection = Backbone.Collection.extend({
+    model: Email,
+    url: "/email"
+  });
 
-    // Controller
-    // ----------
+  // Controller
+  // ----------
 
-    function Controller(){}
+  function Controller(){}
 
-    _.extend(Controller.prototype, {
+  _.extend(Controller.prototype, {
 
-      getAll: function(){
-        var deferred = $.Deferred();
+    getAll: function(){
+      var deferred = $.Deferred();
 
-        this.getMail(function(mail){
-          deferred.resolve(mail);
+      this.getMail(function(mail){
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
+    getByCategory: function(categoryName){
+      var deferred = $.Deferred();
+
+      this.getMail(function(unfiltered){
+        var filtered = unfiltered.filter(function(mail){
+          var categories = mail.get("categories");
+          return _.include(categories, categoryName);
         });
 
-        return deferred.promise();
-      },
+        var mail = new EmailCollection(filtered);
+        deferred.resolve(mail);
+      });
 
-      getByCategory: function(categoryName){
-        var deferred = $.Deferred();
+      return deferred.promise();
+    },
 
-        this.getMail(function(unfiltered){
-          var filtered = unfiltered.filter(function(mail){
-            var categories = mail.get("categories");
-            return _.include(categories, categoryName);
-          });
+    getMail: function(callback){
+      var emailCollection = new EmailCollection();
+      emailCollection.on("reset", callback);
+      emailCollection.fetch();
+    }
 
-          var mail = new EmailCollection(filtered);
-          deferred.resolve(mail);
-        });
+  });
 
-        return deferred.promise();
-      },
+  // Init & Finalize
+  // ---------------
 
-      getMail: function(callback){
-        var emailCollection = new EmailCollection();
-        emailCollection.on("reset", callback);
-        emailCollection.fetch();
-      }
+  Mail.addInitializer(function(){
+    var controller = new Controller();
+    Mail.controller = controller;
 
-    });
+    App.respondTo("mail:inbox", controller.getAll, controller);
+    App.respondTo("mail:category", controller.getByCategory, controller);
+  });
 
-    // Init & Finalize
-    // ---------------
+  Mail.addFinalizer(function(){
+    App.removeRequestHandler("mail:inbox");
+    delete Mail.controller;
+  });
 
-    Mail.addInitializer(function(){
-      var controller = new Controller();
-      Mail.controller = controller;
-
-      App.respondTo("mail:inbox", controller.getAll, controller);
-      App.respondTo("mail:category", controller.getByCategory, controller);
-    });
-
-    Mail.addFinalizer(function(){
-      App.removeRequestHandler("mail:inbox");
-      delete Mail.controller;
-    });
-
-  }
 });
 
-BBCloneMail.module("MailApp.Inbox", {
-  startWithApp: false,
-  define: function(Inbox, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Controller
-    // ----------
+  // Controller
+  // ----------
 
-    var InboxController = function(mainRegion){
-      this.mainRegion = mainRegion;
-    };
+  var InboxController = function(mainRegion){
+    this.mainRegion = mainRegion;
+  };
 
-    _.extend(InboxController.prototype, {
+  _.extend(InboxController.prototype, {
 
-      showInbox: function(){
-        var that = this;
-        Backbone.history.navigate("");
-        this.getEmail(function(emailList){
-          App.execute("show:mail:list", emailList);
-        });
-      },
+    showInbox: function(){
+      var that = this;
+      Backbone.history.navigate("");
+      this.getEmail(function(emailList){
+        App.execute("show:mail:list", emailList);
+      });
+    },
 
-      showMailById: function(id){
-        this.getEmail(function(emailList){
-          var emailItem = emailList.get(id);
-          App.execute("show:mail:item", emailItem);
-        });
-      },
+    showMailById: function(id){
+      this.getEmail(function(emailList){
+        var emailItem = emailList.get(id);
+        App.execute("show:mail:item", emailItem);
+      });
+    },
 
-      showMailByCategory: function(categoryName){
-        Backbone.history.navigate("categories/" + categoryName);
-        this.getEmailByCategory(categoryName, function(emailList){
-          App.execute("show:mail:list", emailList);
-        });
-      },
+    showMailByCategory: function(categoryName){
+      Backbone.history.navigate("categories/" + categoryName);
+      this.getEmailByCategory(categoryName, function(emailList){
+        App.execute("show:mail:list", emailList);
+      });
+    },
 
-      getEmail: function(callback){
-        var emailLoaded = App.request("mail:inbox");
-        $.when(emailLoaded).then(callback);
-      },
+    getEmail: function(callback){
+      var emailLoaded = App.request("mail:inbox");
+      $.when(emailLoaded).then(callback);
+    },
 
-      getEmailByCategory: function(categoryName, callback){
-        var emailLoaded = App.request("mail:category", categoryName);
-        $.when(emailLoaded).then(callback);
-      }
-    });
+    getEmailByCategory: function(categoryName, callback){
+      var emailLoaded = App.request("mail:category", categoryName);
+      $.when(emailLoaded).then(callback);
+    }
+  });
 
-    // Initializers
-    // ------------
+  // Initializers
+  // ------------
 
-    Inbox.addInitializer(function(){
-      Inbox.controller = new InboxController(App.main);
-      Inbox.controller.showInbox();
-    });
+  Inbox.addInitializer(function(){
+    Inbox.controller = new InboxController(App.main);
+    Inbox.controller.showInbox();
+  });
 
-    Inbox.addFinalizer(function(){
-      delete Inbox.controller;
-    });
+  Inbox.addFinalizer(function(){
+    delete Inbox.controller;
+  });
 
-  }
 });
 
 BBCloneMail.module("ContactsApp", { 
-  startWithApp: false,
-
+  startWithParent: false,
   define: function(ContactsApp, App){
     "use strict";
 
@@ -14033,148 +14048,138 @@ BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Mario
 
 });
 
-BBCloneMail.module("ContactsApp.Contacts", { 
-  startWithApp: false,
-  define: function(Contacts, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Entities
-    // --------
+  // Entities
+  // --------
 
-    var Contact = Backbone.Model.extend({
-    });
+  var Contact = Backbone.Model.extend({
+  });
 
-    var ContactCollection = Backbone.Collection.extend({
-      model: Contact,
-      url: "/contacts"
-    });
+  var ContactCollection = Backbone.Collection.extend({
+    model: Contact,
+    url: "/contacts"
+  });
 
-    // Contacts Controller
-    // -------------------
+  // Contacts Controller
+  // -------------------
 
-    Contacts.Controller = function(){};
+  Contacts.Controller = function(){};
 
-    _.extend(Contacts.Controller.prototype, {
+  _.extend(Contacts.Controller.prototype, {
 
-      getAll: function(){
-        var deferred = $.Deferred();
+    getAll: function(){
+      var deferred = $.Deferred();
 
-        this.getContacts(function(contacts){
-          deferred.resolve(contacts);
-        });
+      this.getContacts(function(contacts){
+        deferred.resolve(contacts);
+      });
 
-        return deferred.promise();
-      },
+      return deferred.promise();
+    },
 
-      getContacts: function(callback){
-        var contactCollection = new ContactCollection();
-        contactCollection.on("reset", callback);
-        contactCollection.fetch();
-      }
+    getContacts: function(callback){
+      var contactCollection = new ContactCollection();
+      contactCollection.on("reset", callback);
+      contactCollection.fetch();
+    }
 
-    });
+  });
 
-    Contacts.addInitializer(function(){
-      var controller = new Contacts.Controller();
-      App.respondTo("contacts:all", controller.getAll, controller);
+  Contacts.addInitializer(function(){
+    var controller = new Contacts.Controller();
+    App.respondTo("contacts:all", controller.getAll, controller);
 
-      Contacts.controller = controller;
-    });
+    Contacts.controller = controller;
+  });
 
-    Contacts.addFinalizer(function(){
-      App.removeRequestHandler("contacts:all");
-      delete Contacts.controller;
-    });
-  }
+  Contacts.addFinalizer(function(){
+    App.removeRequestHandler("contacts:all");
+    delete Contacts.controller;
+  });
 });
 
-BBCloneMail.module("ContactsApp.ContactList", { 
-  startWithApp: false,
-  define: function(ContactList, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("ContactsApp.ContactList", function(ContactList, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Contact List Views
-    // ------------------
+  // Contact List Views
+  // ------------------
 
-    ContactList.ContactView = Marionette.ItemView.extend({
-      template: "#contact-item-template",
-      tagName: "li"
-    });
+  ContactList.ContactView = Marionette.ItemView.extend({
+    template: "#contact-item-template",
+    tagName: "li"
+  });
 
-    ContactList.ContactListView = Marionette.CollectionView.extend({
-      itemView: ContactList.ContactView,
-      tagName: "ul",
-      id: "contact-list",
-      className: "contact-list"
-    });
+  ContactList.ContactListView = Marionette.CollectionView.extend({
+    itemView: ContactList.ContactView,
+    tagName: "ul",
+    id: "contact-list",
+    className: "contact-list"
+  });
 
-    // Contact List Controller
-    // -----------------------
+  // Contact List Controller
+  // -----------------------
 
-    ContactList.Controller = function(region){
-      this.region = region;
-    };
+  ContactList.Controller = function(region){
+    this.region = region;
+  };
 
-    _.extend(ContactList.Controller.prototype, {
+  _.extend(ContactList.Controller.prototype, {
 
-      showContacts: function(){
-        var that = this;
+    showContacts: function(){
+      var that = this;
 
-        this.getContacts(function(contacts){
-          var view = new ContactList.ContactListView({
-            collection: contacts
-          });
-
-          that.region.show(view);
+      this.getContacts(function(contacts){
+        var view = new ContactList.ContactListView({
+          collection: contacts
         });
 
-        Backbone.history.navigate("contacts");
-      },
+        that.region.show(view);
+      });
 
-      getContacts: function(callback){
-        var contactRequest = App.request("contacts:all");
-        $.when(contactRequest).then(function(contacts){
-          callback(contacts);
-        });
-      }
+      Backbone.history.navigate("contacts");
+    },
 
-    });
+    getContacts: function(callback){
+      var contactRequest = App.request("contacts:all");
+      $.when(contactRequest).then(function(contacts){
+        callback(contacts);
+      });
+    }
 
-    // Initializers and Finalizers
-    // ---------------------------
+  });
 
-    ContactList.addInitializer(function(){
-      ContactList.controller = new ContactList.Controller(App.main);
-      ContactList.controller.showContacts();
-    });
+  // Initializers and Finalizers
+  // ---------------------------
 
-    ContactList.addFinalizer(function(){
-      delete ContactList.controller;
-    });
-  }
+  ContactList.addInitializer(function(){
+    ContactList.controller = new ContactList.Controller(App.main);
+    ContactList.controller.showContacts();
+  });
+
+  ContactList.addFinalizer(function(){
+    delete ContactList.controller;
+  });
 });
 
-BBCloneMail.module("ContactsApp.ContactCategories", {
-  startWithApp: false,
+BBCloneMail.module("ContactsApp.ContactCategories", function(Cats, App, Backbone, Marionette, $, _){
+  "use strict";
 
-  define: function(Cats, App, Backbone, Marionette, $, _){
-    "use strict";
+  // Category View
+  // -------------
 
-    // Category View
-    // -------------
-    
-    Cats.CategoryView = Marionette.ItemView.extend({
-      template: "#contact-categories-view-template"
-    });
+  Cats.CategoryView = Marionette.ItemView.extend({
+    template: "#contact-categories-view-template"
+  });
 
-    // Initializer
-    // -----------
-    
-    Cats.addInitializer(function(){
-      var view = new Cats.CategoryView();
-      App.nav.show(view);
-    });
-  }
+  // Initializer
+  // -----------
+
+  Cats.addInitializer(function(){
+    var view = new Cats.CategoryView();
+    App.nav.show(view);
+  });
 });
 
 BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $, _){
@@ -14234,223 +14239,212 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
 
 });
 
-BBCloneMail.module("MailApp.Categories", {
-  startWithApp: false,
-  define: function(Categories, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Marionette, $, _){
+  "use strict";
 
+  // Entities
+  // --------
 
-    // Entities
-    // --------
+  var Category = Backbone.Model.extend({});
 
-    var Category = Backbone.Model.extend({});
+  var CategoryCollection = Backbone.Collection.extend({
+    model: Category,
+    url: "/categories"
+  });
 
-    var CategoryCollection = Backbone.Collection.extend({
-      model: Category,
-      url: "/categories"
-    });
+  // Controller
+  // ----------
 
-    // Controller
-    // ----------
+  function Controller(){}
 
-    function Controller(){}
+  _.extend(Controller.prototype, {
 
-    _.extend(Controller.prototype, {
+    getAll: function(){
+      var deferred = $.Deferred();
 
-      getAll: function(){
-        var deferred = $.Deferred();
+      var categoryCollection = new CategoryCollection();
+      categoryCollection.on("reset", function(categories){
+        deferred.resolve(categories);
+      });
 
-        var categoryCollection = new CategoryCollection();
-        categoryCollection.on("reset", function(categories){
-          deferred.resolve(categories);
-        });
+      categoryCollection.fetch();
+      return deferred.promise();
+    }
 
-        categoryCollection.fetch();
-        return deferred.promise();
-      }
+  });
 
-    });
+  // Init & Finialize
+  // ----------------
 
-    // Init & Finialize
-    // ----------------
+  Categories.addInitializer(function(){
+    var controller = new Controller();
+    Categories.controller = controller;
 
-    Categories.addInitializer(function(){
-      var controller = new Controller();
-      Categories.controller = controller;
+    App.respondTo("mail:categories", controller.getAll, controller);
+  });
 
-      App.respondTo("mail:categories", controller.getAll, controller);
-    });
-
-    Categories.addFinalizer(function(){
-      App.removeRequestHandler("mail:categories");
-      delete Categories.controller;
-    });
-
-  }
+  Categories.addFinalizer(function(){
+    App.removeRequestHandler("mail:categories");
+    delete Categories.controller;
+  });
 });
 
-BBCloneMail.module("MailApp.CategoryNavigation", {
-  startWithApp: false,
-  define: function(Nav, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Category List View
-    // ------------------
-    // Display a list of categories in the navigation area
+  // Category List View
+  // ------------------
+  // Display a list of categories in the navigation area
 
-    Nav.CategoryListView = Marionette.ItemView.extend({
-      template: "#mail-categories-view-template",
+  Nav.CategoryListView = Marionette.ItemView.extend({
+    template: "#mail-categories-view-template",
 
-      render: function(){
-        Marionette.ItemView.prototype.render.apply(this, arguments);
-      }
-    });
+    render: function(){
+      Marionette.ItemView.prototype.render.apply(this, arguments);
+    }
+  });
 
-    // Controller
-    // ----------
+  // Controller
+  // ----------
 
-    Nav.Controller = function(region){
-      this.region = region;
-    };
+  Nav.Controller = function(region){
+    this.region = region;
+  };
 
-    _.extend(Nav.Controller.prototype, {
+  _.extend(Nav.Controller.prototype, {
 
-      showCategories: function(){
-        var showCatListView = _.bind(this.showCatListView, this);
-        this.getCategories(showCatListView);
-      },
+    showCategories: function(){
+      var showCatListView = _.bind(this.showCatListView, this);
+      this.getCategories(showCatListView);
+    },
 
-      showCatListView: function(categories){
-        var view = new Nav.CategoryListView({
-          collection: categories
-        });
+    showCatListView: function(categories){
+      var view = new Nav.CategoryListView({
+        collection: categories
+      });
 
-        this.region.show(view);
-      },
+      this.region.show(view);
+    },
 
-      getCategories: function(callback){
-        var categoryLoader = App.request("mail:categories");
-        $.when(categoryLoader).then(callback);
-      }
+    getCategories: function(callback){
+      var categoryLoader = App.request("mail:categories");
+      $.when(categoryLoader).then(callback);
+    }
 
-    });
+  });
 
-    // Initializer / Finalizer
-    // -----------------------
+  // Initializer / Finalizer
+  // -----------------------
 
-    Nav.addInitializer(function(){
-      Nav.controller = new Nav.Controller(App.nav);
-      Nav.controller.showCategories();
-    });
+  Nav.addInitializer(function(){
+    Nav.controller = new Nav.Controller(App.nav);
+    Nav.controller.showCategories();
+  });
 
-    Nav.addFinalizer(function(){
-      delete Nav.controller;
-    });
+  Nav.addFinalizer(function(){
+    delete Nav.controller;
+  });
 
-  }
 });
 
-BBCloneMail.module("MailApp.Mailbox", {
-  startWithApp: false,
-  define: function(Mailbox, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Mail View
-    // ---------
-    // Displays the contents of a single mail item.
+  // Mail View
+  // ---------
+  // Displays the contents of a single mail item.
 
-    Mailbox.MailView = Marionette.ItemView.extend({
-      template: "#email-view-template",
-      tagName: "ul",
-      className: "email-list"
-    });
+  Mailbox.MailView = Marionette.ItemView.extend({
+    template: "#email-view-template",
+    tagName: "ul",
+    className: "email-list"
+  });
 
-    // Mail Preview
-    // ------------
-    // Displays an individual preview line item, when multiple
-    // mail items are displayed as a list. When clicked, the
-    // email item contents will be displayed.
+  // Mail Preview
+  // ------------
+  // Displays an individual preview line item, when multiple
+  // mail items are displayed as a list. When clicked, the
+  // email item contents will be displayed.
 
-    Mailbox.MailPreview = Marionette.ItemView.extend({
-      template: "#email-preview-template",
-      tagName: "li",
+  Mailbox.MailPreview = Marionette.ItemView.extend({
+    template: "#email-preview-template",
+    tagName: "li",
 
-      events: {
-        "click": "previewClicked"
-      },
+    events: {
+      "click": "previewClicked"
+    },
 
-      previewClicked: function(e){
-        e.preventDefault();
-        this.trigger("email:selected", this.model);
-      }
-    });
+    previewClicked: function(e){
+      e.preventDefault();
+      this.trigger("email:selected", this.model);
+    }
+  });
 
-    // Mail List View
-    // --------------
-    // Displays a list of email preview items.
+  // Mail List View
+  // --------------
+  // Displays a list of email preview items.
 
-    Mailbox.MailListView = Marionette.CollectionView.extend({
-      tagName: "ul",
-      className: "email-list",
-      itemView: Mailbox.MailPreview
-    });
+  Mailbox.MailListView = Marionette.CollectionView.extend({
+    tagName: "ul",
+    className: "email-list",
+    itemView: Mailbox.MailPreview
+  });
 
-    // Controller
-    // ----------
-    // Manages the states / transitions between displaying a
-    // list of items, and single email item view
+  // Controller
+  // ----------
+  // Manages the states / transitions between displaying a
+  // list of items, and single email item view
 
-    Mailbox.Controller = function(mainRegion){
-      this.mainRegion = mainRegion;
-    };
+  Mailbox.Controller = function(mainRegion){
+    this.mainRegion = mainRegion;
+  };
 
-    _.extend(Mailbox.Controller.prototype, {
+  _.extend(Mailbox.Controller.prototype, {
 
-      showMailList: function(email){
-        var listView = new Mailbox.MailListView({
-          collection: email
-        });
+    showMailList: function(email){
+      var listView = new Mailbox.MailListView({
+        collection: email
+      });
 
-        listView.on("itemview:email:selected", function(view, email){
-          this.showMailItem(email);
-        }, this);
+      listView.on("itemview:email:selected", function(view, email){
+        this.showMailItem(email);
+      }, this);
 
-        this.mainRegion.show(listView);
-      },
+      this.mainRegion.show(listView);
+    },
 
-      showMailItem: function(email){
-        var itemView = new Mailbox.MailView({
-          model: email
-        });
+    showMailItem: function(email){
+      var itemView = new Mailbox.MailView({
+        model: email
+      });
 
-        itemView.render();
-        $("#main").html(itemView.el);
+      itemView.render();
+      $("#main").html(itemView.el);
 
-        Backbone.history.navigate("inbox/mail/" + email.id);
-      }
+      Backbone.history.navigate("inbox/mail/" + email.id);
+    }
 
-    });
+  });
 
-    // Initializers And Finalizers
-    // ---------------------------
+  // Initializers And Finalizers
+  // ---------------------------
 
-    Mailbox.addInitializer(function(){
-      var controller = new Mailbox.Controller(App.main);
+  Mailbox.addInitializer(function(){
+    var controller = new Mailbox.Controller(App.main);
 
-      // Register command handlers to show a list of
-      // email items, or a single email item
-      App.registerCommand("show:mail:list", controller.showMailList, controller);
-      App.registerCommand("show:mail:item", controller.showMailItem, controller);
+    // Register command handlers to show a list of
+    // email items, or a single email item
+    App.registerCommand("show:mail:list", controller.showMailList, controller);
+    App.registerCommand("show:mail:item", controller.showMailItem, controller);
 
-      Mailbox.controller = controller;
-    });
+    Mailbox.controller = controller;
+  });
 
-    Mailbox.addFinalizer(function(){
-      App.removeCommand("show:mail:list");
-      App.removeCommand("show:mail:item");
+  Mailbox.addFinalizer(function(){
+    App.removeCommand("show:mail:list");
+    App.removeCommand("show:mail:item");
 
-      delete Mailbox.controller;
-    });
+    delete Mailbox.controller;
+  });
 
-  }
 });
