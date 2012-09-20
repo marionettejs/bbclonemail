@@ -12206,6 +12206,90 @@ if ( typeof define === "function" && define.amd && define.amd.jQuery ) {
 
 }).call(this);
 
+/*! backbone.routefilter - v0.1.0 - 2012-09-10
+* https://github.com/boazsender/backbone.routefilter
+* Copyright (c) 2012 Boaz Sender; Licensed MIT */
+
+/*! backbone.routefilter - v0.1.0 - 2012-08-29
+* https://github.com/boazsender/backbone.routefilter
+* Copyright (c) 2012 Boaz Sender; Licensed MIT */
+/*global Backbone:false, _: false, console: false*/
+
+(function(Backbone, _) {
+
+  // Save a reference to the original route method to be called
+  // after we pave it over.
+  var originalRoute = Backbone.Router.prototype.route;
+
+  // Create a reusable no operation func for the case where a before
+  // or after filter is not set. Backbone or Underscore should have
+  // a global one of these in my opinion.
+  var nop = function(){};
+
+  // Extend the router prototype with a default before function,
+  // a default after function, and a pave over of _bindRoutes.
+  _.extend(Backbone.Router.prototype, {
+
+    // Add default before filter.
+    before: nop,
+
+    // Add default after filter.
+    after: nop,
+
+    // Pave over Backbone.Router.prototype.route, the public method used
+    // for adding routes to a router instance on the fly, and the
+    // method which backbone uses internally for binding routes to handlers
+    // on the Backbone.history singleton once it's instantiated.
+    route: function(route, name, callback) {
+
+      // If there is no callback present for this route, then set it to
+      // be the name that was set in the routes property of the constructor,
+      // or the name arguement of the route method invocation. This is what
+      // Backbone.Router.route already does. We need to do it again,
+      // because we are about to wrap the callback in a function that calls
+      // the before and after filters as well as the original callback that
+      // was passed in.
+      if( !callback ){
+        callback = this[ name ];
+      }
+
+      // Create a new callback to replace the original callback that calls
+      // the before and after filters as well as the original callback
+      // internally.
+      var wrappedCallback = _.bind( function() {
+
+        // Call the before filter and if it returns false, run the
+        // route's original callback, and after filter. This allows
+        // the user to return false from within the before filter
+        // to prevent the original route callback and after
+        // filter from running.
+        if ( this.before.apply(this, arguments) === false) {
+          return;
+        }
+
+        // If the callback exists, then call it. This means that the before
+        // and after filters will be called whether or not an actual
+        // callback function is supplied to handle a given route.
+        if( callback ) {
+          callback.apply( this, arguments );
+        }
+
+        // Call the after filter.
+        this.after.apply( this, arguments );
+
+      }, this);
+
+      // Call our original route, replacing the callback that was originally
+      // passed in when Backboun.Router.route was invoked with our wrapped
+      // callback that calls the before and after callbacks as well as the
+      // original callback.
+      return originalRoute.call( this, route, name, wrappedCallback );
+    }
+
+  });
+
+}(Backbone, _));
+
 // Backbone.Marionette, v0.10.0
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
@@ -13695,11 +13779,13 @@ BBCloneMail = (function(Backbone){
   });
 
   App.startSubApp = function(appName){
+    var currentApp = App.module(appName);
+    if (App.currentApp === currentApp){ return; }
+
     if (App.currentApp){
       App.currentApp.stop();
     }
 
-    var currentApp = App.module(appName);
     App.currentApp = currentApp;
     currentApp.start();
   };
@@ -13709,9 +13795,225 @@ BBCloneMail = (function(Backbone){
   return App;
 })(Backbone);
 
+BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette, $, _){
+
+  // Mail Router
+  // -----------
+
+  var Router = Backbone.Router.extend({
+    routes: {
+      "": "showInbox",
+      "categories/:id": "showMailByCategory",
+      "inbox/mail/:id": "showMailById"
+    },
+
+    // this uses https://github.com/boazsender/backbone.routefilter
+    // to do filters around the route methods, and fire this method
+    // "before" any route method is called.
+    before: function(){
+      App.startSubApp("MailApp");
+    },
+
+    showInbox: function(id){
+      App.execute("show:inbox");
+    },
+
+    showMailByCategory: function(id){
+      App.execute("show:category", id);
+    },
+
+    showMailById: function(id){
+      App.execute("show:mail", id);
+    }
+  });
+
+  // Initializer / Finalizer
+  // -----------------------
+
+  MailRouter.addInitializer(function(){
+    console.log("starting the mail router");
+    var router = new Router();
+  });
+
+});
+
+BBCloneMail.module("MailApp", { 
+  startWithApp: false,
+  define: function(){}
+});
+
+BBCloneMail.module("MailApp.Mail", {
+  startWithApp: false,
+  define: function(Mail, App, Backbone, Marionette, $, _){
+
+    // Entities
+    // --------
+
+    var Email = Backbone.Model.extend({
+    });
+
+    var EmailCollection = Backbone.Collection.extend({
+      model: Email,
+      url: "/email"
+    });
+
+    // Controller
+    // ----------
+
+    function Controller(){}
+
+    _.extend(Controller.prototype, {
+
+      getAll: function(){
+        var deferred = $.Deferred();
+
+        this.getMail(function(mail){
+          deferred.resolve(mail);
+        });
+
+        return deferred.promise();
+      },
+
+      getByCategory: function(categoryName){
+        var deferred = $.Deferred();
+
+        this.getMail(function(unfiltered){
+          var filtered = unfiltered.filter(function(mail){
+            var categories = mail.get("categories");
+            return _.include(categories, categoryName);
+          });
+
+          var mail = new EmailCollection(filtered);
+          deferred.resolve(mail);
+        });
+
+        return deferred.promise();
+      },
+
+      getMail: function(callback){
+        var emailCollection = new EmailCollection();
+        emailCollection.on("reset", callback);
+        emailCollection.fetch();
+      }
+
+    });
+
+    // Init & Finalize
+    // ---------------
+
+    Mail.addInitializer(function(){
+      var controller = new Controller();
+      this.controller = controller;
+
+      App.respondTo("mail:inbox", controller.getAll, controller);
+      App.respondTo("mail:category", controller.getByCategory, controller);
+    });
+
+    Mail.addFinalizer(function(){
+      App.removeRequestHandler("mail:inbox");
+      delete this.controller;
+    });
+
+  }
+});
+
+BBCloneMail.module("MailApp.Inbox", {
+  startWithApp: false,
+  define: function(Inbox, App, Backbone, Marionette, $, _){
+
+    // Controller
+    // ----------
+
+    var InboxController = function(mainRegion){
+      this.mainRegion = mainRegion;
+    };
+
+    _.extend(InboxController.prototype, {
+
+      showInbox: function(){
+        var that = this;
+        Backbone.history.navigate("");
+        this.getEmail(function(emailList){
+          App.execute("show:mail:list", emailList);
+        });
+      },
+
+      showMailById: function(id){
+        this.getEmail(function(emailList){
+          var emailItem = emailList.get(id);
+          App.execute("show:mail:item", emailItem);
+        });
+      },
+
+      showMailByCategory: function(categoryName){
+        Backbone.history.navigate("categories/" + categoryName);
+        this.getEmailByCategory(categoryName, function(emailList){
+          App.execute("show:mail:list", emailList);
+        });
+      },
+
+      getEmail: function(callback){
+        var emailLoaded = App.request("mail:inbox");
+        $.when(emailLoaded).then(callback);
+      },
+
+      getEmailByCategory: function(categoryName, callback){
+        var emailLoaded = App.request("mail:category", categoryName);
+        $.when(emailLoaded).then(callback);
+      }
+    });
+
+    // Initializers
+    // ------------
+
+    Inbox.addInitializer(function(){
+      console.log("starting the inbox");
+      var controller = new InboxController(App.main);
+      App.registerCommand("show:inbox", controller.showInbox, controller);
+      App.registerCommand("show:mail", controller.showMailById, controller);
+      App.registerCommand("show:category", controller.showMailByCategory, controller);
+
+      controller.showInbox();
+    });
+
+    Inbox.addFinalizer(function(){
+      console.log("stopping the inbox");
+      App.removeCommand("show:inbox");
+      App.removeCommand("show:mail");
+      App.removeCommand("show:category");
+    });
+
+  }
+});
+
 BBCloneMail.module("ContactsApp", { 
   startWithApp: false,
   define: function(){}
+});
+
+BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Marionette, $, _){
+
+  // Contacts Router
+  // -----------
+
+  var Router = Backbone.Router.extend({
+    routes: {
+      "contacts": "showContacts",
+    },
+
+    showContacts: function(id){
+      App.startSubApp("ContactsApp");
+    }
+  });
+
+  // Initializer / Finalizer
+  // -----------------------
+
+  ContactRouter.addInitializer(function(){
+    console.log("starting the contact router");
+    var router = new Router();
+  });
+
 });
 
 BBCloneMail.module("ContactsApp.Contacts", { 
@@ -13806,6 +14108,8 @@ BBCloneMail.module("ContactsApp.ContactList", {
 
           that.region.show(view);
         });
+
+        Backbone.history.navigate("contacts");
       },
 
       getContacts: function(callback){
@@ -13881,379 +14185,239 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
 
 });
 
-BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Categories", {
+  startWithApp: false,
+  define: function(Categories, App, Backbone, Marionette, $, _){
 
-  // Entities
-  // --------
+    // Entities
+    // --------
 
-  var Category = Backbone.Model.extend({});
+    var Category = Backbone.Model.extend({});
 
-  var CategoryCollection = Backbone.Collection.extend({
-    model: Category,
-    url: "/categories"
-  });
-
-  // Controller
-  // ----------
-
-  function Controller(){}
-  
-  _.extend(Controller.prototype, {
-
-    getAll: function(){
-      var deferred = $.Deferred();
-
-      var categoryCollection = new CategoryCollection();
-      categoryCollection.on("reset", function(categories){
-        deferred.resolve(categories);
-      });
-
-      categoryCollection.fetch();
-      return deferred.promise();
-    }
-
-  });
-
-  // Init & Finialize
-  // ----------------
-
-  Categories.addInitializer(function(){
-    var controller = new Controller();
-    this.controller = controller;
-
-    App.respondTo("mail:categories", controller.getAll, controller);
-  });
-
-  Categories.addFinalizer(function(){
-    App.removeRequestHandler("mail:categories");
-    delete this.controller;
-  });
-
-});
-
-BBCloneMail.module("MailApp.CategoryNavigation", function(Nav, App, Backbone, Marionette, $, _){
-
-  // Category List View
-  // ------------------
-  // Display a list of categories in the navigation area
-
-  Nav.CategoryListView = Marionette.ItemView.extend({
-    template: "#mail-categories-view-template",
-
-    render: function(){
-      Marionette.ItemView.prototype.render.apply(this, arguments);
-    },
-
-    events: {
-      "click .mail-category": "mailCategoryClicked"
-    },
-
-    mailCategoryClicked: function(e){
-      e.preventDefault();
-      var categoryName = $(e.currentTarget).data("category");
-      this.trigger("category:selected", categoryName);
-    }
-  });
-
-  // Controller
-  // ----------
-
-  Nav.Controller = function(region){
-    this.region = region;
-  };
-
-  _.extend(Nav.Controller.prototype, {
-
-    showCategories: function(){
-      var showCatListView = _.bind(this.showCatListView, this);
-      this.getCategories(showCatListView);
-    },
-
-    showCatListView: function(categories){
-      var view = new Nav.CategoryListView({
-        collection: categories
-      });
-
-      view.bindTo(view, "category:selected", this.showCategory, this);
-
-      this.region.show(view);
-    },
-
-    showCategory: function(categoryName){
-      if (categoryName){
-        App.execute("show:category", categoryName);
-      } else {
-        App.execute("show:inbox");
-      }
-    },
-
-    getCategories: function(callback){
-      var categoryLoader = App.request("mail:categories");
-      $.when(categoryLoader).then(callback);
-    }
-
-  });
-
-  // Initializer / Finalizer
-  // -----------------------
-
-  Nav.addInitializer(function(){
-    this.controller = new Nav.Controller(App.nav);
-    this.controller.showCategories();
-  });
-
-  Nav.addFinalizer(function(){
-    delete this.controller;
-  });
-
-});
-
-BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $, _){
-
-  // Router
-  // ------
-
-  var Router = Marionette.AppRouter.extend({
-    appRoutes: {
-      "": "showInbox",
-      "categories/:id": "showMailByCategory",
-      "inbox/mail/:id": "showMailById"
-    }
-  });
-
-  // Controller
-  // ----------
-
-  var InboxController = function(mainRegion){
-    this.mainRegion = mainRegion;
-  };
-
-  _.extend(InboxController.prototype, {
-
-    showInbox: function(){
-      var that = this;
-      Backbone.history.navigate("");
-      this.getEmail(function(emailList){
-        App.execute("show:mail:list", emailList);
-      });
-    },
-
-    showMailById: function(id){
-      this.getEmail(function(emailList){
-        var emailItem = emailList.get(id);
-        App.execute("show:mail:item", emailItem);
-      });
-    },
-
-    showMailByCategory: function(categoryName){
-      Backbone.history.navigate("categories/" + categoryName);
-      this.getEmailByCategory(categoryName, function(emailList){
-        App.execute("show:mail:list", emailList);
-      });
-    },
-
-    getEmail: function(callback){
-      var emailLoaded = App.request("mail:inbox");
-      $.when(emailLoaded).then(callback);
-    },
-
-    getEmailByCategory: function(categoryName, callback){
-      var emailLoaded = App.request("mail:category", categoryName);
-      $.when(emailLoaded).then(callback);
-    }
-  });
-
-  // Initializers
-  // ------------
-  
-  Inbox.addInitializer(function(){
-    var controller = new InboxController(App.main);
-    var router = new Router({
-      controller: controller
+    var CategoryCollection = Backbone.Collection.extend({
+      model: Category,
+      url: "/categories"
     });
 
-    App.registerCommand("show:category", controller.showMailByCategory, controller);
-    App.registerCommand("show:inbox", controller.showInbox, controller);
+    // Controller
+    // ----------
 
-    Inbox.controller = controller;
-    Inbox.router = router;
-  });
+    function Controller(){}
 
-  Inbox.addFinalizer(function(){
-    delete Inbox.controller;
-    delete Inbox.router;
-  });
-});
+    _.extend(Controller.prototype, {
 
-BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, _){
+      getAll: function(){
+        var deferred = $.Deferred();
 
-  // Entities
-  // --------
-
-  var Email = Backbone.Model.extend({
-  });
-
-  var EmailCollection = Backbone.Collection.extend({
-    model: Email,
-    url: "/email"
-  });
-
-  // Controller
-  // ----------
-
-  function Controller(){}
-
-  _.extend(Controller.prototype, {
-
-    getAll: function(){
-      var deferred = $.Deferred();
-
-      this.getMail(function(mail){
-        deferred.resolve(mail);
-      });
-
-      return deferred.promise();
-    },
-
-    getByCategory: function(categoryName){
-      var deferred = $.Deferred();
-
-      this.getMail(function(unfiltered){
-        var filtered = unfiltered.filter(function(mail){
-          var categories = mail.get("categories");
-          return _.include(categories, categoryName);
+        var categoryCollection = new CategoryCollection();
+        categoryCollection.on("reset", function(categories){
+          deferred.resolve(categories);
         });
 
-        var mail = new EmailCollection(filtered);
-        deferred.resolve(mail);
-      });
+        categoryCollection.fetch();
+        return deferred.promise();
+      }
 
-      return deferred.promise();
-    },
+    });
 
-    getMail: function(callback){
-      var emailCollection = new EmailCollection();
-      emailCollection.on("reset", callback);
-      emailCollection.fetch();
-    }
+    // Init & Finialize
+    // ----------------
 
-  });
+    Categories.addInitializer(function(){
+      var controller = new Controller();
+      this.controller = controller;
 
-  // Init & Finalize
-  // ---------------
+      App.respondTo("mail:categories", controller.getAll, controller);
+    });
 
-  Mail.addInitializer(function(){
-    var controller = new Controller();
-    this.controller = controller;
+    Categories.addFinalizer(function(){
+      App.removeRequestHandler("mail:categories");
+      delete this.controller;
+    });
 
-    App.respondTo("mail:inbox", controller.getAll, controller);
-    App.respondTo("mail:category", controller.getByCategory, controller);
-  });
-
-  Mail.addFinalizer(function(){
-    App.removeRequestHandler("mail:inbox");
-    delete this.controller;
-  });
-
+  }
 });
 
-BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.CategoryNavigation", {
+  startWithApp: false,
+  define: function(Nav, App, Backbone, Marionette, $, _){
 
-  // Mail View
-  // ---------
-  // Displays the contents of a single mail item.
+    // Category List View
+    // ------------------
+    // Display a list of categories in the navigation area
 
-  Mailbox.MailView = Marionette.ItemView.extend({
-    template: "#email-view-template",
-    tagName: "ul",
-    className: "email-list"
-  });
-  
-  // Mail Preview
-  // ------------
-  // Displays an individual preview line item, when multiple
-  // mail items are displayed as a list. When clicked, the
-  // email item contents will be displayed.
+    Nav.CategoryListView = Marionette.ItemView.extend({
+      template: "#mail-categories-view-template",
 
-  Mailbox.MailPreview = Marionette.ItemView.extend({
-    template: "#email-preview-template",
-    tagName: "li",
+      render: function(){
+        Marionette.ItemView.prototype.render.apply(this, arguments);
+      },
 
-    events: {
-      "click": "previewClicked"
-    },
+      events: {
+        "click .mail-category": "mailCategoryClicked"
+      },
 
-    previewClicked: function(e){
-      e.preventDefault();
-      this.trigger("email:selected", this.model);
-    }
-  });
+      mailCategoryClicked: function(e){
+        e.preventDefault();
+        var categoryName = $(e.currentTarget).data("category");
+        this.trigger("category:selected", categoryName);
+      }
+    });
 
-  // Mail List View
-  // --------------
-  // Displays a list of email preview items.
+    // Controller
+    // ----------
 
-  Mailbox.MailListView = Marionette.CollectionView.extend({
-    tagName: "ul",
-    className: "email-list",
-    itemView: Mailbox.MailPreview
-  });
+    Nav.Controller = function(region){
+      this.region = region;
+    };
 
-  // Controller
-  // ----------
-  // Manages the states / transitions between displaying a
-  // list of items, and single email item view
-  
-  Mailbox.Controller = function(mainRegion){
-    this.mainRegion = mainRegion;
-  };
+    _.extend(Nav.Controller.prototype, {
 
-  _.extend(Mailbox.Controller.prototype, {
+      showCategories: function(){
+        var showCatListView = _.bind(this.showCatListView, this);
+        this.getCategories(showCatListView);
+      },
 
-    showMailList: function(email){
-      var listView = new Mailbox.MailListView({
-        collection: email
-      });
+      showCatListView: function(categories){
+        var view = new Nav.CategoryListView({
+          collection: categories
+        });
 
-      listView.on("itemview:email:selected", function(view, email){
-        this.showMailItem(email);
-      }, this);
+        view.bindTo(view, "category:selected", this.showCategory, this);
 
-      this.mainRegion.show(listView);
-    },
+        this.region.show(view);
+      },
 
-    showMailItem: function(email){
-      var itemView = new Mailbox.MailView({
-        model: email
-      });
+      showCategory: function(categoryName){
+        if (categoryName){
+          App.execute("show:category", categoryName);
+        } else {
+          App.execute("show:inbox");
+        }
+      },
 
-      itemView.render();
-      $("#main").html(itemView.el);
+      getCategories: function(callback){
+        var categoryLoader = App.request("mail:categories");
+        $.when(categoryLoader).then(callback);
+      }
 
-      Backbone.history.navigate("inbox/mail/" + email.id);
-    }
+    });
 
-  });
+    // Initializer / Finalizer
+    // -----------------------
 
-  // Initializers And Finalizers
-  // ---------------------------
+    Nav.addInitializer(function(){
+      this.controller = new Nav.Controller(App.nav);
+      this.controller.showCategories();
+    });
 
-  Mailbox.addInitializer(function(){
-    var controller = new Mailbox.Controller(App.main);
+    Nav.addFinalizer(function(){
+      delete this.controller;
+    });
 
-    // Register command handlers to show a list of
-    // email items, or a single email item
-    App.registerCommand("show:mail:list", controller.showMailList, controller);
-    App.registerCommand("show:mail:item", controller.showMailItem, controller);
+  }
+});
 
-    Mailbox.controller = controller;
-  });
+BBCloneMail.module("MailApp.Mailbox", {
+  startWithApp: false,
+  define: function(Mailbox, App, Backbone, Marionette, $, _){
 
-  Mailbox.addFinalizer(function(){
-    App.removeCommand("show:mail:list");
-    App.removeCommand("show:mail:item");
+    // Mail View
+    // ---------
+    // Displays the contents of a single mail item.
 
-    delete Mailbox.controller;
-  });
+    Mailbox.MailView = Marionette.ItemView.extend({
+      template: "#email-view-template",
+      tagName: "ul",
+      className: "email-list"
+    });
 
+    // Mail Preview
+    // ------------
+    // Displays an individual preview line item, when multiple
+    // mail items are displayed as a list. When clicked, the
+    // email item contents will be displayed.
+
+    Mailbox.MailPreview = Marionette.ItemView.extend({
+      template: "#email-preview-template",
+      tagName: "li",
+
+      events: {
+        "click": "previewClicked"
+      },
+
+      previewClicked: function(e){
+        e.preventDefault();
+        this.trigger("email:selected", this.model);
+      }
+    });
+
+    // Mail List View
+    // --------------
+    // Displays a list of email preview items.
+
+    Mailbox.MailListView = Marionette.CollectionView.extend({
+      tagName: "ul",
+      className: "email-list",
+      itemView: Mailbox.MailPreview
+    });
+
+    // Controller
+    // ----------
+    // Manages the states / transitions between displaying a
+    // list of items, and single email item view
+
+    Mailbox.Controller = function(mainRegion){
+      this.mainRegion = mainRegion;
+    };
+
+    _.extend(Mailbox.Controller.prototype, {
+
+      showMailList: function(email){
+        var listView = new Mailbox.MailListView({
+          collection: email
+        });
+
+        listView.on("itemview:email:selected", function(view, email){
+          this.showMailItem(email);
+        }, this);
+
+        this.mainRegion.show(listView);
+      },
+
+      showMailItem: function(email){
+        var itemView = new Mailbox.MailView({
+          model: email
+        });
+
+        itemView.render();
+        $("#main").html(itemView.el);
+
+        Backbone.history.navigate("inbox/mail/" + email.id);
+      }
+
+    });
+
+    // Initializers And Finalizers
+    // ---------------------------
+
+    Mailbox.addInitializer(function(){
+      var controller = new Mailbox.Controller(App.main);
+
+      // Register command handlers to show a list of
+      // email items, or a single email item
+      App.registerCommand("show:mail:list", controller.showMailList, controller);
+      App.registerCommand("show:mail:item", controller.showMailItem, controller);
+
+      Mailbox.controller = controller;
+    });
+
+    Mailbox.addFinalizer(function(){
+      App.removeCommand("show:mail:list");
+      App.removeCommand("show:mail:item");
+
+      delete Mailbox.controller;
+    });
+
+  }
 });

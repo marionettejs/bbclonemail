@@ -24,7 +24,12 @@ module.exports = function(grunt) {
           "public/javascripts/bbclonemail/bbclonemail.commands.js",
           "public/javascripts/bbclonemail/bbclonemail.reqres.js",
           "public/javascripts/bbclonemail/bbclonemail.js",
+          "public/javascripts/bbclonemail/bbclonemail.mailrouter.js",
+          "public/javascripts/bbclonemail/bbclonemail.mailapp.js",
+          "public/javascripts/bbclonemail/bbclonemail.mailapp.mail.js",
+          "public/javascripts/bbclonemail/bbclonemail.mailapp.inbox.js",
           "public/javascripts/bbclonemail/bbclonemail.contactsapp.js",
+          "public/javascripts/bbclonemail/bbclonemail.contactrouter.js",
           "public/javascripts/bbclonemail/bbclonemail.contactsapp.contacts.js",
           "public/javascripts/bbclonemail/bbclonemail.contactsapp.contactlist.js",
           "public/javascripts/bbclonemail/**/*.js"

@@ -1,4 +1,5 @@
 BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $, _){
+  "use strict";
 
   // Views
   // -----
@@ -8,16 +9,24 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
       "change #app-selector select": "appSelected"
     },
 
+    initialize: function(){
+      this.bindTo(App.vent, "app:started", this.showAppName, this);
+    },
+
     appSelected: function(e){
       e.preventDefault();
       var appName = $(e.currentTarget).val();
       this.trigger("app:selected", appName);
+    },
+
+    showAppName: function(appName){
+      this.$("#app-selector select").val(appName);
     }
   });
 
   // Controller
   // ---------
-  
+
   var LayoutController = function(){};
 
   _.extend(LayoutController.prototype, {

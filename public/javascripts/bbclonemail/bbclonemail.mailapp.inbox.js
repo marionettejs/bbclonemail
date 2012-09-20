@@ -48,7 +48,6 @@ BBCloneMail.module("MailApp.Inbox", {
     // ------------
 
     Inbox.addInitializer(function(){
-      console.log("starting the inbox");
       var controller = new InboxController(App.main);
       App.registerCommand("show:inbox", controller.showInbox, controller);
       App.registerCommand("show:mail", controller.showMailById, controller);
@@ -58,7 +57,6 @@ BBCloneMail.module("MailApp.Inbox", {
     });
 
     Inbox.addFinalizer(function(){
-      console.log("stopping the inbox");
       App.removeCommand("show:inbox");
       App.removeCommand("show:mail");
       App.removeCommand("show:category");

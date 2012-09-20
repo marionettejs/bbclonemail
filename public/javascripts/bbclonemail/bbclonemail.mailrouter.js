@@ -34,7 +34,6 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
   // -----------------------
 
   MailRouter.addInitializer(function(){
-    console.log("starting the mail router");
     var router = new Router();
   });
 

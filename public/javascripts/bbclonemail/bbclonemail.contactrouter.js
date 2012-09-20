@@ -17,7 +17,6 @@ BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Mario
   // -----------------------
 
   ContactRouter.addInitializer(function(){
-    console.log("starting the contact router");
     var router = new Router();
   });
 
