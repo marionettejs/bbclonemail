@@ -1,4 +1,5 @@
 describe("inbox", function(){
+  "use strict";
 
   var showMailItemHandler, showMailListHandler, getInboxHandler;
 

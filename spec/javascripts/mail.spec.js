@@ -1,4 +1,5 @@
 describe("mail", function(){
+  "use strict";
 
   mockMailAjax();
 

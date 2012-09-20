@@ -1,4 +1,6 @@
 describe("mail categories", function(){
+  "use strict";
+
   var categories;
 
   mockCategoriesAjax();

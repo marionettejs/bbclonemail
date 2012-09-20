@@ -1,5 +1,6 @@
 describe("switching apps", function(){
   "use strict";
+
   var mailApp, contactsApp;
 
   beforeEach(function(){

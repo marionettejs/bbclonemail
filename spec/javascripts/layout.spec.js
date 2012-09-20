@@ -1,4 +1,5 @@
 describe("application layout", function(){
+  "use strict";
 
   describe("when the application starts", function(){
     var appLayout, controller;

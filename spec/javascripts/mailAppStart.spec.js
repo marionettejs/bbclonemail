@@ -1,4 +1,5 @@
 describe("mail app start", function(){
+  "use strict";
 
   describe("when starting the mail app with an empty route (#)", function(){
     var inbox, handler, getInboxHandler;

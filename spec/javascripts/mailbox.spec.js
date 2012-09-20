@@ -1,4 +1,5 @@
 describe("mailbox", function(){
+  "use strict";
 
   describe("when showing an email collection", function(){
     var mailbox, email;

@@ -1,4 +1,5 @@
 describe("contacts", function(){
+  "use strict";
 
   mockContactsAjax();
 
