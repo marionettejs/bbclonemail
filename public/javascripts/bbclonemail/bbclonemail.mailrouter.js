@@ -10,18 +10,22 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
       "inbox/mail/:id": "showMailById"
     },
 
-    showInbox: function(id){
+    // this uses https://github.com/boazsender/backbone.routefilter
+    // to do filters around the route methods, and fire this method
+    // "before" any route method is called.
+    before: function(){
       App.startSubApp("MailApp");
+    },
+
+    showInbox: function(id){
       App.execute("show:inbox");
     },
 
     showMailByCategory: function(id){
-      App.startSubApp("MailApp");
       App.execute("show:category", id);
     },
 
     showMailById: function(id){
-      App.startSubApp("MailApp");
       App.execute("show:mail", id);
     }
   });
