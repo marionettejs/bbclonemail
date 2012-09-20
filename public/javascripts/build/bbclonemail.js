@@ -13826,16 +13826,16 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
       App.startSubApp("MailApp");
     },
 
-    showInbox: function(id){
-      App.execute("show:inbox");
+    showInbox: function(){
+      App.MailApp.Inbox.controller.showInbox();
     },
 
     showMailByCategory: function(id){
-      App.execute("show:category", id);
+      App.MailApp.Inbox.controller.showMailByCategory(id);
     },
 
     showMailById: function(id){
-      App.execute("show:mail", id);
+      App.MailApp.Inbox.controller.showMailById(id);
     }
   });
 
@@ -13921,7 +13921,7 @@ BBCloneMail.module("MailApp.Mail", {
 
     Mail.addInitializer(function(){
       var controller = new Controller();
-      this.controller = controller;
+      Mail.controller = controller;
 
       App.respondTo("mail:inbox", controller.getAll, controller);
       App.respondTo("mail:category", controller.getByCategory, controller);
@@ -13929,7 +13929,7 @@ BBCloneMail.module("MailApp.Mail", {
 
     Mail.addFinalizer(function(){
       App.removeRequestHandler("mail:inbox");
-      delete this.controller;
+      delete Mail.controller;
     });
 
   }
@@ -13986,18 +13986,12 @@ BBCloneMail.module("MailApp.Inbox", {
     // ------------
 
     Inbox.addInitializer(function(){
-      var controller = new InboxController(App.main);
-      App.registerCommand("show:inbox", controller.showInbox, controller);
-      App.registerCommand("show:mail", controller.showMailById, controller);
-      App.registerCommand("show:category", controller.showMailByCategory, controller);
-
-      controller.showInbox();
+      Inbox.controller = new InboxController(App.main);
+      Inbox.controller.showInbox();
     });
 
     Inbox.addFinalizer(function(){
-      App.removeCommand("show:inbox");
-      App.removeCommand("show:mail");
-      App.removeCommand("show:category");
+      delete Inbox.controller;
     });
 
   }
@@ -14084,12 +14078,12 @@ BBCloneMail.module("ContactsApp.Contacts", {
       var controller = new Contacts.Controller();
       App.respondTo("contacts:all", controller.getAll, controller);
 
-      this.controller = controller;
+      Contacts.controller = controller;
     });
 
     Contacts.addFinalizer(function(){
       App.removeRequestHandler("contacts:all");
-      delete this.controller;
+      delete Contacts.controller;
     });
   }
 });
@@ -14150,14 +14144,35 @@ BBCloneMail.module("ContactsApp.ContactList", {
     // ---------------------------
 
     ContactList.addInitializer(function(){
-      var controller = new ContactList.Controller(App.main);
-      controller.showContacts();
-
-      this.controller = controller;
+      ContactList.controller = new ContactList.Controller(App.main);
+      ContactList.controller.showContacts();
     });
 
     ContactList.addFinalizer(function(){
-      delete this.controller;
+      delete ContactList.controller;
+    });
+  }
+});
+
+BBCloneMail.module("ContactsApp.ContactCategories", {
+  startWithApp: false,
+
+  define: function(Cats, App, Backbone, Marionette, $, _){
+    "use strict";
+
+    // Category View
+    // -------------
+    
+    Cats.CategoryView = Marionette.ItemView.extend({
+      template: "#contact-categories-view-template"
+    });
+
+    // Initializer
+    // -----------
+    
+    Cats.addInitializer(function(){
+      var view = new Cats.CategoryView();
+      App.nav.show(view);
     });
   }
 });
@@ -14261,14 +14276,14 @@ BBCloneMail.module("MailApp.Categories", {
 
     Categories.addInitializer(function(){
       var controller = new Controller();
-      this.controller = controller;
+      Categories.controller = controller;
 
       App.respondTo("mail:categories", controller.getAll, controller);
     });
 
     Categories.addFinalizer(function(){
       App.removeRequestHandler("mail:categories");
-      delete this.controller;
+      delete Categories.controller;
     });
 
   }
@@ -14288,16 +14303,6 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
 
       render: function(){
         Marionette.ItemView.prototype.render.apply(this, arguments);
-      },
-
-      events: {
-        "click .mail-category": "mailCategoryClicked"
-      },
-
-      mailCategoryClicked: function(e){
-        e.preventDefault();
-        var categoryName = $(e.currentTarget).data("category");
-        this.trigger("category:selected", categoryName);
       }
     });
 
@@ -14320,17 +14325,7 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
           collection: categories
         });
 
-        view.bindTo(view, "category:selected", this.showCategory, this);
-
         this.region.show(view);
-      },
-
-      showCategory: function(categoryName){
-        if (categoryName){
-          App.execute("show:category", categoryName);
-        } else {
-          App.execute("show:inbox");
-        }
       },
 
       getCategories: function(callback){
@@ -14344,12 +14339,12 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
     // -----------------------
 
     Nav.addInitializer(function(){
-      this.controller = new Nav.Controller(App.nav);
-      this.controller.showCategories();
+      Nav.controller = new Nav.Controller(App.nav);
+      Nav.controller.showCategories();
     });
 
     Nav.addFinalizer(function(){
-      delete this.controller;
+      delete Nav.controller;
     });
 
   }
