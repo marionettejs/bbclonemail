@@ -36,6 +36,8 @@ BBCloneMail.module("ContactsApp.ContactList", {
 
           that.region.show(view);
         });
+
+        Backbone.history.navigate("contacts");
       },
 
       getContacts: function(callback){

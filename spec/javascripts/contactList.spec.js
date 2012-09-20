@@ -7,6 +7,7 @@ describe("contacts list", function(){
     var requestHandler, ContactList;
 
     beforeEach(function(){
+      startHistory();
       affix("#contact-item-template div[text=Joe Johnson]");
       affix("article#main");
 
@@ -29,6 +30,10 @@ describe("contacts list", function(){
 
     it("should show the list of contacts", function(){
       expect(BBCloneMail.main.$el).toHaveText("Joe Johnson");
+    });
+
+    it("should navigate to the #contacts route", function(){
+      expect(window.location.hash).toBe("#contacts");
     });
 
   });
