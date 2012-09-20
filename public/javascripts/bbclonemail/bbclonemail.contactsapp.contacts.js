@@ -1,6 +1,7 @@
 BBCloneMail.module("ContactsApp.Contacts", { 
   startWithApp: false,
   define: function(Contacts, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Entities
     // --------

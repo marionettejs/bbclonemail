@@ -1,6 +1,8 @@
 BBCloneMail.module("MailApp.Categories", {
   startWithApp: false,
   define: function(Categories, App, Backbone, Marionette, $, _){
+    "use strict";
+
 
     // Entities
     // --------

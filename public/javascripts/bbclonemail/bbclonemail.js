@@ -1,4 +1,6 @@
 BBCloneMail = (function(Backbone){
+  "use strict";
+
   var App = new Backbone.Marionette.Application();
 
   App.addRegions({

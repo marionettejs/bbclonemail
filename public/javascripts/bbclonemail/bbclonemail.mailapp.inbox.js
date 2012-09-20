@@ -1,6 +1,7 @@
 BBCloneMail.module("MailApp.Inbox", {
   startWithApp: false,
   define: function(Inbox, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Controller
     // ----------

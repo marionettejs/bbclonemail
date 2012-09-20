@@ -1,6 +1,7 @@
 BBCloneMail.module("MailApp.CategoryNavigation", {
   startWithApp: false,
   define: function(Nav, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Category List View
     // ------------------

@@ -1,4 +1,5 @@
 BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette, $, _){
+  "use strict";
 
   // Mail Router
   // -----------

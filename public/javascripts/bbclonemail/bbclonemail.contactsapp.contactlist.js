@@ -1,6 +1,7 @@
 BBCloneMail.module("ContactsApp.ContactList", { 
   startWithApp: false,
   define: function(ContactList, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Contact List Views
     // ------------------

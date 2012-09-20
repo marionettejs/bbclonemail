@@ -1,6 +1,7 @@
 BBCloneMail.module("MailApp.Mailbox", {
   startWithApp: false,
   define: function(Mailbox, App, Backbone, Marionette, $, _){
+    "use strict";
 
     // Mail View
     // ---------

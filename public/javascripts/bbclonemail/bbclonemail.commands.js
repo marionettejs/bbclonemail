@@ -2,6 +2,7 @@
 // ---------------------------------------
 
 (function(Marionette){
+  "use strict";
 
   var handlers = {};
 
