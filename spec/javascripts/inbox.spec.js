@@ -4,9 +4,9 @@ describe("inbox", function(){
   var showMailItemHandler, showMailListHandler, getInboxHandler;
 
   beforeEach(function(){
-    showMailItemHandler = jasmine.createSpy();
-    showMailListHandler = jasmine.createSpy();
-    getInboxHandler = jasmine.createSpy();
+    showMailItemHandler = jasmine.createSpy("show mail item");
+    showMailListHandler = jasmine.createSpy("show mail list");
+    getInboxHandler = jasmine.createSpy("get inbox");
 
     BBCloneMail.registerCommand("show:mail:item", showMailItemHandler);
     BBCloneMail.registerCommand("show:mail:list", showMailListHandler);
@@ -27,6 +27,7 @@ describe("inbox", function(){
     var inbox;
 
     beforeEach(function(){
+      startHistory();
 
       inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
@@ -45,13 +46,16 @@ describe("inbox", function(){
   });
 
   describe("when routing to an individual email", function(){
-    var inbox, email;
+    var router, inbox, email;
 
     beforeEach(function(){
       affix("article#main; #email-view-template li");
 
       BBCloneMail.main.reset();
       BBCloneMail.main.ensureEl();
+
+      router = BBCloneMail.module("MailRouter");
+      router.start();
 
       inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
@@ -62,10 +66,11 @@ describe("inbox", function(){
 
     afterEach(function(){
       inbox.stop();
+      router.stop();
     });
 
     it("should show the full email contents", function(){
-      expect(showMailItemHandler.wasCalled).toBe(true);
+      expect(showMailItemHandler).toHaveBeenCalled();
     });
 
   });

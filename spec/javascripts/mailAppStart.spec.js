@@ -2,7 +2,7 @@ describe("mail app start", function(){
   "use strict";
 
   describe("when starting the mail app with an empty route (#)", function(){
-    var inbox, handler, getInboxHandler;
+    var router, inbox, handler, getInboxHandler;
 
     beforeEach(function(){
       getInboxHandler = jasmine.createSpy();
@@ -10,6 +10,9 @@ describe("mail app start", function(){
 
       handler = jasmine.createSpy();
       BBCloneMail.registerCommand("show:mail:list", handler);
+
+      router = BBCloneMail.module("MailRouter");
+      router.start();
 
       inbox = BBCloneMail.module("MailApp.Inbox");
       inbox.start();
@@ -19,6 +22,7 @@ describe("mail app start", function(){
 
     afterEach(function(){
       inbox.stop();
+      router.stop();
       BBCloneMail.removeCommand("show:mail:list");
       BBCloneMail.removeRequestHandler("mail:inbox");
     });

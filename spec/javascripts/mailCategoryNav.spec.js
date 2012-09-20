@@ -20,20 +20,4 @@ describe("mail category nav", function(){
     Nav.stop();
   });
 
-  describe("when clicking a mail category", function(){
-    var showCategoryHandler;
-
-    beforeEach(function(){
-      showCategoryHandler = jasmine.createSpy();
-      BBCloneMail.registerCommand("show:category", showCategoryHandler);
-
-      var $category = BBCloneMail.nav.$el.find(".mail-category");
-      $category.trigger("click");
-    });
-
-    it("should show the mail for that category", function(){
-      expect(showCategoryHandler).wasCalled();
-    });
-  });
-
 });
