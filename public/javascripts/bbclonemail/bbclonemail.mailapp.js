@@ -1,5 +1,5 @@
 BBCloneMail.module("MailApp", { 
-  startWithApp: false,
+  startWithParent: false,
   define: function(MailApp, App){
     "use strict";
 

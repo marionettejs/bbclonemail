@@ -1,65 +1,62 @@
-BBCloneMail.module("ContactsApp.ContactList", { 
-  startWithApp: false,
-  define: function(ContactList, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("ContactsApp.ContactList", function(ContactList, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Contact List Views
-    // ------------------
+  // Contact List Views
+  // ------------------
 
-    ContactList.ContactView = Marionette.ItemView.extend({
-      template: "#contact-item-template",
-      tagName: "li"
-    });
+  ContactList.ContactView = Marionette.ItemView.extend({
+    template: "#contact-item-template",
+    tagName: "li"
+  });
 
-    ContactList.ContactListView = Marionette.CollectionView.extend({
-      itemView: ContactList.ContactView,
-      tagName: "ul",
-      id: "contact-list",
-      className: "contact-list"
-    });
+  ContactList.ContactListView = Marionette.CollectionView.extend({
+    itemView: ContactList.ContactView,
+    tagName: "ul",
+    id: "contact-list",
+    className: "contact-list"
+  });
 
-    // Contact List Controller
-    // -----------------------
+  // Contact List Controller
+  // -----------------------
 
-    ContactList.Controller = function(region){
-      this.region = region;
-    };
+  ContactList.Controller = function(region){
+    this.region = region;
+  };
 
-    _.extend(ContactList.Controller.prototype, {
+  _.extend(ContactList.Controller.prototype, {
 
-      showContacts: function(){
-        var that = this;
+    showContacts: function(){
+      var that = this;
 
-        this.getContacts(function(contacts){
-          var view = new ContactList.ContactListView({
-            collection: contacts
-          });
-
-          that.region.show(view);
+      this.getContacts(function(contacts){
+        var view = new ContactList.ContactListView({
+          collection: contacts
         });
 
-        Backbone.history.navigate("contacts");
-      },
+        that.region.show(view);
+      });
 
-      getContacts: function(callback){
-        var contactRequest = App.request("contacts:all");
-        $.when(contactRequest).then(function(contacts){
-          callback(contacts);
-        });
-      }
+      Backbone.history.navigate("contacts");
+    },
 
-    });
+    getContacts: function(callback){
+      var contactRequest = App.request("contacts:all");
+      $.when(contactRequest).then(function(contacts){
+        callback(contacts);
+      });
+    }
 
-    // Initializers and Finalizers
-    // ---------------------------
+  });
 
-    ContactList.addInitializer(function(){
-      ContactList.controller = new ContactList.Controller(App.main);
-      ContactList.controller.showContacts();
-    });
+  // Initializers and Finalizers
+  // ---------------------------
 
-    ContactList.addFinalizer(function(){
-      delete ContactList.controller;
-    });
-  }
+  ContactList.addInitializer(function(){
+    ContactList.controller = new ContactList.Controller(App.main);
+    ContactList.controller.showContacts();
+  });
+
+  ContactList.addFinalizer(function(){
+    delete ContactList.controller;
+  });
 });

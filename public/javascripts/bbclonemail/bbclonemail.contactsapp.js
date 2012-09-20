@@ -1,6 +1,5 @@
 BBCloneMail.module("ContactsApp", { 
-  startWithApp: false,
-
+  startWithParent: false,
   define: function(ContactsApp, App){
     "use strict";
 

@@ -1,22 +1,18 @@
-BBCloneMail.module("ContactsApp.ContactCategories", {
-  startWithApp: false,
+BBCloneMail.module("ContactsApp.ContactCategories", function(Cats, App, Backbone, Marionette, $, _){
+  "use strict";
 
-  define: function(Cats, App, Backbone, Marionette, $, _){
-    "use strict";
+  // Category View
+  // -------------
 
-    // Category View
-    // -------------
-    
-    Cats.CategoryView = Marionette.ItemView.extend({
-      template: "#contact-categories-view-template"
-    });
+  Cats.CategoryView = Marionette.ItemView.extend({
+    template: "#contact-categories-view-template"
+  });
 
-    // Initializer
-    // -----------
-    
-    Cats.addInitializer(function(){
-      var view = new Cats.CategoryView();
-      App.nav.show(view);
-    });
-  }
+  // Initializer
+  // -----------
+
+  Cats.addInitializer(function(){
+    var view = new Cats.CategoryView();
+    App.nav.show(view);
+  });
 });

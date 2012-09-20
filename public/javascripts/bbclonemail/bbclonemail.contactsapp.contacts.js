@@ -1,54 +1,51 @@
-BBCloneMail.module("ContactsApp.Contacts", { 
-  startWithApp: false,
-  define: function(Contacts, App, Backbone, Marionette, $, _){
-    "use strict";
+BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Marionette, $, _){
+  "use strict";
 
-    // Entities
-    // --------
+  // Entities
+  // --------
 
-    var Contact = Backbone.Model.extend({
-    });
+  var Contact = Backbone.Model.extend({
+  });
 
-    var ContactCollection = Backbone.Collection.extend({
-      model: Contact,
-      url: "/contacts"
-    });
+  var ContactCollection = Backbone.Collection.extend({
+    model: Contact,
+    url: "/contacts"
+  });
 
-    // Contacts Controller
-    // -------------------
+  // Contacts Controller
+  // -------------------
 
-    Contacts.Controller = function(){};
+  Contacts.Controller = function(){};
 
-    _.extend(Contacts.Controller.prototype, {
+  _.extend(Contacts.Controller.prototype, {
 
-      getAll: function(){
-        var deferred = $.Deferred();
+    getAll: function(){
+      var deferred = $.Deferred();
 
-        this.getContacts(function(contacts){
-          deferred.resolve(contacts);
-        });
+      this.getContacts(function(contacts){
+        deferred.resolve(contacts);
+      });
 
-        return deferred.promise();
-      },
+      return deferred.promise();
+    },
 
-      getContacts: function(callback){
-        var contactCollection = new ContactCollection();
-        contactCollection.on("reset", callback);
-        contactCollection.fetch();
-      }
+    getContacts: function(callback){
+      var contactCollection = new ContactCollection();
+      contactCollection.on("reset", callback);
+      contactCollection.fetch();
+    }
 
-    });
+  });
 
-    Contacts.addInitializer(function(){
-      var controller = new Contacts.Controller();
-      App.respondTo("contacts:all", controller.getAll, controller);
+  Contacts.addInitializer(function(){
+    var controller = new Contacts.Controller();
+    App.respondTo("contacts:all", controller.getAll, controller);
 
-      Contacts.controller = controller;
-    });
+    Contacts.controller = controller;
+  });
 
-    Contacts.addFinalizer(function(){
-      App.removeRequestHandler("contacts:all");
-      delete Contacts.controller;
-    });
-  }
+  Contacts.addFinalizer(function(){
+    App.removeRequestHandler("contacts:all");
+    delete Contacts.controller;
+  });
 });
