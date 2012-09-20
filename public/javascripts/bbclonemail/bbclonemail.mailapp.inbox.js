@@ -49,18 +49,12 @@ BBCloneMail.module("MailApp.Inbox", {
     // ------------
 
     Inbox.addInitializer(function(){
-      var controller = new InboxController(App.main);
-      App.registerCommand("show:inbox", controller.showInbox, controller);
-      App.registerCommand("show:mail", controller.showMailById, controller);
-      App.registerCommand("show:category", controller.showMailByCategory, controller);
-
-      controller.showInbox();
+      Inbox.controller = new InboxController(App.main);
+      Inbox.controller.showInbox();
     });
 
     Inbox.addFinalizer(function(){
-      App.removeCommand("show:inbox");
-      App.removeCommand("show:mail");
-      App.removeCommand("show:category");
+      delete Inbox.controller;
     });
 
   }

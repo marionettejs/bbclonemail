@@ -18,16 +18,16 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
       App.startSubApp("MailApp");
     },
 
-    showInbox: function(id){
-      App.execute("show:inbox");
+    showInbox: function(){
+      App.MailApp.Inbox.controller.showInbox();
     },
 
     showMailByCategory: function(id){
-      App.execute("show:category", id);
+      App.MailApp.Inbox.controller.showMailByCategory(id);
     },
 
     showMailById: function(id){
-      App.execute("show:mail", id);
+      App.MailApp.Inbox.controller.showMailById(id);
     }
   });
 
