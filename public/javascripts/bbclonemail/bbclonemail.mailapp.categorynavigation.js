@@ -12,16 +12,6 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
 
       render: function(){
         Marionette.ItemView.prototype.render.apply(this, arguments);
-      },
-
-      events: {
-        "click .mail-category": "mailCategoryClicked"
-      },
-
-      mailCategoryClicked: function(e){
-        e.preventDefault();
-        var categoryName = $(e.currentTarget).data("category");
-        this.trigger("category:selected", categoryName);
       }
     });
 
@@ -44,17 +34,7 @@ BBCloneMail.module("MailApp.CategoryNavigation", {
           collection: categories
         });
 
-        view.bindTo(view, "category:selected", this.showCategory, this);
-
         this.region.show(view);
-      },
-
-      showCategory: function(categoryName){
-        if (categoryName){
-          App.execute("show:category", categoryName);
-        } else {
-          App.execute("show:inbox");
-        }
       },
 
       getCategories: function(callback){
