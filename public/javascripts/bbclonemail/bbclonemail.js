@@ -13,11 +13,13 @@ BBCloneMail = (function(Backbone){
   });
 
   App.startSubApp = function(appName){
+    var currentApp = App.module(appName);
+    if (App.currentApp === currentApp){ return; }
+
     if (App.currentApp){
       App.currentApp.stop();
     }
 
-    var currentApp = App.module(appName);
     App.currentApp = currentApp;
     currentApp.start();
   };

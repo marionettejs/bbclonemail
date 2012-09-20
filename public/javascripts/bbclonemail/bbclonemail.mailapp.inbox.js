@@ -1,76 +1,68 @@
-BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Inbox", {
+  startWithApp: false,
+  define: function(Inbox, App, Backbone, Marionette, $, _){
 
-  // Router
-  // ------
+    // Controller
+    // ----------
 
-  var Router = Marionette.AppRouter.extend({
-    appRoutes: {
-      "": "showInbox",
-      "categories/:id": "showMailByCategory",
-      "inbox/mail/:id": "showMailById"
-    }
-  });
+    var InboxController = function(mainRegion){
+      this.mainRegion = mainRegion;
+    };
 
-  // Controller
-  // ----------
+    _.extend(InboxController.prototype, {
 
-  var InboxController = function(mainRegion){
-    this.mainRegion = mainRegion;
-  };
+      showInbox: function(){
+        var that = this;
+        Backbone.history.navigate("");
+        this.getEmail(function(emailList){
+          App.execute("show:mail:list", emailList);
+        });
+      },
 
-  _.extend(InboxController.prototype, {
+      showMailById: function(id){
+        this.getEmail(function(emailList){
+          var emailItem = emailList.get(id);
+          App.execute("show:mail:item", emailItem);
+        });
+      },
 
-    showInbox: function(){
-      var that = this;
-      Backbone.history.navigate("");
-      this.getEmail(function(emailList){
-        App.execute("show:mail:list", emailList);
-      });
-    },
+      showMailByCategory: function(categoryName){
+        Backbone.history.navigate("categories/" + categoryName);
+        this.getEmailByCategory(categoryName, function(emailList){
+          App.execute("show:mail:list", emailList);
+        });
+      },
 
-    showMailById: function(id){
-      this.getEmail(function(emailList){
-        var emailItem = emailList.get(id);
-        App.execute("show:mail:item", emailItem);
-      });
-    },
+      getEmail: function(callback){
+        var emailLoaded = App.request("mail:inbox");
+        $.when(emailLoaded).then(callback);
+      },
 
-    showMailByCategory: function(categoryName){
-      Backbone.history.navigate("categories/" + categoryName);
-      this.getEmailByCategory(categoryName, function(emailList){
-        App.execute("show:mail:list", emailList);
-      });
-    },
-
-    getEmail: function(callback){
-      var emailLoaded = App.request("mail:inbox");
-      $.when(emailLoaded).then(callback);
-    },
-
-    getEmailByCategory: function(categoryName, callback){
-      var emailLoaded = App.request("mail:category", categoryName);
-      $.when(emailLoaded).then(callback);
-    }
-  });
-
-  // Initializers
-  // ------------
-  
-  Inbox.addInitializer(function(){
-    var controller = new InboxController(App.main);
-    var router = new Router({
-      controller: controller
+      getEmailByCategory: function(categoryName, callback){
+        var emailLoaded = App.request("mail:category", categoryName);
+        $.when(emailLoaded).then(callback);
+      }
     });
 
-    App.registerCommand("show:category", controller.showMailByCategory, controller);
-    App.registerCommand("show:inbox", controller.showInbox, controller);
+    // Initializers
+    // ------------
 
-    Inbox.controller = controller;
-    Inbox.router = router;
-  });
+    Inbox.addInitializer(function(){
+      console.log("starting the inbox");
+      var controller = new InboxController(App.main);
+      App.registerCommand("show:inbox", controller.showInbox, controller);
+      App.registerCommand("show:mail", controller.showMailById, controller);
+      App.registerCommand("show:category", controller.showMailByCategory, controller);
 
-  Inbox.addFinalizer(function(){
-    delete Inbox.controller;
-    delete Inbox.router;
-  });
+      controller.showInbox();
+    });
+
+    Inbox.addFinalizer(function(){
+      console.log("stopping the inbox");
+      App.removeCommand("show:inbox");
+      App.removeCommand("show:mail");
+      App.removeCommand("show:category");
+    });
+
+  }
 });

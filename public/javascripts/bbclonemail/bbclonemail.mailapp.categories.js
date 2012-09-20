@@ -1,49 +1,52 @@
-BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Categories", {
+  startWithApp: false,
+  define: function(Categories, App, Backbone, Marionette, $, _){
 
-  // Entities
-  // --------
+    // Entities
+    // --------
 
-  var Category = Backbone.Model.extend({});
+    var Category = Backbone.Model.extend({});
 
-  var CategoryCollection = Backbone.Collection.extend({
-    model: Category,
-    url: "/categories"
-  });
+    var CategoryCollection = Backbone.Collection.extend({
+      model: Category,
+      url: "/categories"
+    });
 
-  // Controller
-  // ----------
+    // Controller
+    // ----------
 
-  function Controller(){}
-  
-  _.extend(Controller.prototype, {
+    function Controller(){}
 
-    getAll: function(){
-      var deferred = $.Deferred();
+    _.extend(Controller.prototype, {
 
-      var categoryCollection = new CategoryCollection();
-      categoryCollection.on("reset", function(categories){
-        deferred.resolve(categories);
-      });
+      getAll: function(){
+        var deferred = $.Deferred();
 
-      categoryCollection.fetch();
-      return deferred.promise();
-    }
+        var categoryCollection = new CategoryCollection();
+        categoryCollection.on("reset", function(categories){
+          deferred.resolve(categories);
+        });
 
-  });
+        categoryCollection.fetch();
+        return deferred.promise();
+      }
 
-  // Init & Finialize
-  // ----------------
+    });
 
-  Categories.addInitializer(function(){
-    var controller = new Controller();
-    this.controller = controller;
+    // Init & Finialize
+    // ----------------
 
-    App.respondTo("mail:categories", controller.getAll, controller);
-  });
+    Categories.addInitializer(function(){
+      var controller = new Controller();
+      this.controller = controller;
 
-  Categories.addFinalizer(function(){
-    App.removeRequestHandler("mail:categories");
-    delete this.controller;
-  });
+      App.respondTo("mail:categories", controller.getAll, controller);
+    });
 
+    Categories.addFinalizer(function(){
+      App.removeRequestHandler("mail:categories");
+      delete this.controller;
+    });
+
+  }
 });

@@ -1,100 +1,103 @@
-BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Mailbox", {
+  startWithApp: false,
+  define: function(Mailbox, App, Backbone, Marionette, $, _){
 
-  // Mail View
-  // ---------
-  // Displays the contents of a single mail item.
+    // Mail View
+    // ---------
+    // Displays the contents of a single mail item.
 
-  Mailbox.MailView = Marionette.ItemView.extend({
-    template: "#email-view-template",
-    tagName: "ul",
-    className: "email-list"
-  });
-  
-  // Mail Preview
-  // ------------
-  // Displays an individual preview line item, when multiple
-  // mail items are displayed as a list. When clicked, the
-  // email item contents will be displayed.
+    Mailbox.MailView = Marionette.ItemView.extend({
+      template: "#email-view-template",
+      tagName: "ul",
+      className: "email-list"
+    });
 
-  Mailbox.MailPreview = Marionette.ItemView.extend({
-    template: "#email-preview-template",
-    tagName: "li",
+    // Mail Preview
+    // ------------
+    // Displays an individual preview line item, when multiple
+    // mail items are displayed as a list. When clicked, the
+    // email item contents will be displayed.
 
-    events: {
-      "click": "previewClicked"
-    },
+    Mailbox.MailPreview = Marionette.ItemView.extend({
+      template: "#email-preview-template",
+      tagName: "li",
 
-    previewClicked: function(e){
-      e.preventDefault();
-      this.trigger("email:selected", this.model);
-    }
-  });
+      events: {
+        "click": "previewClicked"
+      },
 
-  // Mail List View
-  // --------------
-  // Displays a list of email preview items.
+      previewClicked: function(e){
+        e.preventDefault();
+        this.trigger("email:selected", this.model);
+      }
+    });
 
-  Mailbox.MailListView = Marionette.CollectionView.extend({
-    tagName: "ul",
-    className: "email-list",
-    itemView: Mailbox.MailPreview
-  });
+    // Mail List View
+    // --------------
+    // Displays a list of email preview items.
 
-  // Controller
-  // ----------
-  // Manages the states / transitions between displaying a
-  // list of items, and single email item view
-  
-  Mailbox.Controller = function(mainRegion){
-    this.mainRegion = mainRegion;
-  };
+    Mailbox.MailListView = Marionette.CollectionView.extend({
+      tagName: "ul",
+      className: "email-list",
+      itemView: Mailbox.MailPreview
+    });
 
-  _.extend(Mailbox.Controller.prototype, {
+    // Controller
+    // ----------
+    // Manages the states / transitions between displaying a
+    // list of items, and single email item view
 
-    showMailList: function(email){
-      var listView = new Mailbox.MailListView({
-        collection: email
-      });
+    Mailbox.Controller = function(mainRegion){
+      this.mainRegion = mainRegion;
+    };
 
-      listView.on("itemview:email:selected", function(view, email){
-        this.showMailItem(email);
-      }, this);
+    _.extend(Mailbox.Controller.prototype, {
 
-      this.mainRegion.show(listView);
-    },
+      showMailList: function(email){
+        var listView = new Mailbox.MailListView({
+          collection: email
+        });
 
-    showMailItem: function(email){
-      var itemView = new Mailbox.MailView({
-        model: email
-      });
+        listView.on("itemview:email:selected", function(view, email){
+          this.showMailItem(email);
+        }, this);
 
-      itemView.render();
-      $("#main").html(itemView.el);
+        this.mainRegion.show(listView);
+      },
 
-      Backbone.history.navigate("inbox/mail/" + email.id);
-    }
+      showMailItem: function(email){
+        var itemView = new Mailbox.MailView({
+          model: email
+        });
 
-  });
+        itemView.render();
+        $("#main").html(itemView.el);
 
-  // Initializers And Finalizers
-  // ---------------------------
+        Backbone.history.navigate("inbox/mail/" + email.id);
+      }
 
-  Mailbox.addInitializer(function(){
-    var controller = new Mailbox.Controller(App.main);
+    });
 
-    // Register command handlers to show a list of
-    // email items, or a single email item
-    App.registerCommand("show:mail:list", controller.showMailList, controller);
-    App.registerCommand("show:mail:item", controller.showMailItem, controller);
+    // Initializers And Finalizers
+    // ---------------------------
 
-    Mailbox.controller = controller;
-  });
+    Mailbox.addInitializer(function(){
+      var controller = new Mailbox.Controller(App.main);
 
-  Mailbox.addFinalizer(function(){
-    App.removeCommand("show:mail:list");
-    App.removeCommand("show:mail:item");
+      // Register command handlers to show a list of
+      // email items, or a single email item
+      App.registerCommand("show:mail:list", controller.showMailList, controller);
+      App.registerCommand("show:mail:item", controller.showMailItem, controller);
 
-    delete Mailbox.controller;
-  });
+      Mailbox.controller = controller;
+    });
 
+    Mailbox.addFinalizer(function(){
+      App.removeCommand("show:mail:list");
+      App.removeCommand("show:mail:item");
+
+      delete Mailbox.controller;
+    });
+
+  }
 });
