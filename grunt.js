@@ -50,6 +50,7 @@ module.exports = function(grunt) {
         'public/javascripts/vendor/json2.js',
         'public/javascripts/vendor/underscore.js',
         'public/javascripts/vendor/backbone.js',
+        'public/javascripts/vendor/backbone.routefilter.js',
         'public/javascripts/vendor/backbone.marionette.js',
         'public/javascripts/vendor/marionette.wreqr.js',
         'public/javascripts/bbclonemail/bbclonemail.js',

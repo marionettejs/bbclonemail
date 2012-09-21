@@ -4,7 +4,7 @@ function startHistory(){
     // so Backbone.history will exist
     var router = new (Backbone.Router.extend({ 
       routes: { "empty-route": "emptyRoute"}
-    }));
+    }))();
   }
 
   if (!Backbone.History.started){
@@ -13,6 +13,7 @@ function startHistory(){
 }
 
 beforeEach(function(){
+  // clear the regions so they can be used again
   BBCloneMail.main.reset();
   BBCloneMail.nav.reset();
 });
