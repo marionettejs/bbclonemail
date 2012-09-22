@@ -13,9 +13,7 @@ describe("inbox", function(){
     var emailItem = new Backbone.Model({id: 1});
     var emailList = new Backbone.Collection([emailItem]);
 
-    var promise = $.Deferred();
-    promise.resolve(emailList);
-    getInboxHandler.andReturn(promise);
+    getInboxHandler.andReturn(emailList);
   });
 
   afterEach(function(){

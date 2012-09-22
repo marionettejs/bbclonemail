@@ -30,10 +30,12 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
       var promise = this[funcName].apply(this, arguments);
       
-      promise.then(function(){
+      $.when(promise).then(function(){
         var parentArgs = Array.prototype.slice(argList);
         var args = Array.prototype.slice(arguments);
         var promiseArgs = _.flatten(parentArgs.push(args));
+
+        console.log(promiseArgs);
 
         cb.apply(self, promiseArgs);
       });
