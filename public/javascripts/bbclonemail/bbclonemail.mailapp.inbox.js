@@ -31,13 +31,11 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
       var promise = this[funcName].apply(this, arguments);
       
       $.when(promise).then(function(){
-        var parentArgs = Array.prototype.slice(argList);
-        var args = Array.prototype.slice(arguments);
-        var promiseArgs = _.flatten(parentArgs.push(args));
+        var parentArgs = Array.prototype.slice.call(argList);
+        var args = Array.prototype.slice.call(arguments);
 
-        console.log(promiseArgs);
-
-        cb.apply(self, promiseArgs);
+        parentArgs.push(args);
+        cb.apply(self, _.flatten(parentArgs));
       });
 
     }
