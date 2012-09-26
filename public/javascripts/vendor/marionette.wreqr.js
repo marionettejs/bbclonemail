@@ -1,82 +1,104 @@
-// Marionette.Wreqr v0.0.0
-// -----------------------
-// A basic Request/Response and Command pattern implementation
-// for Backbone.js applications
-//
-// Copyright 2012 Muted Solutions, LLC. All Rights Reserved
+// Marionette.Wreqr, v0.0.0
+// Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
+// Distributed under MIT license
+// http://github.com/marionettejs/marionette.wreqr
+Backbone.Marionette.Wreqr = (function(Backbone, Marionette, _){
+  "option strict";
+  var Wreqr = {};
 
-// Request/Response
-// ----------------
-
-(function(Marionette){
-  "use strict";
-
-  var handlers = {};
-
-  _.extend(Marionette.Application.prototype, {
-    respondTo: function(name, handler, context){
-      var config = {
-        handler: handler,
-        context: context
-      };
-
-      handlers[name] = config;
-    },
-
-    request: function(name, args){
-      var config = handlers[name];
-
-      if (!config){
-        throw new Error("Request handler not found for '" + name + "'");
+  Wreqr.Handlers = (function(Backbone, _){
+    "option strict";
+    
+    var Handlers = function(){
+      "use strict";
+      this._handlers = {};
+    };
+  
+    Handlers.extend = Backbone.Model.extend;
+  
+    _.extend(Handlers.prototype, {
+      addHandler: function(name, handler, context){
+        var config = {
+          callback: handler,
+          context: context
+        };
+  
+        this._handlers[name] = config;
+      },
+  
+      getHandler: function(name){
+        var config = this._handlers[name];
+  
+        if (!config){
+          throw new Error("Handler not found for '" + name + "'");
+        }
+  
+        return function(){
+          return config.callback.apply(config.context, arguments);
+        };
+      },
+  
+      removeHandler: function(name){
+        delete this._handlers[name];
+      },
+  
+      removeAllHandlers: function(){
+        this._handlers = {};
       }
-
-      return config.handler.call(config.context, args);
-    },
-
-    removeRequestHandler: function(name){
-      delete handlers[name];
-    },
-
-    clearRequestHandlers: function(){
-      handlers = {};
-    }
-  });
-
-})(Backbone.Marionette);
-
-// Command Pattern
-// ---------------
-
-(function(Marionette){
-  "use strict";
-
-  var handlers = {};
-
-  _.extend(Marionette.Application.prototype, {
-
-    registerCommand: function(name, handler, context){
-      handlers[name] = {
-        handler: handler,
-        context: context
-      };
-    },
-
-    removeCommand: function(name){
-      delete handlers[name];
-    },
-
-    clearCommands: function(){
-      handlers = {};
-    },
-
-    execute: function(name, args){
-      var config = handlers[name];
-      if (!config){
-        throw new Error("Handler not found for '" + name + "'");
+    });
+  
+    return Handlers;
+  })(Backbone, _);
+  
+  Wreqr.Commands = (function(Wreqr){
+    "option strict";
+  
+    return Wreqr.Handlers.extend({
+      execute: function(name, args){
+        this.getHandler(name)(args);
       }
+    });
+  
+  })(Wreqr);
+  
+  Wreqr.RequestResponse = (function(Wreqr){
+    "option strict";
+  
+    return Wreqr.Handlers.extend({
+      request: function(name, args){
+        return this.getHandler(name)(args);
+      }
+    });
+  
+  })(Wreqr);
+  
+  
+  (function(){
+    "option strict";
 
-      config.handler.call(config.context, args);
+    console.log("foo");
+  
+    if (Backbone && Backbone.Marionette && Backbone.Marionette.Application){
+      console.log("bar");
+
+      var commands = new Wreqr.Commands();
+      var reqres = new Wreqr.RequestResponse();
+  
+      _.extend(Backbone.Marionette.Application.prototype, {
+        commands: commands,
+        execute: function(name, argObj){
+          commands.execute(name, argObj);
+        },
+  
+        requestResponse: reqres,
+        request: function(name, argObj){
+          return reqres.request(name, argObj);
+        }
+      });
     }
-  });
+  })();
+  
 
-})(Backbone.Marionette);
+  return Wreqr;
+})(Backbone, Backbone.Marionette, _);
+

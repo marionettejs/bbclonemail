@@ -26,37 +26,43 @@ var categories = [
 var contacts = [
   {
     id: "09vsjk3209svdjh",
-    name: "Joe Johnson",
+    firstName: "Joe",
+    lastName: "Johnson",
     email: "joe.johnson@example.com",
     phone: "555-555-5555"
   },
   {
     id: "45890bdhj4590gf",
-    name: "Jim Jimson",
+    firstName: "Jim",
+    lastName: "Jimson",
     email: "jim.jimson@example.com",
     phone: "555-555-5556"
   },
   {
     id: "120985h4509vfh4",
-    name: "Ben Benson",
+    firstName: "Ben",
+    lastName: "Benson",
     email: "ben.benson@example.com",
     phone: "555-555-5557"
   },
   {
     id: "9sd9123njkdas90",
-    name: "Bob Robertson",
+    firstName: "Bob",
+    lastName: "Robertson",
     email: "robert.robertson@example.com",
     phone: "555-555-5558"
   },
   {
     id: "lj32kjsd09xzcv3",
-    name: "Amy Amerson",
+    firstName: "Amy",
+    lastName: "Amerson",
     email: "amy.amerson@example.com",
     phone: "555-555-5559"
   },
   {
     id: "aa23j45hn45n536",
-    name: "Julie Julerson",
+    firstName: "Julie", 
+    lastName: "Julerson",
     email: "julie.julerson@example.com",
     phone: "555-555-5560"
   }

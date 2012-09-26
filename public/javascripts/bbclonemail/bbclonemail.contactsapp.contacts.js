@@ -1,10 +1,63 @@
 BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Marionette, $, _){
   "use strict";
 
+  // EXPERIMENTAL
+  // ------------
+  //
+  // Add support for computed fields
+
+  function compute(fieldName, fieldList, callback){
+    var length = fieldList.length;
+
+    var fireCallback = function(){
+      var fields = {};
+
+      for (var i = 0; i<length; i++){
+        var field = fieldList[i];
+        fields[field] = this.get(field);
+      }
+
+      var value = callback.call(this, fields);
+      this.set(fieldName, value);
+
+      return value;
+    }
+
+    var computedFunc = function(){
+      var cb = _.bind(fireCallback, this);
+
+      for (var i = 0; i<length; i++){
+        var field = fieldList[i];
+        this.on("change:" + field, cb);
+      }
+
+      return cb();
+    }
+
+    computedFunc.computedField = true;
+
+    return computedFunc;
+  }
+
+  function computeFields(obj){
+    for(var field in obj){
+      if (obj[field] && obj[field].computedField){
+        obj[field].call(obj);
+      }
+    }
+  }
+
   // Entities
   // --------
 
   var Contact = Backbone.Model.extend({
+    initialize: function(){
+      computeFields(this);
+    },
+
+    fullName: compute("fullName", ["firstName", "lastName"], function(fields){
+      return fields.lastName + ", " + fields.firstName;
+    })
   });
 
   var ContactCollection = Backbone.Collection.extend({
@@ -39,7 +92,7 @@ BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Mar
 
   Contacts.addInitializer(function(){
     var controller = new Contacts.Controller();
-    App.respondTo("contacts:all", controller.getAll, controller);
+    App.requestResponse.addHandler("contacts:all", controller.getAll, controller);
 
     Contacts.controller = controller;
   });
