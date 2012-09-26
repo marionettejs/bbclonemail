@@ -98,7 +98,7 @@ BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Mar
   });
 
   Contacts.addFinalizer(function(){
-    App.removeRequestHandler("contacts:all");
+    App.requestResponse.removeHandler("contacts:all");
     delete Contacts.controller;
   });
 });
