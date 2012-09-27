@@ -53,8 +53,8 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
     // EXPERIMENTAL: show use of `resolve` function here, to get the
     // email list that needs to be displayed.
     showInbox: resolve("getEmail", function(emailList){
-      Backbone.history.navigate("");
       App.execute("show:mail:list", emailList);
+      Backbone.history.navigate("");
     }),
 
     // EXPERIMENTAL: show use of `resolve` function here, to get the
@@ -85,6 +85,7 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
   Inbox.addInitializer(function(){
     Inbox.controller = new InboxController(App.main);
+    Inbox.controller.showInbox();
   });
 
   Inbox.addFinalizer(function(){
