@@ -85,15 +85,15 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
 
     // Register command handlers to show a list of
     // email items, or a single email item
-    App.registerCommand("show:mail:list", controller.showMailList, controller);
-    App.registerCommand("show:mail:item", controller.showMailItem, controller);
+    App.commands.addHandler("show:mail:list", controller.showMailList, controller);
+    App.commands.addHandler("show:mail:item", controller.showMailItem, controller);
 
     Mailbox.controller = controller;
   });
 
   Mailbox.addFinalizer(function(){
-    App.removeCommand("show:mail:list");
-    App.removeCommand("show:mail:item");
+    App.commands.removeHandler("show:mail:list");
+    App.commands.removeHandler("show:mail:item");
 
     delete Mailbox.controller;
   });

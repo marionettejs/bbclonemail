@@ -7,8 +7,8 @@ describe("inbox", function(){
     showMailListHandler = jasmine.createSpy("show mail list");
     getInboxHandler = jasmine.createSpy("get inbox");
 
-    BBCloneMail.registerCommand("show:mail:list", showMailListHandler);
-    BBCloneMail.respondTo("mail:inbox", getInboxHandler);
+    BBCloneMail.commands.addHandler("show:mail:list", showMailListHandler);
+    BBCloneMail.requestResponse.addHandler("mail:inbox", getInboxHandler);
 
     var emailItem = new Backbone.Model({id: 1});
     var emailList = new Backbone.Collection([emailItem]);
@@ -17,8 +17,8 @@ describe("inbox", function(){
   });
 
   afterEach(function(){
-    BBCloneMail.removeCommand("show:mail:list");
-    BBCloneMail.removeRequestHandler("mail:inbox");
+    BBCloneMail.commands.removeHandler("show:mail:list");
+    BBCloneMail.requestResponse.removeHandler("mail:inbox");
   });
 
   describe("when viewing the inbox", function(){

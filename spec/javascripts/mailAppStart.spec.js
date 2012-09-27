@@ -11,7 +11,7 @@ describe("mail app start", function(){
       var catCol = new Backbone.Collection([cat]);
       getCategoriesHandler = jasmine.createSpy();
       getCategoriesHandler.andReturn(catCol);
-      BBCloneMail.respondTo("mail:categories", getCategoriesHandler);
+      BBCloneMail.requestResponse.addHandler("mail:categories", getCategoriesHandler);
 
       categoryNav = BBCloneMail.module("MailApp.CategoryNavigation");
       categoryNav.start();
@@ -19,7 +19,7 @@ describe("mail app start", function(){
 
     afterEach(function(){
       categoryNav.stop();
-      BBCloneMail.removeRequestHandler("mail:categories");
+      BBCloneMail.requestResponse.removeHandler("mail:categories");
     });
 
     it("should show the list of categories", function(){

@@ -39,11 +39,11 @@ BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Mar
     var controller = new Controller();
     Categories.controller = controller;
 
-    App.respondTo("mail:categories", controller.getAll, controller);
+    App.requestResponse.addHandler("mail:categories", controller.getAll, controller);
   });
 
   Categories.addFinalizer(function(){
-    App.removeRequestHandler("mail:categories");
+    App.requestResponse.removeHandler("mail:categories");
     delete Categories.controller;
   });
 });

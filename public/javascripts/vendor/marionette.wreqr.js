@@ -76,10 +76,7 @@ Backbone.Marionette.Wreqr = (function(Backbone, Marionette, _){
   (function(){
     "option strict";
 
-    console.log("foo");
-  
     if (Backbone && Backbone.Marionette && Backbone.Marionette.Application){
-      console.log("bar");
 
       var commands = new Wreqr.Commands();
       var reqres = new Wreqr.RequestResponse();
