@@ -17,6 +17,7 @@ module.exports = function(grunt) {
         src: [
           "public/javascripts/vendor/json2.js",
           "public/javascripts/vendor/jquery.js",
+          "public/javascripts/vendor/jquery.resolved.js",
           "public/javascripts/vendor/underscore.js",
           "public/javascripts/vendor/backbone.js",
           "public/javascripts/vendor/backbone.compute.js",
@@ -48,6 +49,7 @@ module.exports = function(grunt) {
     jasmine : {
       src : [
         'public/javascripts/vendor/jquery.js',
+        'public/javascripts/vendor/jquery.resolved.js',
         'public/javascripts/vendor/json2.js',
         'public/javascripts/vendor/underscore.js',
         'public/javascripts/vendor/backbone.js',
