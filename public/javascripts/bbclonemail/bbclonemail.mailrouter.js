@@ -7,8 +7,9 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
   var Router = Backbone.Router.extend({
     routes: {
       "": "showInbox",
-      "categories/:id": "showMailByCategory",
-      "inbox/mail/:id": "showMailById"
+      "mail": "showInbox",
+      "mail/categories/:id": "showMailByCategory",
+      "mail/inbox/mail/:id": "showMailById"
     },
 
     // this uses https://github.com/boazsender/backbone.routefilter

@@ -8,8 +8,12 @@ BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Mario
       "contacts": "showContacts",
     },
 
-    showContacts: function(id){
+    before: function(){
       App.startSubApp("ContactsApp");
+    },
+
+    showContacts: function(){
+      App.module("ContactsApp").showContacts();
     }
   });
 

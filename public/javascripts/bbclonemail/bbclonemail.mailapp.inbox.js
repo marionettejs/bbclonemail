@@ -17,7 +17,6 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
       resolve: "getEmail", 
       run: function(emailList){
         App.execute("show:mail:list", emailList);
-        Backbone.history.navigate("");
       }
     },
 
@@ -36,7 +35,6 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
     showMailByCategory: {
       resolve: "getEmailByCategory", 
       run: function(categoryName, emailList){
-        Backbone.history.navigate("categories/" + categoryName);
         App.execute("show:mail:list", emailList);
       }
     },
@@ -55,7 +53,6 @@ BBCloneMail.module("MailApp.Inbox", function(Inbox, App, Backbone, Marionette, $
 
   Inbox.addInitializer(function(){
     Inbox.controller = new InboxController(App.main);
-    Inbox.controller.showInbox();
   });
 
   Inbox.addFinalizer(function(){

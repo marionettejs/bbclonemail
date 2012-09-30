@@ -26,7 +26,5 @@ BBCloneMail = (function(Backbone){
     currentApp.start();
   };
 
-  App.commands.addHandler("start:app", App.startSubApp, App);
-
   return App;
 })(Backbone);

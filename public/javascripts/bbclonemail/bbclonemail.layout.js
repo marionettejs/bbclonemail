@@ -40,7 +40,7 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
     },
 
     appSelected: function(appName){
-      App.execute("start:app", appName);
+      Backbone.history.navigate(appName, true);
     }
 
   });
