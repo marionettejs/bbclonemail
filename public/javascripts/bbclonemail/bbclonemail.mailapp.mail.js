@@ -60,12 +60,12 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     var controller = new Controller();
     Mail.controller = controller;
 
-    App.requestResponse.addHandler("mail:inbox", controller.getAll, controller);
-    App.requestResponse.addHandler("mail:category", controller.getByCategory, controller);
+    App.reqres.addHandler("mail:inbox", controller.getAll, controller);
+    App.reqres.addHandler("mail:category", controller.getByCategory, controller);
   });
 
   Mail.addFinalizer(function(){
-    App.requestResponse.removeHandler("mail:inbox");
+    App.reqres.removeHandler("mail:inbox");
     delete Mail.controller;
   });
 
