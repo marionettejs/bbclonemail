@@ -1,9 +1,18 @@
-// Backbone.Marionette, v0.11.0
+// Backbone.Marionette, v1.0.0-beta1
 // Copyright (c)2012 Derick Bailey, Muted Solutions, LLC.
 // Distributed under MIT license
 // http://github.com/marionettejs/backbone.marionette
-Backbone.Marionette = (function(Backbone, _, $){
+Backbone.Marionette = Marionette = (function(Backbone, _, $){
   var Marionette = {};
+
+// Helpers
+// -------
+
+// For slicing `arguments` in functions
+var slice = Array.prototype.slice;
+
+// Borrow the Backbone `extend` method so we can use it as needed
+Marionette.extend = Backbone.Model.extend;
 
 // Trigger an event and a corresponding method name. Examples:
 //
@@ -38,6 +47,20 @@ Marionette.triggerMethod = function(){
 // https://github.com/marionettejs/backbone.eventbinder
 Marionette.EventBinder = Backbone.EventBinder;
 
+// Add the EventBinder methods to the view directly,
+// but keep them bound to the EventBinder instance so they work properly.
+// This allows the event binder's implementation to vary independently
+// of it being attached to the view... for example the internal structure
+// used to store the events can change without worry about it interfering
+// with Marionette's views.
+Marionette.addEventBinder = function(target){
+  var eventBinder = new Marionette.EventBinder();
+  target.eventBinder = eventBinder;
+  target.bindTo = _.bind(eventBinder.bindTo, eventBinder);
+  target.unbindFrom = _.bind(eventBinder.unbindFrom, eventBinder);
+  target.unbindAll = _.bind(eventBinder.unbindAll, eventBinder);
+};
+
 // Marionette.View
 // ---------------
 
@@ -45,8 +68,8 @@ Marionette.EventBinder = Backbone.EventBinder;
 Marionette.View = Backbone.View.extend({
 
   constructor: function(){
-    var eventBinder = new Marionette.EventBinder();
-    _.extend(this, eventBinder);
+    _.bindAll(this, "render");
+    Marionette.addEventBinder(this);
 
     Backbone.View.prototype.constructor.apply(this, arguments);
 
@@ -266,8 +289,8 @@ Marionette.ItemView =  Marionette.View.extend({
 // and renders an individual ItemView for each model.
 Marionette.CollectionView = Marionette.View.extend({
   constructor: function(){
-    Marionette.View.prototype.constructor.apply(this, arguments);
     this.initChildViewStorage();
+    Marionette.View.prototype.constructor.apply(this, arguments);
     this.initialEvents();
     this.onShowCallbacks = new Marionette.Callbacks();
   },
@@ -287,7 +310,15 @@ Marionette.CollectionView = Marionette.View.extend({
   addChildView: function(item, collection, options){
     this.closeEmptyView();
     var ItemView = this.getItemView(item);
-    return this.addItemView(item, ItemView, options.index);
+
+    var index;
+    if(options && options.index){
+      index = options.index;
+    } else {
+      index = 0;
+    }
+
+    return this.addItemView(item, ItemView, index);
   },
 
   // Override from `Marionette.View` to guarantee the `onShow` method
@@ -614,7 +645,8 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
     var container;
     if (containerView.itemViewContainer){
 
-      container = containerView.$(_.result(containerView, "itemViewContainer"));
+      var selector = _.result(containerView, "itemViewContainer");
+      container = containerView.$(selector);
       if (container.length <= 0) {
         var err = new Error("The specified `itemViewContainer` was not found: " + containerView.itemViewContainer);
         err.name = "ItemViewContainerMissingError";
@@ -640,17 +672,24 @@ Marionette.CompositeView = Marionette.CollectionView.extend({
 
 // Region 
 // ------
-
+//
 // Manage the visual regions of your composite application. See
 // http://lostechies.com/derickbailey/2011/12/12/composite-js-apps-regions-and-region-managers/
+
 Marionette.Region = function(options){
   this.options = options || {};
 
-  var eventBinder = new Marionette.EventBinder();
-  _.extend(this, eventBinder, options);
+  var el = this.options.el;
+  delete this.options.el;
+
+  Marionette.addEventBinder(this);
+
+  if (el){
+    this.el = el;
+  }
 
   if (!this.el){
-    var err = new Error("An 'el' must be specified");
+    var err = new Error("An 'el' must be specified for a region.");
     err.name = "NoElError";
     throw err;
   }
@@ -659,6 +698,76 @@ Marionette.Region = function(options){
     this.initialize.apply(this, arguments);
   }
 };
+
+
+// Region Type methods
+// -------------------
+
+_.extend(Marionette.Region, {
+
+  // Build an instance of a region by passing in a configuration object
+  // and a default region type to use if none is specified in the config.
+  //
+  // The config object should either be a string as a jQuery DOM selector,
+  // a Region type directly, or an object literal that specifies both
+  // a selector and regionType:
+  //
+  // ```js
+  // {
+  //   selector: "#foo",
+  //   regionType: MyCustomRegion
+  // }
+  // ```
+  //
+  buildRegion: function(regionConfig, defaultRegionType){
+    var regionIsString = (typeof regionConfig === "string");
+    var regionSelectorIsString = (typeof regionConfig.selector === "string");
+    var regionTypeIsUndefined = (typeof regionConfig.regionType === "undefined");
+    var regionIsType = (typeof regionConfig === "function");
+
+    if (!regionIsType && !regionIsString && !regionSelectorIsString) {
+      throw new Error("Region must be specified as a Region type, a selector string or an object with selector property");
+    }
+
+    var selector, RegionType;
+   
+    // get the selector for the region
+    
+    if (regionIsString) {
+      selector = regionConfig;
+    } 
+
+    if (regionConfig.selector) {
+      selector = regionConfig.selector;
+    }
+
+    // get the type for the region
+    
+    if (regionIsType){
+      RegionType = regionConfig;
+    }
+
+    if (!regionIsType && regionTypeIsUndefined) {
+      RegionType = defaultRegionType;
+    }
+
+    if (regionConfig.regionType) {
+      RegionType = regionConfig.regionType;
+    }
+    
+    // build the region instance
+
+    var regionManager = new RegionType({
+      el: selector
+    });
+
+    return regionManager;
+  }
+
+});
+
+// Region Instance Methods
+// -----------------------
 
 _.extend(Marionette.Region.prototype, Backbone.Events, {
 
@@ -733,7 +842,7 @@ _.extend(Marionette.Region.prototype, Backbone.Events, {
 });
 
 // Copy the `extend` function used by Backbone's classes
-Marionette.Region.extend = Backbone.View.extend;
+Marionette.Region.extend = Marionette.extend;
 
 // Layout
 // ------
@@ -793,35 +902,13 @@ Marionette.Layout = Marionette.ItemView.extend({
     }
 
     var that = this;
-    _.each(this.regions, function (region, name) {
-      var regionIsString = (typeof region === "string");
-      var regionSelectorIsString = (typeof region.selector === "string");
-      var regionTypeIsUndefined = (typeof region.regionType === "undefined");
+    var regions = this.regions || {};
+    _.each(regions, function (region, name) {
 
-      if (!regionIsString && !regionSelectorIsString) {
-        throw new Error("Region must be specified as a selector string or an object with selector property");
-      }
-
-      var selector, RegionType;
-     
-      if (regionIsString) {
-        selector = region;
-      } else {
-        selector = region.selector;
-      }
-
-      if (regionTypeIsUndefined){
-        RegionType = that.regionType;
-      } else {
-        RegionType = region.regionType;
-      }
-      
-      var regionManager = new RegionType({
-        el: selector,
-          getEl: function(selector){
-            return that.$(selector);
-          }
-      });
+      var regionManager = Marionette.Region.buildRegion(region, that.regionType);
+      regionManager.getEl = function(selector){
+        return that.$(selector);
+      };
 
       that.regionManagers[name] = regionManager;
       that[name] = regionManager;
@@ -876,8 +963,9 @@ Marionette.Application = function(options){
   this.reqres = new Backbone.Wreqr.RequestResponse();
   this.submodules = {};
 
-  var eventBinder = new Marionette.EventBinder();
-  _.extend(this, eventBinder, options);
+  _.extend(this, options);
+
+  Marionette.addEventBinder(this);
 };
 
 _.extend(Marionette.Application.prototype, Backbone.Events, {
@@ -914,23 +1002,11 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
   // addRegions({something: "#someRegion"})
   // addRegions{{something: Region.extend({el: "#someRegion"}) });
   addRegions: function(regions){
-    var RegionValue, regionObj, region;
-
-    for(region in regions){
-      if (regions.hasOwnProperty(region)){
-        RegionValue = regions[region];
-
-        if (typeof RegionValue === "string"){
-          regionObj = new Marionette.Region({
-            el: RegionValue
-          });
-        } else {
-          regionObj = new RegionValue();
-        }
-
-        this[region] = regionObj;
-      }
-    }
+    var that = this;
+    _.each(regions, function (region, name) {
+      var regionManager = Marionette.Region.buildRegion(region, Marionette.Region);
+      that[name] = regionManager;
+    });
   },
 
   // Removes a region from your app.
@@ -954,7 +1030,7 @@ _.extend(Marionette.Application.prototype, Backbone.Events, {
 });
 
 // Copy the `extend` function used by Backbone's classes
-Marionette.Application.extend = Backbone.View.extend;
+Marionette.Application.extend = Marionette.extend;
 
 // AppRouter
 // ---------
@@ -1041,8 +1117,7 @@ Marionette.Module = function(moduleName, app){
   this.config.app = app;
 
   // extend this module with an event binder
-  var eventBinder = new Marionette.EventBinder();
-  _.extend(this, eventBinder);
+  Marionette.addEventBinder(this);
 };
 
 // Extend the Module prototype with events / bindTo, so that the module
@@ -1409,12 +1484,6 @@ _.extend(Marionette.Callbacks.prototype, {
 //
 // https://github.com/marionettejs/backbone.wreqr
 Marionette.EventAggregator = Backbone.Wreqr.EventAggregator;
-
-// Helpers
-// -------
-
-// For slicing `arguments` in functions
-var slice = Array.prototype.slice;
 
 
   return Marionette;
