@@ -20,8 +20,6 @@ module.exports = function(grunt) {
           "public/javascripts/vendor/jquery.resolved.js",
           "public/javascripts/vendor/underscore.js",
           "public/javascripts/vendor/backbone.js",
-          "public/javascripts/vendor/backbone.wreqr.js",
-          "public/javascripts/vendor/backbone.eventaggregator.js",
           "public/javascripts/vendor/backbone.compute.js",
           "public/javascripts/vendor/backbone.routefilter.js",
           "public/javascripts/vendor/backbone.marionette.js",
