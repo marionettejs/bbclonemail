@@ -1,7 +1,7 @@
-BBCloneMail = (function(Backbone){
+BBCloneMail = (function(Backbone, Marionette){
   "use strict";
 
-  var App = new Backbone.Marionette.Application();
+  var App = new Marionette.Application();
 
   App.addRegions({
     nav: "#navigation",
@@ -27,4 +27,4 @@ BBCloneMail = (function(Backbone){
   };
 
   return App;
-})(Backbone);
+})(Backbone, Marionette);

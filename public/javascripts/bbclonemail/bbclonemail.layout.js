@@ -10,7 +10,7 @@ BBCloneMail.module("AppLayout", function(AppLayout, App, Backbone, Marionette, $
     },
 
     initialize: function(){
-      this.bindTo(App.vent, "app:started", this.showAppName, this);
+      this.listenTo(App.vent, "app:started", this.showAppName, this);
     },
 
     appSelected: function(e){
