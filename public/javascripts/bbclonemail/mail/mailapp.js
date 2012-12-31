@@ -21,8 +21,6 @@ BBCloneMail.module("MailApp", function(MailApp, App){
       var mailbox = new MailApp.Mail.Mailbox();
       $.when(mailbox.getById(id))
         .then(this._showMail);
-
-      Backbone.history.navigate("#mail/inbox/" + id);
     },
 
     showMailByCategory: function(category){
@@ -64,6 +62,8 @@ BBCloneMail.module("MailApp", function(MailApp, App){
       });
 
       this.showComponent(viewer);
+
+      Backbone.history.navigate("#mail/inbox/" + email.id);
     },
 
     // show a list of email in the apps - the inbox, 

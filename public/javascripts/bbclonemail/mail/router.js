@@ -34,7 +34,6 @@ BBCloneMail.module("MailApp", {
       },
 
       showMailByCategory: function(category){
-        console.log("show mail by category", category);
         App.MailApp.controller.showMailByCategory(category);
       }
     });

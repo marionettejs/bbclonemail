@@ -83,7 +83,7 @@ var email = [
     from: "Joe Johnson",
     subject: "Some email about that subject which was sent to you",
     date: "1/1/2001",
-    body: body.join,
+    body: body,
     categories: ["Work Related"]
   },
   {

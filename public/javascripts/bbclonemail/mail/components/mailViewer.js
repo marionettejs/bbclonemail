@@ -28,10 +28,7 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
         model: this.email
       });
 
-      itemView.render();
-      $("#main").html(itemView.el);
-
-      Backbone.history.navigate("mail/inbox/" + this.email.id);
+      this.region.show(itemView);
     }
   });
 
