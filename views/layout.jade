@@ -9,6 +9,7 @@ html
     include templates/mail-categories-view-template
     include templates/contact-categories-view-template
     include templates/contact-item-template
+    include templates/app-selector-template
 
   body
     section.header
@@ -29,12 +30,8 @@ html
 
     section.content
       .container
-
         navigation
           section#app-selector
-            select
-              option(value="mail") Mail
-              option(value="contacts") Contacts
           section#navigation
         article#main
           #loading

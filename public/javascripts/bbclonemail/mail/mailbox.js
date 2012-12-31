@@ -46,11 +46,11 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   // Manages the states / transitions between displaying a
   // list of items, and single email item view
 
-  Mailbox.Controller = function(mainRegion){
-    this.mainRegion = mainRegion;
-  };
-
-  _.extend(Mailbox.Controller.prototype, {
+  Mailbox.Controller = Marionette.Controller.extend({
+    
+    initialize: function(options){
+      this.mainRegion = options.mainRegion;
+    },
 
     showMailList: function(email){
       var listView = new Mailbox.MailListView({
@@ -81,7 +81,9 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   // ---------------------------
 
   Mailbox.addInitializer(function(){
-    var controller = new Mailbox.Controller(App.main);
+    var controller = new Mailbox.Controller({
+      mainRegion: App.main
+    });
 
     // Register command handlers to show a list of
     // email items, or a single email item

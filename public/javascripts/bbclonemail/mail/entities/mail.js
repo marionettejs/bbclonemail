@@ -15,10 +15,7 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
   // Controller
   // ----------
 
-  function Controller(){}
-
-  _.extend(Controller.prototype, {
-
+  var Controller = Marionette.Controller.extend({
     getAll: function(){
       var deferred = $.Deferred();
 
@@ -50,23 +47,5 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
       emailCollection.on("reset", callback);
       emailCollection.fetch();
     }
-
   });
-
-  // Init & Finalize
-  // ---------------
-
-  Mail.addInitializer(function(){
-    var controller = new Controller();
-    Mail.controller = controller;
-
-    App.reqres.addHandler("mail:inbox", controller.getAll, controller);
-    App.reqres.addHandler("mail:category", controller.getByCategory, controller);
-  });
-
-  Mail.addFinalizer(function(){
-    App.reqres.removeHandler("mail:inbox");
-    delete Mail.controller;
-  });
-
 });

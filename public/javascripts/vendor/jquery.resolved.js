@@ -33,35 +33,61 @@
 // var obj = new MyObj();
 // obj.someFunc("bar"); // => "foobar"
 // ```
+//
+// You can also specify an array of methods to resolve. Each of
+// the return values from the prerequisites will be passed along
+// to the `run` function.
+//
+// ```js
+// MyObj.prototype.someFunc = {
+//   resolve: ["prereq1", "prereq2", "etc"],
+//   run: function(p1, p2, etc){
+//     // ...
+//   }
+// }
+// ```
 
 $.resolve = (function($){
   var Resolve = function(obj){
     for(var attrName in obj){
       var attr = obj[attrName];
       if (attr && attr.resolve && attr.run){
-        obj[attrName] = resolveMethod(attr.resolve, attr.run);
+        obj[attrName] = resolveMethod(obj, attr.resolve, attr.run);
       }
     }
   }
 
-  function resolveMethod(funcName, cb){
-    return function(){
+  function resolveMethod(target, funcNames, runMethod){
 
-      var self = this, 
-          argList = arguments;
+    var resolvedMethod = function(){
+      var self = target, 
+          resolvingArgs = Array.prototype.slice.call(arguments);
 
-      var promise = this[funcName].apply(this, arguments);
+      if (!$.isArray(funcNames)){
+        funcNames = [funcNames];
+      }
+
+      var promises = $.map(funcNames, function(f){
+        return self[f].apply(self, resolvingArgs);
+      });
       
-      $.when(promise).then(function(){
-        var parentArgs = Array.prototype.slice.call(argList);
+      $.when.apply($, promises).then(function(){
         var args = Array.prototype.slice.call(arguments);
 
-        parentArgs.push(args);
-        var flatArgs = $.map(parentArgs, function(arg){ return arg; });
-        cb.apply(self, flatArgs);
+        resolvingArgs.push(args);
+
+        var flatArgs = $.map(resolvingArgs, function(arg){ return arg; });
+        runMethod.apply(self, flatArgs);
       });
 
-    }
+    };
+
+    resolvedMethod.run = function(){
+      var args = Array.prototype.slice.call(arguments);
+      runMethod.apply(target, args);
+    };
+
+    return resolvedMethod;
   }
 
   return Resolve;

@@ -5,7 +5,8 @@ BBCloneMail = (function(Backbone, Marionette){
 
   App.addRegions({
     nav: "#navigation",
-    main: "#main"
+    main: "#main",
+    appSelector: "#app-selector"
   });
 
   App.on("initialize:after", function(){
@@ -14,7 +15,7 @@ BBCloneMail = (function(Backbone, Marionette){
     }
   });
 
-  App.startSubApp = function(appName){
+  App.startSubApp = function(appName, args){
     var currentApp = App.module(appName);
     if (App.currentApp === currentApp){ return; }
 
@@ -23,7 +24,7 @@ BBCloneMail = (function(Backbone, Marionette){
     }
 
     App.currentApp = currentApp;
-    currentApp.start();
+    currentApp.start(args);
   };
 
   return App;
