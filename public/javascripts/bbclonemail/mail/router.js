@@ -1,46 +1,50 @@
-BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette, $, _){
-  "use strict";
+BBCloneMail.module("MailApp", {
+  startWithParent: false,
 
-  // Mail Router
-  // -----------
+  define: function(MailApp, App, Backbone, Marionette, $, _){
+    "use strict";
 
-  var Router = Backbone.Router.extend({
-    routes: {
-      "": "showInbox",
-      "mail": "showInbox",
-      "mail/categories/:id": "showMailByCategory",
-      "mail/inbox/:id": "showMailById"
-    },
+    // Mail Router
+    // -----------
 
-    // this uses https://github.com/boazsender/backbone.routefilter
-    // to do filters around the route methods, and fire this method
-    // "before" any route method is called.
-    before: function(){
-      App.startSubApp("MailApp", {
-        mainRegion: App.main,
-        navRegion: App.nav,
-        appSelectorRegion: App.appSelector
-      });
-    },
+    var Router = Backbone.Router.extend({
+      routes: {
+        "": "showInbox",
+        "mail": "showInbox",
+        "mail/categories/:id": "showMailByCategory",
+        "mail/inbox/:id": "showMailById"
+      },
 
-    showInbox: function(){
-      App.MailApp.controller.showInbox();
-    },
+      // this uses https://github.com/boazsender/backbone.routefilter
+      // to do filters around the route methods, and fire this method
+      // "before" any route method is called.
+      before: function(){
+        App.startSubApp("MailApp", {
+          mainRegion: App.main,
+          navRegion: App.nav,
+          appSelectorRegion: App.appSelector
+        });
+      },
 
-    showMailById: function(id){
-      App.MailApp.controller.showMailById(id);
-    },
+      showInbox: function(){
+        App.MailApp.controller.showInbox();
+      },
 
-    showMailByCategory: function(id){
-      App.MailApp.controller.showMailByCategory(id);
-    }
-  });
+      showMailById: function(id){
+        App.MailApp.controller.showMailById(id);
+      },
 
-  // Initializer / Finalizer
-  // -----------------------
+      showMailByCategory: function(id){
+        App.MailApp.controller.showMailByCategory(id);
+      }
+    });
 
-  MailRouter.addInitializer(function(){
-    var router = new Router();
-  });
+    // Initializer / Finalizer
+    // -----------------------
 
+    App.addInitializer(function(){
+      var router = new Router();
+    });
+
+  }
 });

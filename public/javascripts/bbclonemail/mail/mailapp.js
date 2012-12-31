@@ -1,51 +1,49 @@
-BBCloneMail.module("MailApp", { 
-  startWithParent: false,
-  define: function(MailApp, App){
-    "use strict";
+BBCloneMail.module("MailApp", function(MailApp, App){
+  "use strict";
 
-    // Controller
-    // ----------
+  // Controller
+  // ----------
 
-    MailApp.Controller = MailApp.Components.MailController.extend({
-      
-      showInbox: function(){
-        var mailbox = new MailApp.Mail.Mailbox();
-        $.when(mailbox.getAll())
-          .then(this.showMailList);
-      },
+  MailApp.Controller = MailApp.Components.MailController.extend({
+    
+    showInbox: function(){
+      var mailbox = new MailApp.Mail.Mailbox();
+      $.when(mailbox.getAll())
+        .then(this.showMailList);
+    },
 
-      showMailById: function(id){
-        var mailbox = new MailApp.Mail.Mailbox();
-        $.when(mailbox.getById(id))
-          .then(this.showMail);
-      },
+    showMailById: function(id){
+      var mailbox = new MailApp.Mail.Mailbox();
+      $.when(mailbox.getById(id))
+        .then(this.showMail);
+    },
 
-      showMailByCategory: function(category){
-        var mailbox = new MailApp.Mail.Mailbox();
-        $.when(mailbox.getByCategory(category))
-          .then(this.showMailList);
-      },
+    showMailByCategory: function(category){
+      var mailbox = new MailApp.Mail.Mailbox();
+      $.when(mailbox.getByCategory(category))
+        .then(this.showMailList);
+    },
 
+  });
+
+  // Initializers
+  // ------------
+
+  MailApp.addInitializer(function(args){
+    MailApp.controller = new MailApp.Controller({
+      mainRegion: args.mainRegion,
+      navRegion: args.navRegion,
+      appSelectorRegion: args.appSelectorRegion
     });
 
-    // Initializers
-    // ------------
+    MailApp.controller.show();
+  });
 
-    MailApp.addInitializer(function(args){
-      MailApp.controller = new MailApp.Controller({
-        mainRegion: args.mainRegion,
-        navRegion: args.navRegion,
-        appSelectorRegion: args.appSelectorRegion
-      });
+  MailApp.addFinalizer(function(){
+    if (MailApp.controller){
+      MailApp.controller.close();
+      delete MailApp.controller;
+    }
+  });
 
-      MailApp.controller.show();
-    });
-
-    MailApp.addFinalizer(function(){
-      if (MailApp.controller){
-        MailApp.controller.close();
-        delete MailApp.controller;
-      }
-    });
-  }
 });

@@ -1,8 +1,9 @@
 script#email-preview-template(type = "text/template")
   header
-    span.from
-      |<%= from %>
-    span.subject
-      |<%= subject %>
-    span.date
-      |<%= date %>
+    a(href != "#mail/inbox/<%= id %>")
+      span.from
+        |<%= from %>
+      span.subject
+        |<%= subject %>
+      span.date
+        |<%= date %>
