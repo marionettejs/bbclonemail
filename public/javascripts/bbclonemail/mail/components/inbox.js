@@ -11,13 +11,8 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
     template: "#email-preview-template",
     tagName: "li",
 
-    events: {
-      "click": "previewClicked"
-    },
-
-    previewClicked: function(e){
-      e.preventDefault();
-      this.trigger("email:selected", this.model);
+    triggers: {
+      "click": "selected"
     }
   });
 
@@ -28,6 +23,7 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
   Mailboxes.MailListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
+    itemViewEventPrefix: "email",
     itemView: Mailboxes.MailPreview
   });
 
@@ -38,7 +34,6 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
   // list of items, and single email item view
 
   Mailboxes.Inbox = Marionette.Controller.extend({
-    
     initialize: function(options){
       this.region = options.region;
       this.email = options.email;
@@ -49,11 +44,13 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
         collection: this.email
       });
 
-      listView.on("itemview:email:selected", function(view, email){
-        this.showMailItem(email);
-      }, this);
+      this.listenTo(listView, "email:selected", this._emailSelected);
 
       this.region.show(listView);
+    },
+
+    _emailSelected: function(view, args){
+      this.trigger("email:selected", args.model);
     }
   });
 
