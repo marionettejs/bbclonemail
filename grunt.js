@@ -22,16 +22,28 @@ module.exports = function(grunt) {
           "public/javascripts/vendor/backbone.js",
           "public/javascripts/vendor/backbone.compute.js",
           "public/javascripts/vendor/backbone.routefilter.js",
+          "public/javascripts/vendor/backbone.wreqr.js",
+          "public/javascripts/vendor/backbone.babysitter.js",
           "public/javascripts/vendor/backbone.marionette.js",
+
           "public/javascripts/bbclonemail/bbclonemail.js",
-          "public/javascripts/bbclonemail/bbclonemail.mailrouter.js",
-          "public/javascripts/bbclonemail/bbclonemail.mailapp.js",
-          "public/javascripts/bbclonemail/bbclonemail.mailapp.mail.js",
-          "public/javascripts/bbclonemail/bbclonemail.mailapp.inbox.js",
-          "public/javascripts/bbclonemail/bbclonemail.contactsapp.js",
-          "public/javascripts/bbclonemail/bbclonemail.contactrouter.js",
-          "public/javascripts/bbclonemail/bbclonemail.contactsapp.contacts.js",
-          "public/javascripts/bbclonemail/bbclonemail.contactsapp.contactlist.js",
+          "public/javascripts/bbclonemail/components/appSelector.js",
+          "public/javascripts/bbclonemail/components/appController.js",
+
+          "public/javascripts/bbclonemail/mail/components/navMenu.js",
+          "public/javascripts/bbclonemail/mail/components/inbox.js",
+          "public/javascripts/bbclonemail/mail/components/mailViewer.js",
+          "public/javascripts/bbclonemail/mail/entities/mail.js",
+          "public/javascripts/bbclonemail/mail/entities/categories.js",
+          "public/javascripts/bbclonemail/mail/mailapp.js",
+          "public/javascripts/bbclonemail/mail/router.js",
+
+          "public/javascripts/bbclonemail/contacts/router.js",
+          "public/javascripts/bbclonemail/contacts/contactsapp.js",
+          "public/javascripts/bbclonemail/contacts/categories.js",
+          "public/javascripts/bbclonemail/contacts/contacts.js",
+          "public/javascripts/bbclonemail/contacts/contactlist.js",
+
           "public/javascripts/bbclonemail/**/*.js"
         ],
         dest: 'public/javascripts/build/bbclonemail.js'
