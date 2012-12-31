@@ -13,7 +13,7 @@ script#email-view-template(type = "text/template")
         ul.emailCategories
           |<% _.each(categories, function(category){ %>
           li 
-            a(href!="#categories/<%= category %>") <%= category %>
+            a(href!="#mail/categories/<%= category %>") <%= category %>
           |<% }); %>
         |<% } %>
-        p |<%= body %>
+        |<%= body %>
