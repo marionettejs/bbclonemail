@@ -12,14 +12,14 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     url: "/email"
   });
 
-  // Controller
-  // ----------
+  // Mailbox Controller
+  // ------------------
 
-  var Controller = Marionette.Controller.extend({
+  Mail.Mailbox = Marionette.Controller.extend({
     getAll: function(){
       var deferred = $.Deferred();
 
-      this.getMail(function(mail){
+      this._getMail(function(mail){
         deferred.resolve(mail);
       });
 
@@ -29,7 +29,7 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
     getByCategory: function(categoryName){
       var deferred = $.Deferred();
 
-      this.getMail(function(unfiltered){
+      this._getMail(function(unfiltered){
         var filtered = unfiltered.filter(function(mail){
           var categories = mail.get("categories");
           return _.include(categories, categoryName);
@@ -42,7 +42,7 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
       return deferred.promise();
     },
 
-    getMail: function(callback){
+    _getMail: function(callback){
       var emailCollection = new EmailCollection();
       emailCollection.on("reset", callback);
       emailCollection.fetch();

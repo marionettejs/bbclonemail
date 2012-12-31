@@ -1,11 +1,11 @@
-BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
   "use strict";
 
   // Mail View
   // ---------
   // Displays the contents of a single mail item.
 
-  Mailbox.MailView = Marionette.ItemView.extend({
+  Mailboxes.MailView = Marionette.ItemView.extend({
     template: "#email-view-template",
     tagName: "ul",
     className: "email-list"
@@ -17,7 +17,7 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   // mail items are displayed as a list. When clicked, the
   // email item contents will be displayed.
 
-  Mailbox.MailPreview = Marionette.ItemView.extend({
+  Mailboxes.MailPreview = Marionette.ItemView.extend({
     template: "#email-preview-template",
     tagName: "li",
 
@@ -35,25 +35,26 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
   // --------------
   // Displays a list of email preview items.
 
-  Mailbox.MailListView = Marionette.CollectionView.extend({
+  Mailboxes.MailListView = Marionette.CollectionView.extend({
     tagName: "ul",
     className: "email-list",
-    itemView: Mailbox.MailPreview
+    itemView: Mailboxes.MailPreview
   });
 
-  // Controller
-  // ----------
+  // Mailbox Component Controller
+  // ----------------------------
+  //
   // Manages the states / transitions between displaying a
   // list of items, and single email item view
 
-  Mailbox.Controller = Marionette.Controller.extend({
+  Mailboxes.Inbox = Marionette.Controller.extend({
     
     initialize: function(options){
-      this.mainRegion = options.mainRegion;
+      this.region = options.region;
     },
 
     showMailList: function(email){
-      var listView = new Mailbox.MailListView({
+      var listView = new Mailboxes.MailListView({
         collection: email
       });
 
@@ -61,11 +62,11 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
         this.showMailItem(email);
       }, this);
 
-      this.mainRegion.show(listView);
+      this.region.show(listView);
     },
 
     showMailItem: function(email){
-      var itemView = new Mailbox.MailView({
+      var itemView = new Mailboxes.MailView({
         model: email
       });
 
@@ -75,29 +76,6 @@ BBCloneMail.module("MailApp.Mailbox", function(Mailbox, App, Backbone, Marionett
       Backbone.history.navigate("inbox/mail/" + email.id);
     }
 
-  });
-
-  // Initializers And Finalizers
-  // ---------------------------
-
-  Mailbox.addInitializer(function(){
-    var controller = new Mailbox.Controller({
-      mainRegion: App.main
-    });
-
-    // Register command handlers to show a list of
-    // email items, or a single email item
-    App.commands.addHandler("show:mail:list", controller.showMailList, controller);
-    App.commands.addHandler("show:mail:item", controller.showMailItem, controller);
-
-    Mailbox.controller = controller;
-  });
-
-  Mailbox.addFinalizer(function(){
-    App.commands.removeHandler("show:mail:list");
-    App.commands.removeHandler("show:mail:item");
-
-    delete Mailbox.controller;
   });
 
 });

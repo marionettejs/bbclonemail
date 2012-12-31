@@ -13,12 +13,26 @@ BBCloneMail.module("MailApp.Components", function(Components, App){
       this.navRegion = options.navRegion;
       this.appSelectorRegion = options.appSelectorRegion;
 
+      _.bindAll(this, "showMail", "showMailList");
+
       Marionette.Controller.prototype.constructor.call(this, options);
     },
 
     show: function(){
       this._showAppSelector("mail");
       this._showCategories();
+    },
+
+    showMail: function(email){
+      console.log("showing email", email);
+    },
+
+    showMailList: function(emailList){
+      var inbox = new App.MailApp.Mailboxes.Inbox({
+        region: this.mainRegion
+      });
+
+      inbox.showMailList(emailList);
     },
 
     _showAppSelector: function(appName){

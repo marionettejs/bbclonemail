@@ -9,13 +9,23 @@ BBCloneMail.module("MailApp", {
     MailApp.Controller = MailApp.Components.MailController.extend({
       
       showInbox: function(){
+        var mailbox = new MailApp.Mail.Mailbox();
+        $.when(mailbox.getAll())
+          .then(this.showMailList);
       },
 
-      showMailById: function(){
+      showMailById: function(id){
+        var mailbox = new MailApp.Mail.Mailbox();
+        $.when(mailbox.getById(id))
+          .then(this.showMail);
       },
 
-      showMailByCategory: function(){
+      showMailByCategory: function(category){
+        var mailbox = new MailApp.Mail.Mailbox();
+        $.when(mailbox.getByCategory(category))
+          .then(this.showMailList);
       },
+
     });
 
     // Initializers
