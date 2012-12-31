@@ -17,17 +17,25 @@ BBCloneMail.module("MailApp.Components", function(Components, App){
     },
 
     show: function(){
-      this.showAppSelector("mail");
+      this._showAppSelector("mail");
+      this._showCategories();
     },
 
-    // show the app selector component in the app selector region
-    showAppSelector: function(appName){
+    _showAppSelector: function(appName){
       var appSelector = new App.AppSelector({
         region: this.appSelectorRegion,
         currentApp: appName
       });
 
       appSelector.show();
+    },
+
+    _showCategories: function(){
+      var categoryNav = new App.MailApp.Navigation.Menu({
+        region: this.navRegion
+      });
+
+      categoryNav.show();
     }
 
   });

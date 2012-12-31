@@ -9,7 +9,6 @@ BBCloneMail.module("MailApp", {
     MailApp.Controller = MailApp.Components.MailController.extend({
       
       showInbox: function(){
-        console.log('show inbox');
       },
 
       showMailById: function(){
