@@ -9,7 +9,7 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
       "": "showInbox",
       "mail": "showInbox",
       "mail/categories/:id": "showMailByCategory",
-      "mail/inbox/mail/:id": "showMailById"
+      "mail/inbox/:id": "showMailById"
     },
 
     // this uses https://github.com/boazsender/backbone.routefilter
@@ -27,12 +27,12 @@ BBCloneMail.module("MailRouter", function(MailRouter, App, Backbone, Marionette,
       App.MailApp.controller.showInbox();
     },
 
-    showMailByCategory: function(id){
-      App.MailApp.controller.showMailByCategory(id);
-    },
-
     showMailById: function(id){
       App.MailApp.controller.showMailById(id);
+    },
+
+    showMailByCategory: function(id){
+      App.MailApp.controller.showMailByCategory(id);
     }
   });
 

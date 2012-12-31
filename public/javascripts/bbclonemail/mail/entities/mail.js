@@ -26,6 +26,17 @@ BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, 
       return deferred.promise();
     },
 
+    getById: function(id){
+      var deferred = $.Deferred();
+
+      this._getMail(function(mailList){
+        var mail = mailList.get(id);
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
     getByCategory: function(categoryName){
       var deferred = $.Deferred();
 

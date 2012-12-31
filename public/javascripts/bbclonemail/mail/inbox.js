@@ -1,16 +1,6 @@
 BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
   "use strict";
 
-  // Mail View
-  // ---------
-  // Displays the contents of a single mail item.
-
-  Mailboxes.MailView = Marionette.ItemView.extend({
-    template: "#email-view-template",
-    tagName: "ul",
-    className: "email-list"
-  });
-
   // Mail Preview
   // ------------
   // Displays an individual preview line item, when multiple
@@ -51,11 +41,12 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
     
     initialize: function(options){
       this.region = options.region;
+      this.email = options.email;
     },
 
-    showMailList: function(email){
+    show: function(){
       var listView = new Mailboxes.MailListView({
-        collection: email
+        collection: this.email
       });
 
       listView.on("itemview:email:selected", function(view, email){
@@ -63,19 +54,7 @@ BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Mario
       }, this);
 
       this.region.show(listView);
-    },
-
-    showMailItem: function(email){
-      var itemView = new Mailboxes.MailView({
-        model: email
-      });
-
-      itemView.render();
-      $("#main").html(itemView.el);
-
-      Backbone.history.navigate("inbox/mail/" + email.id);
     }
-
   });
 
 });

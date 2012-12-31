@@ -24,15 +24,21 @@ BBCloneMail.module("MailApp.Components", function(Components, App){
     },
 
     showMail: function(email){
-      console.log("showing email", email);
+      var viewer = new App.MailApp.Mailboxes.MailViewer({
+        region: this.mainRegion,
+        email: email
+      });
+
+      viewer.show();
     },
 
     showMailList: function(emailList){
       var inbox = new App.MailApp.Mailboxes.Inbox({
-        region: this.mainRegion
+        region: this.mainRegion,
+        email: emailList
       });
 
-      inbox.showMailList(emailList);
+      inbox.show();
     },
 
     _showAppSelector: function(appName){
