@@ -1,3 +1,8 @@
+// Mail Inbox
+// ----------
+//
+// Display a list of email
+
 BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
   "use strict";
 

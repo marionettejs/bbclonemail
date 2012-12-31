@@ -15,9 +15,8 @@ BBCloneMail.module("MailApp", {
         "mail/inbox/:id": "showMailById"
       },
 
-      // this uses https://github.com/boazsender/backbone.routefilter
-      // to do filters around the route methods, and fire this method
-      // "before" any route method is called.
+      // route filter before method
+      // https://github.com/boazsender/backbone.routefilter
       before: function(){
         App.startSubApp("MailApp", {
           mainRegion: App.main,
@@ -35,16 +34,18 @@ BBCloneMail.module("MailApp", {
       },
 
       showMailByCategory: function(category){
+        console.log("show mail by category", category);
         App.MailApp.controller.showMailByCategory(category);
       }
     });
 
-    // Initializer / Finalizer
-    // -----------------------
-
+    // Initializer
+    // -----------
+    
+    // The router must always be alive with the app, so that it can
+    // respond to route changes and start up the right sub-app 
     App.addInitializer(function(){
       var router = new Router();
     });
-
   }
 });

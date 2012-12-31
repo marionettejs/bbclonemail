@@ -1,3 +1,9 @@
+// Navigation Menu
+// ---------------
+//
+// Show the list of mail categories and handle
+// clicking them to navigate to the mail category
+
 BBCloneMail.module("MailApp.Navigation", function(Nav, App, Backbone, Marionette, $, _){
   "use strict";
 
@@ -8,8 +14,15 @@ BBCloneMail.module("MailApp.Navigation", function(Nav, App, Backbone, Marionette
   Nav.CategoryListView = Marionette.ItemView.extend({
     template: "#mail-categories-view-template",
 
-    render: function(){
-      Marionette.ItemView.prototype.render.apply(this, arguments);
+    events: {
+      "click .mail-category": "mailCategoryClicked"
+    },
+
+    mailCategoryClicked: function(e){
+      e.preventDefault();
+
+      var category = $(e.currentTarget).data("category");
+      this.trigger("category:selected", category);
     }
   });
 
@@ -32,7 +45,13 @@ BBCloneMail.module("MailApp.Navigation", function(Nav, App, Backbone, Marionette
         collection: categories
       });
 
+      this.listenTo(view, "category:selected", this._categorySelected);
+
       this.region.show(view);
+    },
+
+    _categorySelected: function(category){
+      this.trigger("category:selected", category);
     },
 
     _getCategories: function(callback){

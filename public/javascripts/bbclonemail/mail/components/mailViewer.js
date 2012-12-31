@@ -1,3 +1,8 @@
+// Mail Viewer
+// -----------
+//
+// View an individual email
+
 BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
   "use strict";
   
