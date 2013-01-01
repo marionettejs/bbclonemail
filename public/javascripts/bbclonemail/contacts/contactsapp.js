@@ -1,71 +1,84 @@
-BBCloneMail.module("ContactsApp", { 
-  startWithParent: false,
-  define: function(ContactsApp, App){
-    "use strict";
+BBCloneMail.module("ContactsApp", function(ContactsApp, App){
+  "use strict";
+ 
+  // Contact List Views
+  // ------------------
 
-    // Contact App Controller
-    // -----------------------
+  ContactsApp.ContactView = Marionette.ItemView.extend({
+    template: "#contact-item-template",
+    tagName: "li"
+  });
 
-    ContactsApp.Controller = function(repo, mainRegion, navRegion){
-      $.resolve(this);
+  ContactsApp.ContactListView = Marionette.CollectionView.extend({
+    itemView: ContactsApp.ContactView,
+    tagName: "ul",
+    id: "contact-list",
+    className: "contact-list"
+  });
+  
+  // Category View
+  // -------------
 
-      this.contactsRepo = repo;
-      this.mainRegion = mainRegion;
-      this.navRegion = navRegion;
-    };
+  ContactsApp.CategoryView = Marionette.ItemView.extend({
+    template: "#contact-categories-view-template"
+  });
 
-    _.extend(ContactsApp.Controller.prototype, {
+  // Contact App Controller
+  // -----------------------
 
-      start: function(){
-        this.showCategories();
-      },
+  ContactsApp.Controller = App.AppController.extend({
+    initialize: function(options){
+      this.repo = options.repo;
+    },
 
-      showCategories: function(){
-        var view = new ContactsApp.Categories.CategoryView();
-        this.navRegion.show(view);
-      },
+    onShow: function(){
+      this._showCategories();
+    },
 
-      showContacts: {
-        resolve: "getContacts",
-        run: function(contacts){
-          var view = new ContactsApp.ContactList.ContactListView({
-            collection: contacts
-          });
+    showContacts: function(contacts){
+      var view = new ContactsApp.ContactListView({
+        collection: contacts
+      });
 
-          this.mainRegion.show(view);
+      this.mainRegion.show(view);
 
-          Backbone.history.navigate("contacts");
-        }
-      },
+      Backbone.history.navigate("contacts");
+    },
 
-      getContacts: function(callback){
-        return this.contactsRepo.getAll();
-      }
+    // show the list of categories for the mail app
+    _showCategories: function(){
+      var categoryNav = new ContactsApp.CategoryView();
+      this.navRegion.show(categoryNav);
+    },
 
-    });
-
-    // Public API
-    // ----------
-
-    ContactsApp.showContacts = function(){
-      ContactsApp.controller.showContacts();
+    getContacts: function(callback){
+      return this.contactsRepo.getAll();
     }
 
-    // Initializers and Finalizers
-    // ---------------------------
+  });
 
-    ContactsApp.addInitializer(function(){
-      var repo = new ContactsApp.Contacts.Repository();
+  // Initializers and Finalizers
+  // ---------------------------
 
-      ContactsApp.controller = new ContactsApp.Controller(repo, App.main, App.nav);
-      ContactsApp.controller.start();
+  ContactsApp.addInitializer(function(args){
+    var repo = new ContactsApp.Contacts.Repository();
 
-      App.vent.trigger("app:started", "ContactsApp");
+    ContactsApp.controller = new ContactsApp.Controller({
+      mainRegion: args.mainRegion,
+      navRegion: args.navRegion,
+      appSelectorRegion: args.appSelectorRegion,
+      repo: repo
     });
+    ContactsApp.controller.show();
 
-    ContactsApp.addFinalizer(function(){
-      delete ContactsApp.ContactList.controller;
-    });
+    App.vent.trigger("app:started", "ContactsApp");
+  });
 
-  }
+  ContactsApp.addFinalizer(function(){
+    if (ContactsApp.controller){
+      ContactsApp.controller.close();
+      delete ContactsApp.controller;
+    }
+  });
+
 });

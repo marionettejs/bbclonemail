@@ -40,7 +40,7 @@ BBCloneMail.module("MailApp", {
 
     // Initializer
     // -----------
-    
+    //
     // The router must always be alive with the app, so that it can
     // respond to route changes and start up the right sub-app 
     App.addInitializer(function(){
