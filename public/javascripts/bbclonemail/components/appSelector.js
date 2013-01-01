@@ -3,7 +3,7 @@
 //
 // Display the list of applications to choose from
 // and move to that application when the selection is changed
-BBCloneMail.AppSelector = (function(Marionette){
+BBCloneMail.AppSelector = (function(App, Marionette){
 
   // Selector View
   // -------------
@@ -42,6 +42,11 @@ BBCloneMail.AppSelector = (function(Marionette){
     initialize: function(options){
       this.region = options.region;
       this.currentApp = options.currentApp;
+      App.vent.on("app:started", this._setCurrentApp, this);
+    },
+
+    onClose: function(){
+      App.vent.off("app:started", this._setCurrentApp, this);
     },
 
     // show the selector view and set up the
@@ -73,7 +78,7 @@ BBCloneMail.AppSelector = (function(Marionette){
 
     // handle app selection change
     _appSelected: function(app){
-      console.log("app selected", app);
+      Backbone.history.navigate(app, true);
     },
 
     // close the region and view when this component closes
@@ -85,4 +90,4 @@ BBCloneMail.AppSelector = (function(Marionette){
     }
   });
 
-})(Marionette);
+})(BBCloneMail, Marionette);

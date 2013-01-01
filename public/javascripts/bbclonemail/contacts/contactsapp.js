@@ -75,6 +75,7 @@ BBCloneMail.module("ContactsApp", function(ContactsApp, App){
     });
 
     ContactsApp.controller.show();
+    App.vent.trigger("app:started", "contacts");
   });
 
   ContactsApp.addFinalizer(function(){

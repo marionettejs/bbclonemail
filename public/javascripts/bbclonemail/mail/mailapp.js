@@ -94,6 +94,7 @@ BBCloneMail.module("MailApp", function(MailApp, App){
     });
 
     MailApp.controller.show();
+    App.vent.trigger("app:started", "mail");
   });
 
   MailApp.addFinalizer(function(){
