@@ -35,14 +35,18 @@ BBCloneMail.module("ContactsApp", function(ContactsApp, App){
       this._showCategories();
     },
 
-    showContacts: function(contacts){
-      var view = new ContactsApp.ContactListView({
-        collection: contacts
+    showContacts: function(){
+      var that = this;
+
+      $.when(this.repo.getAll()).then(function(contacts){
+        var view = new ContactsApp.ContactListView({
+          collection: contacts
+        });
+
+        that.mainRegion.show(view);
+
+        Backbone.history.navigate("contacts");
       });
-
-      this.mainRegion.show(view);
-
-      Backbone.history.navigate("contacts");
     },
 
     // show the list of categories for the mail app
@@ -69,9 +73,8 @@ BBCloneMail.module("ContactsApp", function(ContactsApp, App){
       appSelectorRegion: args.appSelectorRegion,
       repo: repo
     });
-    ContactsApp.controller.show();
 
-    App.vent.trigger("app:started", "ContactsApp");
+    ContactsApp.controller.show();
   });
 
   ContactsApp.addFinalizer(function(){

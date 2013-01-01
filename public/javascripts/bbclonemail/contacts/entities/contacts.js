@@ -25,9 +25,8 @@ BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Mar
   // Contacts Repository
   // -------------------
 
-  Contacts.Repository = function(){};
+  Contacts.Repository = Marionette.Controller.extend({
 
-  _.extend(Contacts.Repository.prototype, {
     getAll: function(){
       var deferred = $.Deferred();
 
