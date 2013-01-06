@@ -14904,7 +14904,7 @@ BBCloneMail = (function(Backbone, Marionette){
 //
 // Display the list of applications to choose from
 // and move to that application when the selection is changed
-BBCloneMail.AppSelector = (function(Marionette){
+BBCloneMail.AppSelector = (function(App, Marionette){
 
   // Selector View
   // -------------
@@ -14943,6 +14943,11 @@ BBCloneMail.AppSelector = (function(Marionette){
     initialize: function(options){
       this.region = options.region;
       this.currentApp = options.currentApp;
+      App.vent.on("app:started", this._setCurrentApp, this);
+    },
+
+    onClose: function(){
+      App.vent.off("app:started", this._setCurrentApp, this);
     },
 
     // show the selector view and set up the
@@ -14974,7 +14979,7 @@ BBCloneMail.AppSelector = (function(Marionette){
 
     // handle app selection change
     _appSelected: function(app){
-      console.log("app selected", app);
+      Backbone.history.navigate(app, true);
     },
 
     // close the region and view when this component closes
@@ -14986,7 +14991,7 @@ BBCloneMail.AppSelector = (function(Marionette){
     }
   });
 
-})(Marionette);
+})(BBCloneMail, Marionette);
 
 // AppController
 // --------------
@@ -15103,168 +15108,6 @@ BBCloneMail.module("MailApp.Navigation", function(Nav, App, Backbone, Marionette
     }
   });
 
-});
-
-// Mail Inbox
-// ----------
-//
-// Display a list of email
-
-BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
-  "use strict";
-
-  // Mail Preview
-  // ------------
-  // Displays an individual preview line item, when multiple
-  // mail items are displayed as a list. When clicked, the
-  // email item contents will be displayed.
-
-  Mailboxes.MailPreview = Marionette.ItemView.extend({
-    template: "#email-preview-template",
-    tagName: "li",
-
-    triggers: {
-      "click": "selected"
-    }
-  });
-
-  // Mail List View
-  // --------------
-  // Displays a list of email preview items.
-
-  Mailboxes.MailListView = Marionette.CollectionView.extend({
-    tagName: "ul",
-    className: "email-list",
-    itemViewEventPrefix: "email",
-    itemView: Mailboxes.MailPreview
-  });
-
-  // Mailbox Component Controller
-  // ----------------------------
-  //
-  // Manages the states / transitions between displaying a
-  // list of items, and single email item view
-
-  Mailboxes.Inbox = Marionette.Controller.extend({
-    initialize: function(options){
-      this.region = options.region;
-      this.email = options.email;
-    },
-
-    show: function(){
-      var listView = new Mailboxes.MailListView({
-        collection: this.email
-      });
-
-      this.listenTo(listView, "email:selected", this._emailSelected);
-
-      this.region.show(listView);
-    },
-
-    _emailSelected: function(view, args){
-      this.trigger("email:selected", args.model);
-    }
-  });
-
-});
-
-// Mail Viewer
-// -----------
-//
-// View an individual email
-
-BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
-  "use strict";
-  
-  // Mail View
-  // ---------
-  // Displays the contents of a single mail item.
-
-  Mailboxes.MailView = Marionette.ItemView.extend({
-    template: "#email-view-template",
-    tagName: "ul",
-    className: "email-list"
-  });
-
-  Mailboxes.MailViewer = Marionette.Controller.extend({
-
-    initialize: function(options){
-      this.region = options.region;
-      this.email = options.email;
-    },
-
-    show: function(){
-      var itemView = new Mailboxes.MailView({
-        model: this.email
-      });
-
-      this.region.show(itemView);
-    }
-  });
-
-});
-
-BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, _){
-  "use strict";
-
-  // Entities
-  // --------
-
-  var Email = Backbone.Model.extend({
-  });
-
-  var EmailCollection = Backbone.Collection.extend({
-    model: Email,
-    url: "/email"
-  });
-
-  // Mailbox Controller
-  // ------------------
-
-  Mail.Mailbox = Marionette.Controller.extend({
-    getAll: function(){
-      var deferred = $.Deferred();
-
-      this._getMail(function(mail){
-        deferred.resolve(mail);
-      });
-
-      return deferred.promise();
-    },
-
-    getById: function(id){
-      var deferred = $.Deferred();
-
-      this._getMail(function(mailList){
-        var mail = mailList.get(id);
-        deferred.resolve(mail);
-      });
-
-      return deferred.promise();
-    },
-
-    getByCategory: function(categoryName){
-      var deferred = $.Deferred();
-
-      this._getMail(function(unfiltered){
-        var filtered = unfiltered.filter(function(mail){
-          var categories = mail.get("categories");
-          return _.include(categories, categoryName);
-        });
-
-        var mail = new EmailCollection(filtered);
-        deferred.resolve(mail);
-      });
-
-      return deferred.promise();
-    },
-
-    _getMail: function(callback){
-      var emailCollection = new EmailCollection();
-      emailCollection.on("reset", callback);
-      emailCollection.fetch();
-    }
-  });
 });
 
 BBCloneMail.module("MailApp.Categories", function(Categories, App, Backbone, Marionette, $, _){
@@ -15413,6 +15256,7 @@ BBCloneMail.module("MailApp", function(MailApp, App){
     });
 
     MailApp.controller.show();
+    App.vent.trigger("app:started", "mail");
   });
 
   MailApp.addFinalizer(function(){
@@ -15466,7 +15310,7 @@ BBCloneMail.module("MailApp", {
 
     // Initializer
     // -----------
-    
+    //
     // The router must always be alive with the app, so that it can
     // respond to route changes and start up the right sub-app 
     App.addInitializer(function(){
@@ -15475,114 +15319,130 @@ BBCloneMail.module("MailApp", {
   }
 });
 
-BBCloneMail.module("ContactRouter", function(ContactRouter, App, Backbone, Marionette, $, _){
-
-  // Contacts Router
-  // -----------
-
-  var Router = Backbone.Router.extend({
-    routes: {
-      "contacts": "showContacts",
-    },
-
-    before: function(){
-      App.startSubApp("ContactsApp");
-    },
-
-    showContacts: function(){
-      App.module("ContactsApp").showContacts();
-    }
-  });
-
-  // Initializer / Finalizer
-  // -----------------------
-
-  ContactRouter.addInitializer(function(){
-    var router = new Router();
-  });
-
-});
-
-BBCloneMail.module("ContactsApp", { 
+BBCloneMail.module("ContactsApp", {
   startWithParent: false,
   define: function(ContactsApp, App){
-    "use strict";
 
-    // Contact App Controller
-    // -----------------------
+    // Contacts Router
+    // -----------
 
-    ContactsApp.Controller = function(repo, mainRegion, navRegion){
-      $.resolve(this);
-
-      this.contactsRepo = repo;
-      this.mainRegion = mainRegion;
-      this.navRegion = navRegion;
-    };
-
-    _.extend(ContactsApp.Controller.prototype, {
-
-      start: function(){
-        this.showCategories();
+    var Router = Backbone.Router.extend({
+      routes: {
+        "contacts": "showContacts",
       },
 
-      showCategories: function(){
-        var view = new ContactsApp.Categories.CategoryView();
-        this.navRegion.show(view);
+      // route filter before method
+      // https://github.com/boazsender/backbone.routefilter
+      before: function(){
+        App.startSubApp("ContactsApp", {
+          mainRegion: App.main,
+          navRegion: App.nav,
+          appSelectorRegion: App.appSelector
+        });
       },
 
-      showContacts: {
-        resolve: "getContacts",
-        run: function(contacts){
-          var view = new ContactsApp.ContactList.ContactListView({
-            collection: contacts
-          });
-
-          this.mainRegion.show(view);
-
-          Backbone.history.navigate("contacts");
-        }
-      },
-
-      getContacts: function(callback){
-        return this.contactsRepo.getAll();
+      showContacts: function(){
+        App.ContactsApp.controller.showContacts();
       }
-
     });
 
-    // Public API
-    // ----------
-
-    ContactsApp.showContacts = function(){
-      ContactsApp.controller.showContacts();
-    }
-
-    // Initializers and Finalizers
-    // ---------------------------
-
-    ContactsApp.addInitializer(function(){
-      var repo = new ContactsApp.Contacts.Repository();
-
-      ContactsApp.controller = new ContactsApp.Controller(repo, App.main, App.nav);
-      ContactsApp.controller.start();
-
-      App.vent.trigger("app:started", "ContactsApp");
-    });
-
-    ContactsApp.addFinalizer(function(){
-      delete ContactsApp.ContactList.controller;
+    // Initializer
+    // -----------
+    //
+    // The router must always be alive with the app, so that it can
+    // respond to route changes and start up the right sub-app 
+    App.addInitializer(function(){
+      var router = new Router();
     });
 
   }
 });
 
-BBCloneMail.module("ContactsApp.Categories", function(Cats, App, Backbone, Marionette, $, _){
+BBCloneMail.module("ContactsApp", function(ContactsApp, App){
   "use strict";
+ 
+  // Contact List Views
+  // ------------------
 
+  ContactsApp.ContactView = Marionette.ItemView.extend({
+    template: "#contact-item-template",
+    tagName: "li"
+  });
+
+  ContactsApp.ContactListView = Marionette.CollectionView.extend({
+    itemView: ContactsApp.ContactView,
+    tagName: "ul",
+    id: "contact-list",
+    className: "contact-list"
+  });
+  
   // Category View
   // -------------
 
-  Cats.CategoryView = Marionette.ItemView.extend({
+  ContactsApp.CategoryView = Marionette.ItemView.extend({
     template: "#contact-categories-view-template"
+  });
+
+  // Contact App Controller
+  // -----------------------
+
+  ContactsApp.Controller = App.AppController.extend({
+    initialize: function(options){
+      this.repo = options.repo;
+    },
+
+    onShow: function(){
+      this._showCategories();
+    },
+
+    showContacts: function(){
+      var that = this;
+
+      $.when(this.repo.getAll()).then(function(contacts){
+        var view = new ContactsApp.ContactListView({
+          collection: contacts
+        });
+
+        that.mainRegion.show(view);
+
+        Backbone.history.navigate("contacts");
+      });
+    },
+
+    // show the list of categories for the mail app
+    _showCategories: function(){
+      var categoryNav = new ContactsApp.CategoryView();
+      this.navRegion.show(categoryNav);
+    },
+
+    getContacts: function(callback){
+      return this.contactsRepo.getAll();
+    }
+
+  });
+
+  // Initializers and Finalizers
+  // ---------------------------
+
+  ContactsApp.addInitializer(function(args){
+    var repo = new ContactsApp.Contacts.Repository();
+
+    ContactsApp.controller = new ContactsApp.Controller({
+      mainRegion: args.mainRegion,
+      navRegion: args.navRegion,
+      appSelectorRegion: args.appSelectorRegion,
+      repo: repo
+    });
+
+    ContactsApp.controller.show();
+    App.vent.trigger("app:started", "contacts");
+  });
+
+  ContactsApp.addFinalizer(function(){
+    if (ContactsApp.controller){
+      ContactsApp.controller.close();
+      delete ContactsApp.controller;
+    }
   });
 
 });
@@ -15614,9 +15474,8 @@ BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Mar
   // Contacts Repository
   // -------------------
 
-  Contacts.Repository = function(){};
+  Contacts.Repository = Marionette.Controller.extend({
 
-  _.extend(Contacts.Repository.prototype, {
     getAll: function(){
       var deferred = $.Deferred();
 
@@ -15636,22 +15495,164 @@ BBCloneMail.module("ContactsApp.Contacts", function(Contacts, App, Backbone, Mar
   });
 });
 
-BBCloneMail.module("ContactsApp.ContactList", function(ContactList, App, Backbone, Marionette, $, _){
+BBCloneMail.module("MailApp.Mail", function(Mail, App, Backbone, Marionette, $, _){
   "use strict";
 
-  // Contact List Views
-  // ------------------
+  // Entities
+  // --------
 
-  ContactList.ContactView = Marionette.ItemView.extend({
-    template: "#contact-item-template",
-    tagName: "li"
+  var Email = Backbone.Model.extend({
   });
 
-  ContactList.ContactListView = Marionette.CollectionView.extend({
-    itemView: ContactList.ContactView,
+  var EmailCollection = Backbone.Collection.extend({
+    model: Email,
+    url: "/email"
+  });
+
+  // Mailbox Controller
+  // ------------------
+
+  Mail.Mailbox = Marionette.Controller.extend({
+    getAll: function(){
+      var deferred = $.Deferred();
+
+      this._getMail(function(mail){
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
+    getById: function(id){
+      var deferred = $.Deferred();
+
+      this._getMail(function(mailList){
+        var mail = mailList.get(id);
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
+    getByCategory: function(categoryName){
+      var deferred = $.Deferred();
+
+      this._getMail(function(unfiltered){
+        var filtered = unfiltered.filter(function(mail){
+          var categories = mail.get("categories");
+          return _.include(categories, categoryName);
+        });
+
+        var mail = new EmailCollection(filtered);
+        deferred.resolve(mail);
+      });
+
+      return deferred.promise();
+    },
+
+    _getMail: function(callback){
+      var emailCollection = new EmailCollection();
+      emailCollection.on("reset", callback);
+      emailCollection.fetch();
+    }
+  });
+});
+
+// Mail Viewer
+// -----------
+//
+// View an individual email
+
+BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
+  "use strict";
+  
+  // Mail View
+  // ---------
+  // Displays the contents of a single mail item.
+
+  Mailboxes.MailView = Marionette.ItemView.extend({
+    template: "#email-view-template",
     tagName: "ul",
-    id: "contact-list",
-    className: "contact-list"
+    className: "email-list"
+  });
+
+  Mailboxes.MailViewer = Marionette.Controller.extend({
+
+    initialize: function(options){
+      this.region = options.region;
+      this.email = options.email;
+    },
+
+    show: function(){
+      var itemView = new Mailboxes.MailView({
+        model: this.email
+      });
+
+      this.region.show(itemView);
+    }
+  });
+
+});
+
+// Mail Inbox
+// ----------
+//
+// Display a list of email
+
+BBCloneMail.module("MailApp.Mailboxes", function(Mailboxes, App, Backbone, Marionette, $, _){
+  "use strict";
+
+  // Mail Preview
+  // ------------
+  // Displays an individual preview line item, when multiple
+  // mail items are displayed as a list. When clicked, the
+  // email item contents will be displayed.
+
+  Mailboxes.MailPreview = Marionette.ItemView.extend({
+    template: "#email-preview-template",
+    tagName: "li",
+
+    triggers: {
+      "click": "selected"
+    }
+  });
+
+  // Mail List View
+  // --------------
+  // Displays a list of email preview items.
+
+  Mailboxes.MailListView = Marionette.CollectionView.extend({
+    tagName: "ul",
+    className: "email-list",
+    itemViewEventPrefix: "email",
+    itemView: Mailboxes.MailPreview
+  });
+
+  // Mailbox Component Controller
+  // ----------------------------
+  //
+  // Manages the states / transitions between displaying a
+  // list of items, and single email item view
+
+  Mailboxes.Inbox = Marionette.Controller.extend({
+    initialize: function(options){
+      this.region = options.region;
+      this.email = options.email;
+    },
+
+    show: function(){
+      var listView = new Mailboxes.MailListView({
+        collection: this.email
+      });
+
+      this.listenTo(listView, "email:selected", this._emailSelected);
+
+      this.region.show(listView);
+    },
+
+    _emailSelected: function(view, args){
+      this.trigger("email:selected", args.model);
+    }
   });
 
 });

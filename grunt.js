@@ -30,11 +30,11 @@ module.exports = function(grunt) {
           "public/javascripts/bbclonemail/components/appSelector.js",
           "public/javascripts/bbclonemail/components/appController.js",
 
-          "public/javascripts/bbclonemail/mail/components/navMenu.js",
-          "public/javascripts/bbclonemail/mail/components/inbox.js",
-          "public/javascripts/bbclonemail/mail/components/mailViewer.js",
-          "public/javascripts/bbclonemail/mail/entities/mail.js",
-          "public/javascripts/bbclonemail/mail/entities/categories.js",
+          "public/javascripts/bbclonemail/mail/categories/categoryView.js",
+          "public/javascripts/bbclonemail/mail/categories/categories.js",
+          "public/javascripts/bbclonemail/mail/mail/mailListView.js",
+          "public/javascripts/bbclonemail/mail/mail/mailItemView.js",
+          "public/javascripts/bbclonemail/mail/mail/mail.js",
           "public/javascripts/bbclonemail/mail/mailapp.js",
           "public/javascripts/bbclonemail/mail/router.js",
 
