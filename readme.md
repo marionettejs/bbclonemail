@@ -8,9 +8,25 @@ plugin for Backbone.js. You can see it in action at:
 
 http://bbclonemail.heroku.com
 
+## Running BBCloneMail On Your Computer
+
+BBCloneMail is a NodeJS app built on Express.js. To run it on your
+computer you'll want to clone this repository to your machine somewhere,
+and then follow these steps:
+
+1. Install the latest http://nodejs.org if you don't have it already
+2. Open a command prompt / terminal window in the BBCloneMail project folder
+3. Run `npm install` to install all of the needed components
+4. Run `npm start` to start the server
+5. Open http://localhost:3000 in your browser
+
+Note that step 1 through 3 only have to be done once. After you have
+done that, you just need to run step 4 and 5 any time you want to
+see the app running on your computer.
+
 ## A Work In Progress
 
-Keep in mind that this is still a work in progress. While the source code
+Keep in mind that this is always a work in progress. While the source code
 and functionality do demonstrate all of the core features and capabilities
 of Backbone.Marionette, the application itself is very limited in it's 
 functionality. 
