@@ -3,7 +3,7 @@ BBCloneMail: A Backbone.Marionette Reference Application
 ## See It In Action
 
 This is a sample application, demonstrating how to use my 
-[Backbone.Marionette](http://github.com/derickbailey/backbone.marionette)
+[Backbone.Marionette](http://github.com/marionettejs/backbone.marionette)
 plugin for Backbone.js. You can see it in action at:
 
 http://bbclonemail.heroku.com
