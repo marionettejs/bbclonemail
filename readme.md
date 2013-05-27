@@ -1,5 +1,10 @@
 BBCloneMail: A Backbone.Marionette Reference Application
 
+**NOTE:** This code is currently in an experimental state. I don't recommend 
+using it as guidance for how to build Marionette apps at the moment. If you
+would like to see a better reference code base, check out the version of
+BBCloneMail that [Foxandxss is building](https://github.com/Foxandxss/bbclonemail).
+
 ## See It In Action
 
 This is a sample application, demonstrating how to use my 
