@@ -1,3 +1,10 @@
+### Deprecated
+
+##### This project is no longer maintained and is not representative of the current best practices in Marionette.
+
+------------
+
+
 BBCloneMail: A Backbone.Marionette Reference Application
 
 **NOTE:** This code is currently in an experimental state. I don't recommend 
